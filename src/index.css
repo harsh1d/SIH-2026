@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #F6F9F5;
+    color: #1F2937;
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F0F4EF;
+}
+::-webkit-scrollbar-thumb {
+  background: #C2D6C0;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2D7A41;
+}
+
+/* Custom Glassmorphism Cards */
+.glass-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(230, 240, 230, 0.8);
+}
+
+.glass-ai-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(243, 232, 255, 0.6) 100%);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(157, 78, 221, 0.2);
+}
+
+.glass-earth-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 246, 240, 0.8) 100%);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(218, 156, 75, 0.25);
+}
+
+/* Scanning Beam Animation for Leaf Scanner */
+.scan-beam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #4E9F5B, #9D4EDD, #4E9F5B, transparent);
+  box-shadow: 0 0 15px #9D4EDD, 0 0 8px #4E9F5B;
+}
+
+/* Pulse Glow */
+.pulse-ring {
+  box-shadow: 0 0 0 0 rgba(45, 122, 65, 0.4);
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(45, 122, 65, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(45, 122, 65, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(45, 122, 65, 0);
+  }
+}
