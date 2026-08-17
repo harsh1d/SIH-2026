@@ -16,7 +16,8 @@ import {
   BarChart3, 
   User, 
   Sparkles,
-  MapPin
+  MapPin,
+  ChevronRight
 } from 'lucide-react';
 
 export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
@@ -75,14 +76,14 @@ export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
       {isMobileMenuOpen && (
         <div 
           onClick={() => setIsMobileMenuOpen(false)}
-          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs lg:hidden"
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-xs lg:hidden"
         />
       )}
 
       <aside className={`
-        fixed lg:sticky top-20 left-0 z-40
-        w-64 h-[calc(100vh-5rem)] 
-        bg-white border-r border-agri-light/80
+        fixed lg:sticky top-28 left-0 z-40
+        w-64 h-[calc(100vh-7rem)] 
+        bg-white border-r border-agri-soft/40
         flex flex-col justify-between
         transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'}
@@ -90,15 +91,15 @@ export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
         {/* Navigation Scrollable Area */}
         <div className="p-4 space-y-6 overflow-y-auto flex-1">
 
-          {/* Location Badge Indicator for Mobile Sidebar Header */}
-          <div className="md:hidden p-3 bg-agri-bg rounded-2xl border border-agri-soft/40 mb-2">
-            <div className="text-[11px] font-bold text-gray-400 uppercase">Farm Location</div>
+          {/* Location Indicator for Mobile Sidebar Header */}
+          <div className="md:hidden p-3.5 bg-agri-bg rounded-2xl border border-agri-soft/50 mb-2">
+            <div className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider">Farm Location</div>
             <button 
               onClick={() => {
                 setIsLocationModalOpen(true);
                 setIsMobileMenuOpen(false);
               }}
-              className="flex items-center gap-2 mt-1 text-xs font-semibold text-agri-dark text-left"
+              className="flex items-center gap-2 mt-1 text-xs font-bold text-agri-dark text-left"
             >
               <MapPin className="w-4 h-4 text-earth-terracotta flex-shrink-0" />
               <span className="truncate">{location.formatted}</span>
@@ -107,7 +108,7 @@ export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
 
           {navSections.map((sec, sIdx) => (
             <div key={sIdx} className="space-y-1.5">
-              <div className="px-3 text-[11px] font-extrabold tracking-wider text-earth-walnut/70 uppercase">
+              <div className="px-3 text-[10px] font-black tracking-widest text-earth-walnut/70 uppercase">
                 {sec.title}
               </div>
 
@@ -115,17 +116,17 @@ export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
                 
-                let itemClass = "w-full flex items-center justify-between px-3 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all duration-200 ";
+                let itemClass = "w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-extrabold transition-all duration-200 ";
 
                 if (isActive) {
                   if (item.isAi) {
-                    itemClass += "bg-ai-plum text-white shadow-ai font-bold";
+                    itemClass += "bg-ai-plum text-white shadow-ai border border-ai-mauve/40";
                   } else {
-                    itemClass += "bg-agri-dark text-white shadow-agri font-bold";
+                    itemClass += "bg-agri-dark text-white shadow-agri border border-gov-gold/30";
                   }
                 } else {
                   if (item.isAi) {
-                    itemClass += "text-ai-plum hover:bg-ai-light/60 font-semibold";
+                    itemClass += "text-ai-plum hover:bg-ai-light/70";
                   } else {
                     itemClass += "text-gray-700 hover:bg-agri-bg hover:text-agri-dark";
                   }
@@ -138,7 +139,7 @@ export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
                     className={itemClass}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${
+                      <Icon className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${
                         isActive 
                           ? 'text-emerald-200' 
                           : item.isAi ? 'text-ai-purple' : 'text-agri-primary'
@@ -146,15 +147,15 @@ export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
                       <span>{item.label}</span>
                     </div>
 
-                    {/* Badge or Counter */}
+                    {/* Badges */}
                     {item.badge && (
-                      <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-ai-purple text-white uppercase tracking-wider">
+                      <span className="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-ai-purple text-white uppercase tracking-wider shadow-xs">
                         {item.badge}
                       </span>
                     )}
 
                     {item.count > 0 && (
-                      <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-rose-500 text-white">
+                      <span className="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-rose-600 text-white">
                         {item.count}
                       </span>
                     )}
@@ -166,19 +167,19 @@ export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
         </div>
 
         {/* AI Quick Banner Bottom */}
-        <div className="p-4 border-t border-agri-light/80 bg-gradient-to-br from-agri-bg to-ai-light/30">
+        <div className="p-4 border-t border-agri-soft/40 bg-gradient-to-br from-agri-bg to-ai-light/40">
           <button 
             onClick={() => handleNavClick('ai')}
-            className="w-full flex items-center gap-3 p-3 bg-white hover:bg-ai-light border border-ai-mauve/30 rounded-2xl shadow-sm text-left group transition-all"
+            className="w-full flex items-center gap-3 p-3 bg-white hover:bg-ai-light border border-ai-mauve/30 rounded-2xl shadow-xs text-left group transition-all"
           >
             <div className="p-2 rounded-xl bg-ai-plum text-white group-hover:scale-110 transition-transform">
               <Sparkles className="w-4 h-4 text-purple-200" />
             </div>
             <div>
-              <div className="text-xs font-bold text-ai-plum flex items-center gap-1">
-                Ask AI Companion
+              <div className="text-xs font-black text-ai-plum flex items-center gap-1">
+                Ask AI Assistant
               </div>
-              <div className="text-[11px] text-gray-500">24/7 Crop advisory</div>
+              <div className="text-[11px] text-gray-500 font-medium">24/7 Crop advisory</div>
             </div>
           </button>
         </div>

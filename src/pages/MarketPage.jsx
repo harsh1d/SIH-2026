@@ -30,16 +30,16 @@ export const MarketPage = () => {
     <div className="space-y-8 max-w-5xl mx-auto animate-fade-in">
       
       {/* PAGE HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 sm:p-7 rounded-3xl border border-gray-100 shadow-sm">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-earth-walnut uppercase tracking-wider mb-1">
-            <TrendingUp className="w-4 h-4 text-earth-terracotta" /> Mandi Intelligence & Prices
+          <div className="flex items-center gap-2 text-xs font-black text-earth-walnut uppercase tracking-widest mb-1">
+            <TrendingUp className="w-4 h-4 text-earth-terracotta" /> APMC Mandi Intelligence & Rates
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-agri-dark font-sans">
-            {t.market.title}
+          <h1 className="text-2xl sm:text-3xl font-black text-agri-dark font-sans tracking-tight">
+            {t.market.title || "Market Mandi Prices"}
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
-            {t.market.subtitle}
+          <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">
+            {t.market.subtitle || "Track modal prices across nearby APMC markets with 30-day price trend graphs."}
           </p>
         </div>
 
@@ -49,39 +49,42 @@ export const MarketPage = () => {
             <button
               key={idx}
               onClick={() => setSelectedCropIndex(idx)}
-              className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
+              className={`px-4 py-2.5 rounded-2xl text-xs font-extrabold transition-all ${
                 selectedCropIndex === idx 
-                  ? 'bg-earth-walnut text-white shadow-earth' 
+                  ? 'bg-earth-walnut text-white shadow-earth border border-earth-wheat/40' 
                   : 'bg-gray-100 text-gray-700 hover:bg-earth-sand/50'
               }`}
             >
-              {item.crop}
+              🌾 {item.crop}
             </button>
           ))}
         </div>
       </div>
 
-      {/* HIGHLIGHT STATS CARDS */}
+      {/* HIGHLIGHT STATS CARDS - EARTHY BROWN + WHEAT + GREEN */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         
         <div className="p-5 bg-white rounded-3xl border border-gray-100 shadow-sm space-y-1">
-          <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Commodity Selected</span>
-          <div className="text-xl font-extrabold text-agri-dark">{activeMandiData.crop}</div>
-          <span className="text-xs font-semibold text-gray-500">{activeMandiData.variety}</span>
+          <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Commodity Selected</span>
+          <div className="text-2xl font-black text-agri-dark">{activeMandiData.crop}</div>
+          <span className="text-xs font-bold text-gray-500">{activeMandiData.variety}</span>
         </div>
 
         <div className="p-5 bg-emerald-50/80 rounded-3xl border border-emerald-200 shadow-sm space-y-1">
-          <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Highest Nearby Price</span>
-          <div className="text-2xl font-extrabold text-emerald-950">₹{activeMandiData.highestPrice} <span className="text-xs font-normal">/ qtnl</span></div>
-          <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-black text-emerald-800 uppercase tracking-widest">Highest Nearby Price</span>
+            <span className="px-2 py-0.5 text-[9px] font-extrabold bg-emerald-600 text-white rounded-full uppercase">Best Rate</span>
+          </div>
+          <div className="text-2xl font-black text-emerald-950">₹{activeMandiData.highestPrice} <span className="text-xs font-normal text-gray-500">/ qtnl</span></div>
+          <span className="text-xs font-extrabold text-emerald-600 flex items-center gap-1">
             <ArrowUpRight className="w-4 h-4" /> {activeMandiData.trend} 30-Day Rise
           </span>
         </div>
 
-        <div className="p-5 bg-earth-cream rounded-3xl border border-earth-wheat/30 shadow-sm space-y-1">
-          <span className="text-xs font-bold text-earth-soil uppercase tracking-wider">Lowest Nearby Price</span>
-          <div className="text-2xl font-extrabold text-earth-walnut">₹{activeMandiData.lowestPrice} <span className="text-xs font-normal">/ qtnl</span></div>
-          <span className="text-xs font-semibold text-gray-500">Halol District Average</span>
+        <div className="p-5 bg-earth-cream rounded-3xl border border-earth-wheat/40 shadow-sm space-y-1">
+          <span className="text-[10px] font-black text-earth-soil uppercase tracking-widest">Lowest District Price</span>
+          <div className="text-2xl font-black text-earth-walnut">₹{activeMandiData.lowestPrice} <span className="text-xs font-normal text-gray-500">/ qtnl</span></div>
+          <span className="text-xs font-semibold text-gray-500">Panchmahal District Average</span>
         </div>
 
       </div>
@@ -90,10 +93,10 @@ export const MarketPage = () => {
       <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-extrabold text-base text-agri-dark">{activeMandiData.crop} 30-Day Mandi Price Trend</h3>
-            <p className="text-xs text-gray-500">Historical daily modal prices across Panchmahal APMC mandis</p>
+            <h3 className="font-black text-base text-agri-dark">{activeMandiData.crop} 30-Day Mandi Price Trend</h3>
+            <p className="text-xs text-gray-500 font-medium">Historical daily modal prices across Panchmahal APMC mandis</p>
           </div>
-          <span className="text-xs font-bold text-earth-terracotta bg-earth-sand/40 px-3 py-1 rounded-full">
+          <span className="text-xs font-extrabold text-earth-walnut bg-earth-sand/60 px-3.5 py-1 rounded-full border border-earth-wheat/30">
             ₹ / Quintal
           </span>
         </div>
@@ -111,7 +114,7 @@ export const MarketPage = () => {
               <XAxis dataKey="date" stroke="#9CA3AF" fontSize={11} tickLine={false} />
               <YAxis stroke="#9CA3AF" fontSize={11} tickLine={false} domain={['dataMin - 100', 'dataMax + 100']} />
               <Tooltip 
-                contentStyle={{ background: '#1E4D2B', color: '#fff', borderRadius: '12px', border: 'none', fontSize: '12px' }}
+                contentStyle={{ background: '#143D20', color: '#fff', borderRadius: '12px', border: 'none', fontSize: '12px' }}
                 itemStyle={{ color: '#83B77C' }}
               />
               <Area type="monotone" dataKey="price" stroke="#2D7A41" strokeWidth={3} fillOpacity={1} fill="url(#colorPrice)" />
@@ -123,27 +126,27 @@ export const MarketPage = () => {
       {/* MANDI LIST WITH SORTING */}
       <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
-          <h3 className="font-extrabold text-base text-agri-dark flex items-center gap-2">
+          <h3 className="font-black text-base text-agri-dark flex items-center gap-2">
             <MapPin className="w-5 h-5 text-earth-terracotta" /> Nearby APMC Mandis ({sortedMarkets.length})
           </h3>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-gray-500">{t.market.sortBy}:</span>
+            <span className="text-xs font-bold text-gray-500">{t.market.sortBy || "Sort by"}:</span>
             <button
               onClick={() => setSortBy('highest')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                sortBy === 'highest' ? 'bg-agri-dark text-white' : 'bg-gray-100 text-gray-700'
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all ${
+                sortBy === 'highest' ? 'bg-agri-dark text-white shadow-agri' : 'bg-gray-100 text-gray-700'
               }`}
             >
-              {t.market.highestPrice}
+              {t.market.highestPrice || "Highest Price"}
             </button>
             <button
               onClick={() => setSortBy('distance')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                sortBy === 'distance' ? 'bg-agri-dark text-white' : 'bg-gray-100 text-gray-700'
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all ${
+                sortBy === 'distance' ? 'bg-agri-dark text-white shadow-agri' : 'bg-gray-100 text-gray-700'
               }`}
             >
-              {t.market.distance}
+              {t.market.distance || "Nearest Distance"}
             </button>
           </div>
         </div>
@@ -151,18 +154,18 @@ export const MarketPage = () => {
         {/* Mandi Cards List */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {sortedMarkets.map((mkt, idx) => (
-            <div key={idx} className="p-4 bg-agri-bg rounded-2xl border border-agri-soft/40 hover:border-agri-primary transition-all flex items-center justify-between">
+            <div key={idx} className="p-4 sm:p-5 bg-agri-bg rounded-2xl border border-agri-soft/40 hover:border-agri-primary transition-all flex items-center justify-between shadow-xs">
               <div className="space-y-1">
-                <div className="text-sm font-extrabold text-agri-dark">{mkt.name}</div>
-                <div className="text-xs text-gray-500 flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-earth-terracotta" /> {mkt.district} • <strong className="text-agri-dark">{mkt.distanceKm} km away</strong>
+                <div className="text-sm font-black text-agri-dark">{mkt.name}</div>
+                <div className="text-xs text-gray-600 flex items-center gap-1 font-medium">
+                  <MapPin className="w-3.5 h-3.5 text-earth-terracotta" /> {mkt.district} • <strong className="text-agri-dark font-bold">{mkt.distanceKm} km away</strong>
                 </div>
-                <div className="text-[10px] text-gray-400">Updated: {mkt.updated}</div>
+                <div className="text-[10px] text-gray-400 font-medium">Updated: {mkt.updated}</div>
               </div>
 
               <div className="text-right">
-                <div className="text-xl font-extrabold text-earth-walnut">₹{mkt.price}</div>
-                <span className={`text-xs font-bold inline-block px-2 py-0.5 rounded-full ${
+                <div className="text-xl font-black text-earth-walnut">₹{mkt.price}</div>
+                <span className={`text-xs font-extrabold inline-block px-2.5 py-0.5 rounded-full ${
                   mkt.change.startsWith('+') ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
                 }`}>
                   {mkt.change}

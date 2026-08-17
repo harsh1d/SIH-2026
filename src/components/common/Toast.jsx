@@ -15,17 +15,17 @@ export const Toast = () => {
   };
 
   const bgStyles = {
-    success: "bg-emerald-50 border-emerald-200 text-emerald-950",
-    error: "bg-rose-50 border-rose-200 text-rose-950",
-    info: "bg-sky-50 border-sky-200 text-sky-950",
-    warning: "bg-amber-50 border-amber-200 text-amber-950"
+    success: "bg-emerald-50 border-emerald-300 text-emerald-950",
+    error: "bg-rose-50 border-rose-300 text-rose-950",
+    info: "bg-sky-50 border-sky-300 text-sky-950",
+    warning: "bg-amber-50 border-amber-300 text-amber-950"
   };
 
   return (
     <div className="fixed bottom-6 right-6 z-50 animate-bounce-short max-w-md">
-      <div className={`flex items-center gap-3 px-4 py-3.5 rounded-xl border shadow-floating ${bgStyles[toastMessage.type] || bgStyles.info}`}>
+      <div className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl border shadow-xl ${bgStyles[toastMessage.type] || bgStyles.info}`}>
         {icons[toastMessage.type] || icons.info}
-        <span className="text-sm font-medium">{toastMessage.message}</span>
+        <span className="text-xs sm:text-sm font-bold">{toastMessage.message}</span>
       </div>
     </div>
   );

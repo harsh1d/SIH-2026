@@ -4,9 +4,14 @@
 
 @layer base {
   body {
-    background-color: #F6F9F5;
+    background-color: #F4F7F3;
     color: #1F2937;
     font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+    background-image: 
+      radial-gradient(circle at 15% 15%, rgba(45, 122, 65, 0.04) 0%, transparent 40%),
+      radial-gradient(circle at 85% 85%, rgba(107, 45, 92, 0.03) 0%, transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(218, 156, 75, 0.02) 0%, transparent 60%);
+    background-attachment: fixed;
   }
 }
 
@@ -16,34 +21,51 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F0F4EF;
+  background: #EAF4E8;
 }
 ::-webkit-scrollbar-thumb {
-  background: #C2D6C0;
+  background: #A3C9A0;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #2D7A41;
 }
 
-/* Custom Glassmorphism Cards */
-.glass-card {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(230, 240, 230, 0.8);
+/* Premium Card Variants */
+.card-farm {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(250, 246, 240, 0.85) 100%);
+  border: 1px solid rgba(218, 156, 75, 0.22);
+  box-shadow: 0 4px 20px -2px rgba(92, 64, 51, 0.06);
 }
 
-.glass-ai-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(243, 232, 255, 0.6) 100%);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(157, 78, 221, 0.2);
+.card-ai {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(243, 232, 255, 0.7) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  box-shadow: 0 6px 25px -2px rgba(59, 18, 61, 0.12);
 }
 
-.glass-earth-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 246, 240, 0.8) 100%);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(218, 156, 75, 0.25);
+.card-weather {
+  background: linear-gradient(135deg, rgba(20, 61, 32, 0.96) 0%, rgba(15, 57, 27, 0.98) 100%);
+  border: 1px solid rgba(131, 183, 124, 0.3);
+  color: #FFFFFF;
+}
+
+.card-market {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(254, 249, 238, 0.9) 100%);
+  border: 1px solid rgba(218, 156, 75, 0.3);
+  box-shadow: 0 4px 18px -2px rgba(218, 156, 75, 0.1);
+}
+
+.card-alert {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(254, 242, 242, 0.9) 100%);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  box-shadow: 0 4px 18px -2px rgba(244, 63, 94, 0.08);
+}
+
+.glass-gov-bar {
+  background: rgba(20, 61, 32, 0.97);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
 }
 
 /* Scanning Beam Animation for Leaf Scanner */
@@ -52,8 +74,8 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, transparent, #4E9F5B, #9D4EDD, #4E9F5B, transparent);
-  box-shadow: 0 0 15px #9D4EDD, 0 0 8px #4E9F5B;
+  background: linear-gradient(90deg, transparent, #4E9F5B, #8B5CF6, #4E9F5B, transparent);
+  box-shadow: 0 0 15px #8B5CF6, 0 0 8px #4E9F5B;
 }
 
 /* Pulse Glow */

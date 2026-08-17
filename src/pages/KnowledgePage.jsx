@@ -43,7 +43,7 @@ export const KnowledgePage = () => {
       readTime: "6 min read",
       summary: "How to prepare fermented Jeevamrut using indigenous cow dung & urine to enhance soil organic carbon (SOC) in black cotton soil.",
       icon: Layers,
-      color: "bg-earth-cream text-earth-walnut border-earth-wheat/30"
+      color: "bg-earth-cream text-earth-walnut border-earth-wheat/40"
     },
     {
       id: 4,
@@ -66,16 +66,16 @@ export const KnowledgePage = () => {
     <div className="space-y-8 max-w-5xl mx-auto animate-fade-in">
       
       {/* PAGE HEADER */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-sm space-y-4">
+      <div className="bg-white p-6 sm:p-7 rounded-3xl border border-gray-100 shadow-sm space-y-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-agri-dark uppercase tracking-wider mb-1">
-            <BookOpen className="w-4 h-4 text-agri-primary" /> Agricultural Learning Hub
+          <div className="flex items-center gap-2 text-xs font-black text-agri-dark uppercase tracking-widest mb-1">
+            <BookOpen className="w-4 h-4 text-agri-primary" /> Agricultural Knowledge Library
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-agri-dark font-sans">
-            {t.nav.knowledge}
+          <h1 className="text-2xl sm:text-3xl font-black text-agri-dark font-sans tracking-tight">
+            {t.nav.knowledge || "Knowledge Hub"}
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
-            Best practices, irrigation guides, and sustainable farming manuals created by agronomy experts.
+          <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">
+            Best practices, irrigation manuals, and sustainable farming guides created by agronomy scientists.
           </p>
         </div>
 
@@ -88,7 +88,7 @@ export const KnowledgePage = () => {
               placeholder="Search guides by crop, pest, irrigation, or soil..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-agri-primary"
+              className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-agri-primary"
             />
           </div>
 
@@ -97,8 +97,8 @@ export const KnowledgePage = () => {
               <button
                 key={idx}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-                  selectedCategory === cat ? 'bg-agri-dark text-white' : 'bg-gray-100 text-gray-700'
+                className={`px-3.5 py-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all ${
+                  selectedCategory === cat ? 'bg-agri-dark text-white shadow-agri' : 'bg-gray-100 text-gray-700'
                 }`}
               >
                 {cat}
@@ -116,17 +116,17 @@ export const KnowledgePage = () => {
             <div key={art.id} className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 space-y-4 hover:shadow-md transition-all flex flex-col justify-between">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase border ${art.color}`}>
+                  <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase border ${art.color}`}>
                     {art.category}
                   </span>
-                  <span className="text-[11px] text-gray-400 font-medium">{art.readTime}</span>
+                  <span className="text-[11px] text-gray-400 font-bold">{art.readTime}</span>
                 </div>
 
-                <h3 className="text-base font-extrabold text-agri-dark leading-snug">{art.title}</h3>
-                <p className="text-xs text-gray-600 leading-relaxed">{art.summary}</p>
+                <h3 className="text-base font-black text-agri-dark leading-snug">{art.title}</h3>
+                <p className="text-xs text-gray-600 leading-relaxed font-medium">{art.summary}</p>
               </div>
 
-              <button className="flex items-center gap-1 text-xs font-bold text-agri-primary hover:underline pt-2 border-t border-gray-50">
+              <button className="flex items-center gap-1 text-xs font-extrabold text-agri-primary hover:underline pt-3 border-t border-gray-50">
                 Read Full Guide <ChevronRight className="w-4 h-4" />
               </button>
             </div>
