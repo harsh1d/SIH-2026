@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { mockCrops, mockWeatherData, mockMandiRates } from '../data/mockData';
+import { getCropTranslation, getStageTranslation, getSoilTranslation } from '../data/translations';
 import { 
   Sparkles, 
   MapPin, 
@@ -47,7 +48,9 @@ export const Dashboard = () => {
           <MapPin className="w-5 h-5 text-earth-terracotta flex-shrink-0" />
           <div className="text-xs">
             <div className="font-extrabold text-agri-dark">{location.formatted}</div>
-            <div className="text-gray-500 font-medium">{farmerProfile.farmSizeAcres} Acres • {farmerProfile.soilType}</div>
+            <div className="text-gray-500 font-medium">
+              {farmerProfile.farmSizeAcres} {t.dashboard?.acresUnit || "Acres"} • {getSoilTranslation(farmerProfile.soilType, t)}
+            </div>
           </div>
         </div>
       </div>
@@ -65,15 +68,17 @@ export const Dashboard = () => {
               <Sparkles className="w-4 h-4 text-purple-300 animate-pulse" />
               <span>✨ {t.dashboard?.advisoryTitle || "AI FARM ADVISORY"}</span>
             </div>
-            <span className="text-xs text-purple-200/80 font-medium">Updated 10 mins ago</span>
+            <span className="text-xs text-purple-200/80 font-medium">
+              {t.dashboard?.updatedTime || "Updated 10 mins ago"}
+            </span>
           </div>
 
           <div className="space-y-2">
             <h3 className="text-lg sm:text-xl font-bold leading-snug tracking-tight">
-              🌧️ Rain Forecast Advisory for {primaryCrop.name} ({primaryCrop.currentStage})
+              🌧️ {t.dashboard?.advisoryHeadline || "Rain Forecast Advisory for"} {getCropTranslation(primaryCrop.name, t)} ({getStageTranslation(primaryCrop.currentStage, t)})
             </h3>
             <p className="text-xs sm:text-sm text-purple-100/90 leading-relaxed max-w-3xl font-medium">
-              "{mockWeatherData.agroImpact.summary} Soil moisture is currently optimal (68%). Holding off chemical fertigation today saves ₹850 in fertilizer runoff."
+              "{t.dashboard?.advisoryQuote || mockWeatherData.agroImpact.summary}"
             </p>
           </div>
 
@@ -120,7 +125,7 @@ export const Dashboard = () => {
             <Camera className="w-5 h-5 text-emerald-300" />
           </div>
           <div className="text-xs font-black text-agri-dark">📸 {t.dashboard?.scanCrop || "Scan Crop Leaf"}</div>
-          <div className="text-[11px] text-gray-500 font-medium">{t.dashboard?.scanCropSub || "Pest & leaf scan"}</div>
+          <div className="text-[11px] text-gray-500 font-medium">{t.dashboard?.scanCropSub || "Pest & disease scan"}</div>
         </button>
 
         <button
@@ -163,7 +168,7 @@ export const Dashboard = () => {
                 onClick={() => setActiveTab('myFarm')}
                 className="text-xs font-bold text-agri-primary hover:underline flex items-center gap-1 cursor-pointer"
               >
-                {t.nav?.myFarm || "View My Farm"} <ChevronRight className="w-3.5 h-3.5" />
+                {t.dashboard?.viewMyFarm || "View My Farm"} <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
@@ -175,21 +180,21 @@ export const Dashboard = () => {
                   className="p-4 rounded-2xl border border-gray-100 hover:border-agri-soft/60 bg-agri-bg/40 hover:bg-agri-bg transition-all cursor-pointer space-y-3"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-black text-agri-dark">{crop.name}</span>
+                    <span className="text-xs font-black text-agri-dark">{getCropTranslation(crop.name, t)}</span>
                     <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
                       {crop.healthScore}/100
                     </span>
                   </div>
 
                   <div>
-                    <div className="text-[10px] text-gray-400 font-extrabold uppercase">Stage</div>
-                    <div className="text-xs font-bold text-earth-walnut line-clamp-1">{crop.currentStage}</div>
+                    <div className="text-[10px] text-gray-400 font-extrabold uppercase">{t.dashboard?.stageLabel || "Stage"}</div>
+                    <div className="text-xs font-bold text-earth-walnut line-clamp-1">{getStageTranslation(crop.currentStage, t)}</div>
                   </div>
 
                   {/* Progress bar */}
                   <div>
                     <div className="flex justify-between text-[10px] text-gray-400 mb-1 font-semibold">
-                      <span>Progress</span>
+                      <span>{t.dashboard?.progressLabel || "Progress"}</span>
                       <span>{crop.stageProgressPercent}%</span>
                     </div>
                     <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
@@ -214,16 +219,24 @@ export const Dashboard = () => {
               <div className="flex items-start gap-3 p-4 bg-white rounded-2xl border border-earth-wheat/20 shadow-xs">
                 <input type="checkbox" defaultChecked className="mt-1 accent-agri-primary w-4 h-4 rounded" />
                 <div className="text-xs">
-                  <span className="font-extrabold text-agri-dark block">Inspect lower Cotton leaves for Pink Bollworm larvae</span>
-                  <span className="text-gray-600 font-medium">KVK alert recommends checking 10 random plants near field edges.</span>
+                  <span className="font-extrabold text-agri-dark block">
+                    {t.dashboard?.checklistItem1Title || "Inspect lower Cotton leaves for Pink Bollworm larvae"}
+                  </span>
+                  <span className="text-gray-600 font-medium">
+                    {t.dashboard?.checklistItem1Sub || "KVK Panchmahal alert recommends checking 10 random plants near field edges."}
+                  </span>
                 </div>
               </div>
 
               <div className="flex items-start gap-3 p-4 bg-white rounded-2xl border border-earth-wheat/20 shadow-xs">
                 <input type="checkbox" className="mt-1 accent-agri-primary w-4 h-4 rounded" />
                 <div className="text-xs">
-                  <span className="font-extrabold text-agri-dark block">Postpone nitrogen fertigation until tomorrow afternoon</span>
-                  <span className="text-gray-600 font-medium">Rain probability 85% at 3:00 PM. Avoid fertilizer runoff into subsoil.</span>
+                  <span className="font-extrabold text-agri-dark block">
+                    {t.dashboard?.checklistItem2Title || "Postpone nitrogen fertigation until tomorrow afternoon"}
+                  </span>
+                  <span className="text-gray-600 font-medium">
+                    {t.dashboard?.checklistItem2Sub || "Rain probability 85% at 3:00 PM. Avoid fertilizer runoff into subsoil."}
+                  </span>
                 </div>
               </div>
             </div>
@@ -272,7 +285,7 @@ export const Dashboard = () => {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xs font-black text-agri-dark">{cottonMandi.crop}</div>
+                  <div className="text-xs font-black text-agri-dark">{getCropTranslation(cottonMandi.crop, t)}</div>
                   <div className="text-[11px] text-gray-500 font-medium">{cottonMandi.markets[0].name} (4 km)</div>
                 </div>
                 <div className="text-right">
@@ -285,7 +298,7 @@ export const Dashboard = () => {
                 onClick={() => setActiveTab('market')}
                 className="w-full py-2.5 text-center text-xs font-bold text-agri-primary bg-agri-bg hover:bg-agri-light rounded-2xl transition-colors border border-agri-soft/30 cursor-pointer"
               >
-                {t.market?.title || "Compare All Mandis"} →
+                {t.dashboard?.compareAllMandis || "Compare All Mandis"} →
               </button>
             </div>
           </div>

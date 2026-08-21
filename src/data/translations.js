@@ -41,8 +41,10 @@ export const translations = {
       greeting: "Good Morning",
       subGreeting: "Here is your precision agricultural overview & daily advisory.",
       stationTitle: "Official Agriculture Portal • Halol Station",
-      advisoryTitle: "AI Farm Advisory",
-      weatherImpact: "Rain expected tomorrow (85% prob). Postpone nitrogen spraying on Cotton field.",
+      advisoryTitle: "AI FARM ADVISORY",
+      updatedTime: "Updated 10 mins ago",
+      advisoryHeadline: "Rain Forecast Advisory for",
+      advisoryQuote: "Heavy afternoon shower predicted. Irrigation is NOT recommended today for Cotton or Tomato crops. Soil moisture is currently optimal (68%). Holding off chemical fertigation today saves ₹850 in fertilizer runoff.",
       quickActions: "Quick Actions",
       askAi: "Ask AI Assistant",
       askAiSub: "Voice / text query",
@@ -52,16 +54,25 @@ export const translations = {
       viewMandiSub: "Cotton ₹7,410/qtnl",
       viewWeather: "Agro-Weather Radar",
       viewWeatherSub: "29°C • 85% Rain",
-      activeCrops: "Active Crops",
+      activeCrops: "Active Crop Lifecycle Status",
       healthIndex: "Farm Health Index",
-      mandiHighlight: "Nearby Price Highlight",
+      mandiHighlight: "Nearby Mandi Rates",
       unreadAlerts: "Active Farm Alerts",
       recentActivity: "Recent Crop Observations",
-      recommendedToday: "Recommended Action Today",
+      recommendedToday: "Today's Recommended Actions",
       soilTypeLabel: "Registered Soil",
       farmSizeLabel: "Farm Size",
       askFollowUp: "Ask AI Follow-Up Query",
-      detailedWeatherImpact: "Detailed Weather Impact"
+      detailedWeatherImpact: "Detailed Weather Impact",
+      viewMyFarm: "View My Farm",
+      compareAllMandis: "Compare All Mandis",
+      stageLabel: "Stage",
+      progressLabel: "Progress",
+      acresUnit: "Acres",
+      checklistItem1Title: "Inspect lower Cotton leaves for Pink Bollworm larvae",
+      checklistItem1Sub: "KVK Panchmahal alert recommends checking 10 random plants near field edges.",
+      checklistItem2Title: "Postpone nitrogen fertigation until tomorrow afternoon",
+      checklistItem2Sub: "Rain probability 85% at 3:00 PM. Avoid fertilizer runoff into subsoil."
     },
     ai: {
       title: "AgriSaathi AI Farmer Assistant",
@@ -167,6 +178,34 @@ export const translations = {
       subtitle: "ICAR scientific best practices, irrigation manuals, and live Wikipedia agronomic research explorer.",
       wikiSearchTitle: "Live Wikipedia Agronomy Knowledge Explorer",
       searchPlaceholder: "Search guides by crop, pest, irrigation, or soil..."
+    },
+    crops: {
+      Cotton: "Cotton",
+      Wheat: "Wheat",
+      Tomato: "Tomato",
+      Maize: "Maize",
+      Soybean: "Soybean",
+      Mustard: "Mustard",
+      Sugarcane: "Sugarcane",
+      Paddy: "Paddy"
+    },
+    stages: {
+      "Flowering & Boll Formation": "Flowering & Boll Formation",
+      "Vegetative Tillering": "Vegetative Tillering",
+      "Fruiting & Harvesting": "Fruiting & Harvesting",
+      "Sowing & Germination": "Sowing & Germination",
+      "Vegetative Growth": "Vegetative Growth",
+      "Boll Maturation": "Boll Maturation",
+      "Harvesting & Picking": "Harvesting & Picking"
+    },
+    soils: {
+      "Black Cotton Soil (Regur)": "Black Cotton Soil (Regur)",
+      "Alluvial Soil": "Alluvial Soil",
+      "Red & Yellow Sandy Soil": "Red & Yellow Sandy Soil",
+      "Laterite Clay Soil": "Laterite Clay Soil"
+    },
+    sidebar: {
+      cropAdvisorySub: "24/7 Crop advisory"
     }
   },
   hi: {
@@ -212,7 +251,9 @@ export const translations = {
       subGreeting: "आपके खेत के लिए आज की सटीक कृषि सलाह और अवलोकन।",
       stationTitle: "आधिकारिक कृषि पोर्टल • हालोल स्टेशन",
       advisoryTitle: "एआई कृषि सलाह",
-      weatherImpact: "कल भारी बारिश की संभावना (85%)। कपास में यूरिया छिड़काव टालें।",
+      updatedTime: "10 मिनट पहले अपडेट हुआ",
+      advisoryHeadline: "बारिश पूर्वानुमान सलाह:",
+      advisoryQuote: "दोपहर बाद भारी बारिश का अनुमान है। आज कपास या टमाटर की फसल में सिंचाई की आवश्यकता नहीं है। मिट्टी की नमी इष्टतम (68%) है। आज रासायनिक खाद टालने से ₹850 का उर्वरक बहने से बचेगा।",
       quickActions: "त्वरित कार्य",
       askAi: "एआई से पूछें",
       askAiSub: "आवाज या टेक्स्ट प्रश्न",
@@ -222,16 +263,25 @@ export const translations = {
       viewMandiSub: "कपास ₹7,410/क्विंटल",
       viewWeather: "मौसम रडार",
       viewWeatherSub: "29°C • 85% बारिश",
-      activeCrops: "सक्रिय फसलें",
+      activeCrops: "सक्रिय फसल जीवन चक्र स्थिति",
       healthIndex: "फार्म स्वास्थ्य सूचकांक",
       mandiHighlight: "निकटतम मंडी भाव",
       unreadAlerts: "सक्रिय अलर्ट",
       recentActivity: "हाल के अवलोकन",
-      recommendedToday: "आज का अनुशंसित कार्य",
+      recommendedToday: "आज के अनुशंसित कार्य",
       soilTypeLabel: "पंजीकृत मिट्टी",
       farmSizeLabel: "खेत का आकार",
       askFollowUp: "एआई से अगला प्रश्न पूछें",
-      detailedWeatherImpact: "विस्तृत मौसम प्रभाव"
+      detailedWeatherImpact: "विस्तृत मौसम प्रभाव",
+      viewMyFarm: "मेरा खेत देखें",
+      compareAllMandis: "सभी मंडियों की तुलना करें",
+      stageLabel: "चरण",
+      progressLabel: "प्रगति",
+      acresUnit: "एकड़",
+      checklistItem1Title: "गुलाबी सुंडी के लार्वा के लिए कपास की निचली पत्तियों की जांच करें",
+      checklistItem1Sub: "केवीके पंचमहाल अलर्ट: खेत के किनारों के पास 10 यादृच्छिक पौधों की जांच की सलाह।",
+      checklistItem2Title: "कल दोपहर तक नाइट्रोजन खाद प्रयोग स्थगित करें",
+      checklistItem2Sub: "दोपहर 3:00 बजे 85% बारिश की संभावना। मिट्टी में नाइट्रोजन बहने से बचाएं।"
     },
     ai: {
       title: "कृषि साथी एआई किसान सहायक",
@@ -337,6 +387,34 @@ export const translations = {
       subtitle: "आईसीएआर वैज्ञानिक पद्धतियां, सिंचाई गाइड और लाइव विकिपीडिया खोज।",
       wikiSearchTitle: "लाइव विकिपीडिया कृषि अनुसंधान अन्वेषक",
       searchPlaceholder: "फसल, कीट, सिंचाई या मिट्टी खोजें..."
+    },
+    crops: {
+      Cotton: "कपास",
+      Wheat: "गेहूं",
+      Tomato: "टमाटर",
+      Maize: "मक्का",
+      Soybean: "सोयाबीन",
+      Mustard: "सरसों",
+      Sugarcane: "गन्ना",
+      Paddy: "धान"
+    },
+    stages: {
+      "Flowering & Boll Formation": "फूल और गूलर निर्माण",
+      "Vegetative Tillering": "वानस्पतिक कल्ले फूटना",
+      "Fruiting & Harvesting": "फल लगना और तुड़ाई",
+      "Sowing & Germination": "बुवाई और अंकुरण",
+      "Vegetative Growth": "वानस्पतिक विकास",
+      "Boll Maturation": "गूलर परिपक्वता",
+      "Harvesting & Picking": "कटाई और चुनाई"
+    },
+    soils: {
+      "Black Cotton Soil (Regur)": "काली कपास मिट्टी (रेगुर)",
+      "Alluvial Soil": "जलोढ़ मिट्टी",
+      "Red & Yellow Sandy Soil": "लाल व पीली रेतीली मिट्टी",
+      "Laterite Clay Soil": "लैटेराइट चिकनी मिट्टी"
+    },
+    sidebar: {
+      cropAdvisorySub: "24/7 फसल सलाह"
     }
   },
   gu: {
@@ -382,7 +460,9 @@ export const translations = {
       subGreeting: "તમારા ખેતર માટે આજની પર્સનલાઇઝ્ડ સલાહ અને હવામાન વિગત.",
       stationTitle: "સત્તાવાર કૃષિ પોર્ટલ • હાલોલ સ્ટેશન",
       advisoryTitle: "એઆઈ કૃષિ સલાહ",
-      weatherImpact: "કાલે વરસાદની શક્યતા (85%). કપાસમાં નાઇટ્રોજનનો છંટકાવ ટાળો.",
+      updatedTime: "10 મિનિટ પહેલા અપડેટ થયું",
+      advisoryHeadline: "વરસાદની આગાહી સલાહ:",
+      advisoryQuote: "બપોર પછી ભારે વરસાદની આગાહી છે. આજે કપાસ કે ટામેટામાં સિંચાઈની જરૂર નથી. જમીનમાં ભેજ પૂરતો (68%) છે. આજે ખાતર આપવાનું ટાળવાથી ₹850 ના ખાતરનો બગાડ અટકશે.",
       quickActions: "ઝડપી કાર્યો",
       askAi: "એઆઈ ને પૂછો",
       askAiSub: "અવાજ કે લખાણથી પ્રશ્ન",
@@ -392,16 +472,25 @@ export const translations = {
       viewMandiSub: "કપાસ ₹7,410/ક્વિન્ટલ",
       viewWeather: "હવામાન રડાર",
       viewWeatherSub: "29°C • 85% વરસાદ",
-      activeCrops: "સક્રિય પાક",
+      activeCrops: "સક્રિય પાક જીવન ચક્ર સ્થિતિ",
       healthIndex: "ફાર્મ હેલ્થ ઇન્ડેક્સ",
       mandiHighlight: "નજીકના મંડી ભાવ",
       unreadAlerts: "સક્રિય એલર્ટ",
       recentActivity: "તાજેતરના અવલોકનો",
-      recommendedToday: "આજનું ભલામણ કરેલ કાર્ય",
+      recommendedToday: "આજના ભલામણ કરેલ કાર્યો",
       soilTypeLabel: "નોંધાયેલ જમીન",
       farmSizeLabel: "ખેતરનું કદ",
       askFollowUp: "એઆઈ ને આગળનો પ્રશ્ન પૂછો",
-      detailedWeatherImpact: "વિગતવાર હવામાન અસર"
+      detailedWeatherImpact: "વિગતવાર હવામાન અસર",
+      viewMyFarm: "મારું ખેતર જુઓ",
+      compareAllMandis: "બધી મંડીઓની સરખામણી કરો",
+      stageLabel: "તબક્કો",
+      progressLabel: "પ્રગતિ",
+      acresUnit: "એકર",
+      checklistItem1Title: "ગુલાબી ઈયળ માટે કપાસના નીચેના પાંદડા તપાસો",
+      checklistItem1Sub: "કેવીકે પંચમહાલ એલર્ટ: ખેતરના કિનારે 10 છોડ તપાસવાની ભલામણ.",
+      checklistItem2Title: "આવતીકાલ બપોર સુધી નાઇટ્રોજન ખાતર મુલતવી રાખો",
+      checklistItem2Sub: "બપોરે 3:00 વાગ્યે 85% વરસાદની શક્યતા. નાઇટ્રોજન ધોવાણ અટકાવો."
     },
     ai: {
       title: "કૃષિ સાથી એઆઈ કિસાન આસિસ્ટન્ટ",
@@ -507,6 +596,34 @@ export const translations = {
       subtitle: "આઈસીએઆર વૈજ્ઞાનિક પદ્ધતિઓ, સિંચાઈ માર્ગદર્શિકા અને લાઈવ વિકિપીડિયા સંશોધન.",
       wikiSearchTitle: "લાઈવ વિકિપીડિયા કૃષિ સંશોધન એક્સપ્લોરર",
       searchPlaceholder: "પાક, રોગ, ખાતર કે સિંચાઈ શોધો..."
+    },
+    crops: {
+      Cotton: "કપાસ",
+      Wheat: "ઘઉં",
+      Tomato: "ટામેટા",
+      Maize: "મકાઈ",
+      Soybean: "સોયાબીન",
+      Mustard: "રાઈ",
+      Sugarcane: "શેરડી",
+      Paddy: "ડાંગર"
+    },
+    stages: {
+      "Flowering & Boll Formation": "ફૂલ અને જીંડવા નિર્માણ",
+      "Vegetative Tillering": "વાનસ્પતિક વૃદ્ધિ",
+      "Fruiting & Harvesting": "ફળ અને લણણી",
+      "Sowing & Germination": "વાવણી અને અંકુરણ",
+      "Vegetative Growth": "વાનસ્પતિક વિકાસ",
+      "Boll Maturation": "જીંડવા પરિપક્વતા",
+      "Harvesting & Picking": "લણણી અને ચૂંટવું"
+    },
+    soils: {
+      "Black Cotton Soil (Regur)": "કાળી કપાસની જમીન (રેગુર)",
+      "Alluvial Soil": "કાંપની જમીન",
+      "Red & Yellow Sandy Soil": "લાલ અને પીળી રેતાળ જમીન",
+      "Laterite Clay Soil": "લેટેરાઇટ માટી"
+    },
+    sidebar: {
+      cropAdvisorySub: "24/7 પાક સલાહ"
     }
   },
   ml: {
@@ -552,7 +669,9 @@ export const translations = {
       subGreeting: "നിങ്ങളുടെ ഫാമിലേക്കുള്ള ഇന്നത്തെ കൃത്യമായ വിവരങ്ങളും ഉപദേശങ്ങളും.",
       stationTitle: "ഔദ്യോഗിക കൃഷി പോർട്ടൽ • ഹാലോൽ സ്റ്റേഷൻ",
       advisoryTitle: "എഐ കൃഷി ഉപദേശം",
-      weatherImpact: "നാളെ മഴയ്ക്ക് സാധ്യത (85%). പരുത്തി പാടത്ത് നൈട്രജൻ തളിക്കുന്നത് ഒഴിവാക്കുക.",
+      updatedTime: "10 മിനിറ്റ് മുൻപ് അപ്‌ഡേറ്റ് ചെയ്തു",
+      advisoryHeadline: "മഴ സാധ്യത മുന്നറിയിപ്പ്:",
+      advisoryQuote: "ഉച്ചകഴിഞ്ഞ് കനത്ത മഴയ്ക്ക് സാധ്യതയുണ്ട്. പരുത്തി, തക്കാളി വിളകൾക്ക് ഇന്ന് നനയ്ക്കൽ ആവശ്യമില്ല. മണ്ണിലെ ഈർപ്പം തൃപ്തികരമാണ് (68%). ഇന്ന് വളപ്രയോഗം ഒഴിവാക്കുന്നത് ₹850 ലാഭിക്കും.",
       quickActions: "ദ്രുത പ്രവർത്തനങ്ങൾ",
       askAi: "എഐ യോട് ചോദിക്കുക",
       askAiSub: "ശബ്ദ അല്ലെങ്കിൽ ടെക്സ്റ്റ് ചോദ്യം",
@@ -562,16 +681,25 @@ export const translations = {
       viewMandiSub: "പരുത്തി ₹7,410/ക്വിന്റൽ",
       viewWeather: "കാലാവസ്ഥ റഡാർ",
       viewWeatherSub: "29°C • 85% മഴ",
-      activeCrops: "നിലവിലെ വിളകൾ",
+      activeCrops: "നിലവിലെ വിളകളുടെ വളർച്ചാ ഘട്ടം",
       healthIndex: "ഫാം ഹെൽത്ത് ഇൻഡക്സ്",
-      mandiHighlight: "സമീപത്തെ മികച്ച വില",
+      mandiHighlight: "സമീപത്തെ മികച്ച വിപണി വില",
       unreadAlerts: "അലേർട്ടുകൾ",
       recentActivity: "അടുത്തിടെയുള്ള നിരീക്ഷണങ്ങൾ",
-      recommendedToday: "ഇന്നത്തെ നിർദ്ദേശം",
+      recommendedToday: "ഇന്നത്തെ നിർദ്ദേശങ്ങൾ",
       soilTypeLabel: "മണ്ണ്",
       farmSizeLabel: "ഫാം വലുപ്പം",
       askFollowUp: "തുടർചോദ്യം ചോദിക്കുക",
-      detailedWeatherImpact: "വിശദമായ കാലാവസ്ഥ സ്വാധീനം"
+      detailedWeatherImpact: "വിശദമായ കാലാവസ്ഥ സ്വാധീനം",
+      viewMyFarm: "എന്റെ ഫാം കാണുക",
+      compareAllMandis: "എല്ലാ വിപണികളും താരതമ്യം ചെയ്യുക",
+      stageLabel: "ഘട്ടം",
+      progressLabel: "പുരോഗതി",
+      acresUnit: "ഏക്കർ",
+      checklistItem1Title: "പിങ്ക് ബോൾവോം പുഴുക്കൾക്കായി പരുത്തിയുടെ അടിയിലുള്ള ഇലകൾ പരിശോധിക്കുക",
+      checklistItem1Sub: "പാടത്തിന്റെ അതിർത്തിയിലുള്ള 10 ചെടികൾ പരിശോധിക്കാൻ കെവികെ നിർദ്ദേശം.",
+      checklistItem2Title: "നാളെ ഉച്ചവരെ നൈട്രജൻ വളപ്രയോഗം മാറ്റിവെയ്ക്കുക",
+      checklistItem2Sub: "ഉച്ചയ്ക്ക് 3:00 മണിക്ക് 85% മഴ സാധ്യത. നൈട്രജൻ നഷ്ടപ്പെടുന്നത് ഒഴിവാക്കുക."
     },
     ai: {
       title: "കൃഷി സാഥി എഐ കർഷക സഹായി",
@@ -677,6 +805,58 @@ export const translations = {
       subtitle: "ഐസിഎആർ കൃഷി വിവരങ്ങളും വിക്കിപീഡിയ വിവരങ്ങളും.",
       wikiSearchTitle: "വിക്കിപീഡിയ അഗ്രോണമി തിരയൽ",
       searchPlaceholder: "വിള, കീടങ്ങൾ, വളം എന്നിവ തിരയുക..."
+    },
+    crops: {
+      Cotton: "പരുത്തി",
+      Wheat: "ഗോതമ്പ്",
+      Tomato: "തക്കാളി",
+      Maize: "മക്കച്ചോളം",
+      Soybean: "സോയാബീൻ",
+      Mustard: "കടുക്",
+      Sugarcane: "കരിമ്പ്",
+      Paddy: "നെല്ല്"
+    },
+    stages: {
+      "Flowering & Boll Formation": "പൂവിടലും കായ്പിടുത്തവും",
+      "Vegetative Tillering": "വളർച്ചാ ഘട്ടം",
+      "Fruiting & Harvesting": "വിളവെടുപ്പ് ഘട്ടം",
+      "Sowing & Germination": "വിത്തുവിതയ്ക്കലും മുളയ്ക്കലും",
+      "Vegetative Growth": "കായിക വളർച്ച",
+      "Boll Maturation": "കായ് പാകമാകൽ",
+      "Harvesting & Picking": "വിളവെടുപ്പ്"
+    },
+    soils: {
+      "Black Cotton Soil (Regur)": "കറുത്ത പരുത്തി മണ്ണ് (റെഗുർ)",
+      "Alluvial Soil": "എക്കൽ മണ്ണ്",
+      "Red & Yellow Sandy Soil": "ചുവപ്പും മഞ്ഞയും മണൽമണ്ണ്",
+      "Laterite Clay Soil": "ലാറ്ററൈറ്റ് കളിമണ്ണ്"
+    },
+    sidebar: {
+      cropAdvisorySub: "24/7 വിള ഉപദേശം"
     }
   }
 };
+
+/**
+ * Helper to safely translate crop names
+ */
+export function getCropTranslation(cropName, t) {
+  if (!cropName) return '';
+  return t?.crops?.[cropName] || cropName;
+}
+
+/**
+ * Helper to safely translate crop stages
+ */
+export function getStageTranslation(stageName, t) {
+  if (!stageName) return '';
+  return t?.stages?.[stageName] || stageName;
+}
+
+/**
+ * Helper to safely translate soil types
+ */
+export function getSoilTranslation(soilName, t) {
+  if (!soilName) return '';
+  return t?.soils?.[soilName] || soilName;
+}

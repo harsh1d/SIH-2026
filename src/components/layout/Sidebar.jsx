@@ -179,7 +179,9 @@ export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
               <div className="text-xs font-black text-ai-plum flex items-center gap-1">
                 {t.dashboard?.askAi || "Ask AI Assistant"}
               </div>
-              <div className="text-[11px] text-gray-500 font-medium">24/7 Crop advisory</div>
+              <div className="text-[11px] text-gray-500 font-medium">
+                {t.sidebar?.cropAdvisorySub || "24/7 Crop advisory"}
+              </div>
             </div>
           </button>
         </div>

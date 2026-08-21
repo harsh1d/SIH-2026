@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { mockCrops } from '../data/mockData';
+import { getCropTranslation, getStageTranslation, getSoilTranslation } from '../data/translations';
 import { 
   Sprout, 
   MapPin, 
@@ -49,33 +50,45 @@ export const MyFarmPage = () => {
 
           <button
             onClick={() => setActiveTab('profile')}
-            className="self-start sm:self-auto px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-extrabold rounded-xl transition-colors"
+            className="self-start sm:self-auto px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-extrabold rounded-xl transition-colors cursor-pointer"
           >
-            Edit Farm Parameters
+            {t.myFarm?.editProfile || "Edit Farm Parameters"}
           </button>
         </div>
 
         {/* Telemetry Metrics */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
           <div className="p-4 bg-agri-bg rounded-2xl border border-agri-soft/40 space-y-1">
-            <span className="text-gray-500 font-bold block text-[10px] uppercase tracking-wider">Total Farm Area</span>
-            <span className="text-base font-black text-agri-dark">{farmerProfile.farmSizeAcres} Acres</span>
+            <span className="text-gray-500 font-bold block text-[10px] uppercase tracking-wider">
+              {t.myFarm?.totalArea || "Total Farm Area"}
+            </span>
+            <span className="text-base font-black text-agri-dark">
+              {farmerProfile.farmSizeAcres} {t.dashboard?.acresUnit || "Acres"}
+            </span>
           </div>
 
           <div className="p-4 bg-earth-cream rounded-2xl border border-earth-wheat/40 space-y-1">
-            <span className="text-gray-500 font-bold block text-[10px] uppercase tracking-wider">Soil Type</span>
-            <span className="text-xs font-black text-earth-walnut line-clamp-1">{farmerProfile.soilType}</span>
+            <span className="text-gray-500 font-bold block text-[10px] uppercase tracking-wider">
+              {t.myFarm?.soilType || "Soil Type"}
+            </span>
+            <span className="text-xs font-black text-earth-walnut line-clamp-1">
+              {getSoilTranslation(farmerProfile.soilType, t)}
+            </span>
           </div>
 
           <div className="p-4 bg-sky-50 rounded-2xl border border-sky-200 space-y-1">
-            <span className="text-gray-500 font-bold block text-[10px] uppercase tracking-wider">Irrigation System</span>
+            <span className="text-gray-500 font-bold block text-[10px] uppercase tracking-wider">
+              {t.myFarm?.irrigation || "Irrigation System"}
+            </span>
             <span className="text-xs font-black text-sky-950 flex items-center gap-1">
               <Droplet className="w-3.5 h-3.5 text-sky-600" /> {farmerProfile.irrigationType}
             </span>
           </div>
 
           <div className="p-4 bg-purple-50 rounded-2xl border border-purple-200 space-y-1">
-            <span className="text-gray-500 font-bold block text-[10px] uppercase tracking-wider">Active Crops</span>
+            <span className="text-gray-500 font-bold block text-[10px] uppercase tracking-wider">
+              {t.myFarm?.activeCrops || "Active Crops"}
+            </span>
             <span className="text-base font-black text-purple-950">{mockCrops.length} Registered</span>
           </div>
         </div>
@@ -90,14 +103,14 @@ export const MyFarmPage = () => {
               <button
                 key={crop.id}
                 onClick={() => setSelectedCropId(crop.id)}
-                className={`flex items-center gap-3 px-5 py-3.5 rounded-2xl border transition-all text-xs font-black whitespace-nowrap ${
+                className={`flex items-center gap-3 px-5 py-3.5 rounded-2xl border transition-all text-xs font-black whitespace-nowrap cursor-pointer ${
                   isSelected 
                     ? 'bg-agri-dark text-white border-agri-dark shadow-agri scale-102 border-gov-gold/40' 
                     : 'bg-white text-gray-700 hover:bg-agri-bg border-gray-200'
                 }`}
               >
                 <Sprout className={`w-4 h-4 ${isSelected ? 'text-emerald-300' : 'text-agri-primary'}`} />
-                <span>{crop.name} ({crop.variety})</span>
+                <span>{getCropTranslation(crop.name, t)} ({crop.variety})</span>
                 <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${
                   isSelected ? 'bg-emerald-800 text-emerald-200' : 'bg-gray-100 text-gray-600'
                 }`}>
@@ -115,9 +128,11 @@ export const MyFarmPage = () => {
             
             <div className="md:col-span-8 space-y-3">
               <div className="flex items-center gap-2 text-xs font-black text-agri-primary uppercase tracking-wider">
-                <span>{activeCrop.variety}</span> • <span>{activeCrop.areaAcres} Acres</span>
+                <span>{activeCrop.variety}</span> • <span>{activeCrop.areaAcres} {t.dashboard?.acresUnit || "Acres"}</span>
               </div>
-              <h2 className="text-2xl font-black text-agri-dark font-sans">{activeCrop.name} Farm Profile</h2>
+              <h2 className="text-2xl font-black text-agri-dark font-sans">
+                {getCropTranslation(activeCrop.name, t)} Farm Profile
+              </h2>
               
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs pt-2">
                 <div className="p-3.5 bg-gray-50 rounded-2xl border border-gray-100">
@@ -137,7 +152,9 @@ export const MyFarmPage = () => {
 
             {/* Health Index Gauge */}
             <div className="md:col-span-4 bg-gradient-to-br from-agri-bg to-emerald-50 p-6 rounded-3xl border border-agri-soft/50 text-center space-y-2 shadow-xs">
-              <span className="text-xs font-black text-gray-500 uppercase tracking-widest block">Crop Health Score</span>
+              <span className="text-xs font-black text-gray-500 uppercase tracking-widest block">
+                {t.myFarm?.healthScore || "Crop Health Score"}
+              </span>
               <div className="text-4xl font-black text-agri-dark">{activeCrop.healthScore} <span className="text-lg text-gray-400 font-semibold">/100</span></div>
               <span className="inline-block px-3 py-1 bg-emerald-600 text-white font-black text-xs rounded-full shadow-xs">
                 {activeCrop.healthStatus}
@@ -154,14 +171,14 @@ export const MyFarmPage = () => {
             <div className="flex items-center gap-2.5">
               <Bot className="w-5 h-5 text-purple-200" />
               <span className="text-xs font-bold">
-                Need specific fertigation, pest, or harvesting advice for {activeCrop.name} ({activeCrop.currentStage})?
+                {getCropTranslation(activeCrop.name, t)} ({getStageTranslation(activeCrop.currentStage, t)})
               </span>
             </div>
             <button
               onClick={() => setActiveTab('ai')}
-              className="px-4 py-2 bg-white text-ai-plum hover:bg-purple-50 text-xs font-extrabold rounded-xl transition-colors shadow-xs flex items-center gap-1.5 flex-shrink-0"
+              className="px-4 py-2 bg-white text-ai-plum hover:bg-purple-50 text-xs font-extrabold rounded-xl transition-colors shadow-xs flex items-center gap-1.5 flex-shrink-0 cursor-pointer"
             >
-              <Sparkles className="w-3.5 h-3.5 text-ai-purple" /> Consult AI Assistant
+              <Sparkles className="w-3.5 h-3.5 text-ai-purple" /> {t.myFarm?.consultAi || "Consult AI Assistant About This Stage"}
             </button>
           </div>
 
@@ -169,10 +186,10 @@ export const MyFarmPage = () => {
           <div className="space-y-4 pt-4 border-t border-gray-100">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-black text-agri-dark flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-earth-terracotta" /> Crop Lifecycle Journey
+                <Calendar className="w-5 h-5 text-earth-terracotta" /> {t.myFarm?.lifecycle || "Crop Lifecycle Journey"}
               </h3>
               <span className="text-xs text-earth-walnut font-bold bg-earth-sand/60 px-3.5 py-1 rounded-full border border-earth-wheat/30">
-                Current Stage: {activeCrop.currentStage}
+                {t.dashboard?.stageLabel || "Current Stage"}: {getStageTranslation(activeCrop.currentStage, t)}
               </span>
             </div>
 
@@ -208,7 +225,7 @@ export const MyFarmPage = () => {
                       <div className="flex-1 space-y-1">
                         <div className="flex items-center justify-between">
                           <span className={`text-sm font-black ${isCurrent ? 'text-agri-dark text-base' : 'text-gray-800'}`}>
-                            {stg.name}
+                            {getStageTranslation(stg.name, t)}
                           </span>
                           <span className="text-xs text-gray-500 font-bold">{stg.dates}</span>
                         </div>
