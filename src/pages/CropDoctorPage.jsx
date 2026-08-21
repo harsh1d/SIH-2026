@@ -41,6 +41,9 @@ import {
   CheckCheck
 } from 'lucide-react';
 
+import { DiagnosisReportModal } from '../components/common/DiagnosisReportModal';
+import { generateAgronomyPdfReport } from '../services/pdfReportService';
+
 export const CropDoctorPage = () => {
   const { setActiveTab, showToast, t, location, farmerProfile, weatherData, language } = useApp();
 
@@ -54,6 +57,7 @@ export const CropDoctorPage = () => {
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [selectedCropCategory, setSelectedCropCategory] = useState('All');
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
 
   // Invalid / Non-Leaf Image Alert State
   const [invalidImageAlert, setInvalidImageAlert] = useState(null);
@@ -743,12 +747,21 @@ export const CropDoctorPage = () => {
                   </button>
 
                   <button
+                    onClick={() => setIsPdfModalOpen(true)}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl transition-colors cursor-pointer shadow-xs"
+                    title="View and Download Graphical PDF Report"
+                  >
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>View Graphical PDF Report</span>
+                  </button>
+
+                  <button
                     onClick={handleDownloadPrescription}
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-gray-100 text-gray-800 font-bold rounded-xl border border-gray-200 cursor-pointer shadow-xs"
-                    title="Download Prescription as PDF/Text"
+                    title="Download Plain Prescription Slip"
                   >
                     <Download className="w-3.5 h-3.5" />
-                    <span>Save Prescription</span>
+                    <span>Save Text Slip</span>
                   </button>
                 </div>
               </div>
@@ -860,12 +873,19 @@ export const CropDoctorPage = () => {
                   <RotateCcw className="w-4 h-4" /> Scan Another Leaf
                 </button>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={() => setIsPdfModalOpen(true)}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black rounded-2xl transition-colors shadow-agri cursor-pointer"
+                  >
+                    <Download className="w-4 h-4 text-emerald-200" /> Export Graphical PDF Summary
+                  </button>
+
                   <button
                     onClick={() => setActiveTab('ai')}
                     className="flex items-center gap-2 px-4 py-2.5 bg-ai-plum hover:bg-ai-purple text-white text-xs font-bold rounded-2xl transition-colors shadow-ai cursor-pointer"
                   >
-                    <Sparkles className="w-4 h-4 text-purple-200" /> Discuss with AI Assistant
+                    <Sparkles className="w-4 h-4 text-purple-200" /> Discuss with AI
                   </button>
 
                   <button
@@ -876,6 +896,17 @@ export const CropDoctorPage = () => {
                   </button>
                 </div>
               </div>
+
+              {/* Modal Preview for Graphical PDF Summary */}
+              <DiagnosisReportModal
+                isOpen={isPdfModalOpen}
+                onClose={() => setIsPdfModalOpen(false)}
+                scanResult={scanResult}
+                farmerProfile={farmerProfile}
+                location={location}
+                weatherData={weatherData}
+                previewImage={previewImage}
+              />
 
             </div>
           )}
