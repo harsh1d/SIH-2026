@@ -188,20 +188,28 @@ export const Dashboard = () => {
               <h3 className="font-black text-base text-agri-dark flex items-center gap-2">
                 <Sprout className="w-5 h-5 text-agri-primary" /> {t.dashboard?.activeCrops || "Active Crop Lifecycle Status"} ({crops.length})
               </h3>
-              <button 
-                onClick={() => setActiveTab('myFarm')}
-                className="text-xs font-bold text-agri-primary hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                {t.dashboard?.viewMyFarm || "View My Farm"} <ChevronRight className="w-3.5 h-3.5" />
-              </button>
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => setActiveTab('cropJourney')}
+                  className="text-xs font-bold text-agri-primary hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  Growth Journey <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+                <button 
+                  onClick={() => setActiveTab('cropHealth')}
+                  className="text-xs font-bold text-ai-plum hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  Health Radar <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {crops.map((crop) => (
                 <div 
                   key={crop.id}
-                  onClick={() => setActiveTab('myFarm')}
-                  className="p-4 rounded-2xl border border-gray-100 hover:border-agri-soft/60 bg-agri-bg/40 hover:bg-agri-bg transition-all cursor-pointer space-y-3"
+                  onClick={() => setActiveTab('cropJourney')}
+                  className="p-4 rounded-2xl border border-gray-100 hover:border-agri-soft/60 bg-agri-bg/40 hover:bg-agri-bg transition-all cursor-pointer space-y-3 shadow-2xs hover:shadow-md"
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-black text-agri-dark">{getCropTranslation(crop.name, t)}</span>
