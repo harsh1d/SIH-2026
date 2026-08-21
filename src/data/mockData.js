@@ -684,6 +684,252 @@ export const AGRO_REGIONS_DATABASE = [
         officialLink: "https://hpagriculture.com"
       }
     ]
+  },
+
+  // BIHAR
+  {
+    id: "BIH-PATNA",
+    district: "Patna",
+    village: "Danapur",
+    state: "Bihar",
+    pincode: "800001",
+    lat: 25.5941,
+    lng: 85.1376,
+    formatted: "Patna, Bihar",
+    agroZone: "South Bihar Alluvial Plain Zone",
+    soilType: "Gangetic Heavy Clay & Sandy Loam",
+    soilOptions: ["Gangetic Heavy Clay", "Sandy Loam", "Calcareous Alluvium"],
+    irrigationType: "Sone Canal + Diesel/Electric Tube Well",
+    agricultureType: "Paddy-Wheat Multi-Cropping & High-Yield Maize",
+    avgRainfall: "1100mm",
+    primaryCrops: ["Paddy", "Wheat", "Maize"],
+    secondaryCrops: ["Mustard", "Tomato", "Sugarcane"],
+    mandiYardNames: [
+      { name: "Patna Bazar Samiti APMC", district: "Patna", distanceKm: 5 },
+      { name: "Danapur Grain Mandi", district: "Patna", distanceKm: 14 },
+      { name: "Muzaffarpur Agricultural Yard", district: "Muzaffarpur", distanceKm: 72 },
+      { name: "Gaya Grain Market", district: "Gaya", distanceKm: 98 }
+    ],
+    stateSchemes: [
+      {
+        id: "SCHEME-BIH-KRISHI-ROADMAP",
+        title: "Bihar Rajya Fasal Sahayata Yojana (BRFSY)",
+        dept: "Cooperative Department, Govt of Bihar",
+        category: "Insurance & Assistance",
+        benefitAmount: "₹7,500 to ₹10,000/Hectare direct compensation for crop loss without premium",
+        eligibility: "All ryots and non-ryots cultivating notified crops in Bihar.",
+        isEligibleForUser: true,
+        documentsRequired: ["Land Possession Certificate (LPC) / Self Declaration", "Aadhaar Card", "Bank Passbook"],
+        applicationProcess: "Online through pacsbihar.gov.in.",
+        deadline: "August 31, 2026",
+        officialLink: "https://pacsonline.bih.nic.in"
+      }
+    ]
+  },
+
+  // KARNATAKA
+  {
+    id: "KAR-BELAGAVI",
+    district: "Belagavi",
+    village: "Gokak",
+    state: "Karnataka",
+    pincode: "590001",
+    lat: 15.8497,
+    lng: 74.4977,
+    formatted: "Belagavi, Karnataka",
+    agroZone: "Northern Transition & Sugarcane Belt Zone",
+    soilType: "Deep Black Clay & Red Sandy Loam",
+    soilOptions: ["Deep Black Clay", "Red Sandy Loam", "Medium Black Soil"],
+    irrigationType: "Ghataprabha Canal + Drip Fertigation",
+    agricultureType: "Commercial Sugarcane, Cotton & Maize",
+    avgRainfall: "880mm",
+    primaryCrops: ["Sugarcane", "Cotton", "Maize"],
+    secondaryCrops: ["Soybean", "Paddy", "Tomato"],
+    mandiYardNames: [
+      { name: "Belagavi APMC Central Yard", district: "Belagavi", distanceKm: 6 },
+      { name: "Gokak Sugarcane & Grain Market", district: "Belagavi", distanceKm: 28 },
+      { name: "Hubballi Amargol APMC (Karnataka's Largest)", district: "Dharwad", distanceKm: 94 },
+      { name: "Bailhongal Cotton Mandi", district: "Belagavi", distanceKm: 42 }
+    ],
+    stateSchemes: [
+      {
+        id: "SCHEME-KAR-RAITHA-SIRI",
+        title: "Karnataka Raitha Siri & Krishi Bhagya Scheme",
+        dept: "Department of Agriculture, Govt of Karnataka",
+        category: "Direct Income & Subsidies",
+        benefitAmount: "₹10,000/Hectare incentive for millets + 80% subsidy on Krishi Honda (Farm Ponds)",
+        eligibility: "Farmers in Karnataka cultivating notified crops.",
+        isEligibleForUser: true,
+        documentsRequired: ["RTC (Pahani) Copy", "FID Number", "Aadhaar Card"],
+        applicationProcess: "Apply via FRUITS portal (fruits.karnataka.gov.in) / Raitha Samparka Kendra.",
+        deadline: "Open All Year",
+        officialLink: "https://fruits.karnataka.gov.in"
+      }
+    ]
+  },
+
+  // TELANGANA
+  {
+    id: "TEL-WARANGAL",
+    district: "Warangal",
+    village: "Narsampet",
+    state: "Telangana",
+    pincode: "506002",
+    lat: 17.9689,
+    lng: 79.5941,
+    formatted: "Warangal, Telangana",
+    agroZone: "Central Telangana Red Chalkas & Black Soil Zone",
+    soilType: "Red Sandy Loam (Chalka) & Deep Black Clay",
+    soilOptions: ["Red Sandy Loam (Chalka)", "Deep Black Clay", "Gravelly Red Soil"],
+    irrigationType: "Kaleshwaram Lift Canal + Drip Borewell",
+    agricultureType: "Commercial Cotton, Red Chilli & Maize",
+    avgRainfall: "1000mm",
+    primaryCrops: ["Cotton", "Paddy", "Maize"],
+    secondaryCrops: ["Tomato", "Soybean", "Sugarcane"],
+    mandiYardNames: [
+      { name: "Enumamula Agricultural Market Yard (Asia's 2nd Largest)", district: "Warangal", distanceKm: 6 },
+      { name: "Narsampet Cotton Yard", district: "Warangal", distanceKm: 32 },
+      { name: "Khammam Chilli & Grain APMC", district: "Khammam", distanceKm: 88 },
+      { name: "Jangaon Grain Mandi", district: "Jangaon", distanceKm: 48 }
+    ],
+    stateSchemes: [
+      {
+        id: "SCHEME-TEL-RYTHU-BANDHU",
+        title: "Telangana Rythu Bandhu Direct Investment Scheme",
+        dept: "Department of Agriculture, Govt of Telangana",
+        category: "Direct Income",
+        benefitAmount: "₹10,000 per Acre per year (₹5,000 for Kharif & ₹5,000 for Rabi)",
+        eligibility: "All landowning farmers in Telangana registered on Dharani portal.",
+        isEligibleForUser: true,
+        documentsRequired: ["Dharani Passbook", "Aadhaar Card", "Bank Account Number"],
+        applicationProcess: "Automatic credit through Dharani portal verification.",
+        deadline: "Open All Year",
+        officialLink: "https://rythubandhu.telangana.gov.in"
+      }
+    ]
+  },
+
+  // ODISHA
+  {
+    id: "ODI-CUTTACK",
+    district: "Cuttack",
+    village: "Athagarh",
+    state: "Odisha",
+    pincode: "753001",
+    lat: 20.4625,
+    lng: 85.8828,
+    formatted: "Cuttack, Odisha",
+    agroZone: "East & South Eastern Coastal Plain Zone",
+    soilType: "Coastal Deltaic Alluvium & Red Clay Soil",
+    soilOptions: ["Coastal Deltaic Alluvium", "Red Clay Soil", "Laterite Loam"],
+    irrigationType: "Mahanadi Canal System + Lift Irrigation",
+    agricultureType: "Paddy Granary, Pulses & Oilseed Multi-Cropping",
+    avgRainfall: "1550mm",
+    primaryCrops: ["Paddy", "Mustard", "Tomato"],
+    secondaryCrops: ["Sugarcane", "Maize", "Wheat"],
+    mandiYardNames: [
+      { name: "Cuttack RMC Market Yard", district: "Cuttack", distanceKm: 5 },
+      { name: "Athagarh Grain Mandi", district: "Cuttack", distanceKm: 28 },
+      { name: "Bhubaneswar Mandi Terminal", district: "Khurda", distanceKm: 26 },
+      { name: "Jagatsinghpur Paddy Centre", district: "Jagatsinghpur", distanceKm: 42 }
+    ],
+    stateSchemes: [
+      {
+        id: "SCHEME-ODI-KALIA",
+        title: "KALIA Scheme (Krushak Assistance for Livelihood and Income Augmentation)",
+        dept: "Department of Agriculture & Farmers' Empowerment, Govt of Odisha",
+        category: "Direct Income",
+        benefitAmount: "₹10,000 per year per farm family + ₹12,500 for landless agricultural households",
+        eligibility: "Small, marginal, and landless agricultural farmers in Odisha.",
+        isEligibleForUser: true,
+        documentsRequired: ["KALIA Token Number", "Aadhaar Card", "Bank Passbook"],
+        applicationProcess: "Apply on kalia.odisha.gov.in.",
+        deadline: "Open All Year",
+        officialLink: "https://kalia.odisha.gov.in"
+      }
+    ]
+  },
+
+  // ASSAM & NORTHEAST
+  {
+    id: "ASM-GUWAHATI",
+    district: "Kamrup",
+    village: "Hajo",
+    state: "Assam",
+    pincode: "781001",
+    lat: 26.1445,
+    lng: 91.7362,
+    formatted: "Guwahati, Assam",
+    agroZone: "Lower Brahmaputra Valley Agro-Climatic Zone",
+    soilType: "Rich Riverine Alluvial Silt Loam & Acidic Red Soil",
+    soilOptions: ["Riverine Alluvial Silt Loam", "Acidic Red Soil", "Clay Loam"],
+    irrigationType: "Brahmaputra Lift Irrigation + Shallow Tube Well",
+    agricultureType: "Ahu/Sali Paddy, Mustard, Vegetables & Tea Cultivation",
+    avgRainfall: "1850mm",
+    primaryCrops: ["Paddy", "Mustard", "Tomato"],
+    secondaryCrops: ["Maize", "Wheat", "Sugarcane"],
+    mandiYardNames: [
+      { name: "Guwahati Pamohi Wholesale Agricultural Market", district: "Kamrup", distanceKm: 8 },
+      { name: "Hajo Vegetable & Grain Yard", district: "Kamrup", distanceKm: 26 },
+      { name: "Nalbari Regulated Market", district: "Nalbari", distanceKm: 54 },
+      { name: "Barpeta Road Mandi", district: "Barpeta", distanceKm: 88 }
+    ],
+    stateSchemes: [
+      {
+        id: "SCHEME-ASM-CMSGUY",
+        title: "Chief Minister Samagra Gramya Unnayan Yojana (Assam)",
+        dept: "Department of Agriculture, Govt of Assam",
+        category: "Subsidies & Mechanisation",
+        benefitAmount: "70% subsidy on Tractors, Power Tillers, and Mini Rice Mills",
+        eligibility: "Farmer groups and individual cultivators in Assam.",
+        isEligibleForUser: true,
+        documentsRequired: ["Farmer Certificate", "Aadhaar Card", "Bank Passbook"],
+        applicationProcess: "Apply via Assam Agriculture portal (diragri.assam.gov.in).",
+        deadline: "September 30, 2026",
+        officialLink: "https://diragri.assam.gov.in"
+      }
+    ]
+  },
+
+  // JAMMU & KASHMIR
+  {
+    id: "JK-SRINAGAR",
+    district: "Srinagar",
+    village: "Pampore",
+    state: "Jammu and Kashmir",
+    pincode: "190001",
+    lat: 34.0837,
+    lng: 74.7973,
+    formatted: "Srinagar, Jammu and Kashmir",
+    agroZone: "Kashmir Valley Temperate & Saffron/Apple Plateau",
+    soilType: "Karewa Lacustrine Silt & Mountain Loam",
+    soilOptions: ["Karewa Lacustrine Silt", "Mountain Loam", "Alluvial Riverbed Soil"],
+    irrigationType: "Gravity Stream Kuhl + Drip System",
+    agricultureType: "High-Density Apple, Saffron, Walnut & Off-Season Vegetables",
+    avgRainfall: "750mm",
+    primaryCrops: ["Wheat", "Maize", "Tomato"],
+    secondaryCrops: ["Mustard", "Paddy", "Soybean"],
+    mandiYardNames: [
+      { name: "Parimpora Fruit & Grain Terminal Mandi Srinagar", district: "Srinagar", distanceKm: 4 },
+      { name: "Pampore Saffron & Spice Market", district: "Pulwama", distanceKm: 14 },
+      { name: "Sopore Fruit Mandi (Asia's 2nd Largest Apple Yard)", district: "Baramulla", distanceKm: 48 },
+      { name: "Shopian Apple APMC", district: "Shopian", distanceKm: 52 }
+    ],
+    stateSchemes: [
+      {
+        id: "SCHEME-JK-HADP",
+        title: "Holistic Agriculture Development Programme (HADP J&K)",
+        dept: "Agriculture Production Department, UT of J&K",
+        category: "Subsidies & High-Density Plantations",
+        benefitAmount: "50% to 80% subsidy for High-Density Orchards, Polyhouses, and Micro-Irrigation",
+        eligibility: "Farmers residing and cultivating land in Jammu and Kashmir.",
+        isEligibleForUser: true,
+        documentsRequired: ["Revenue Land Record (Girdawari)", "Aadhaar Card", "Bank Passbook"],
+        applicationProcess: "Apply via HADP portal (hadp.jk.gov.in).",
+        deadline: "Open All Year",
+        officialLink: "https://hadp.jk.gov.in"
+      }
+    ]
   }
 ];
 

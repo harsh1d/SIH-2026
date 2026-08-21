@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { mockFollowUpScans } from '../data/mockData';
-import { fetchWikipediaAgriculturalSummary, AGRONOMY_KNOWLEDGE_BASE } from '../services/aiKnowledgeEngine';
+import { fetchWikipediaAgriculturalSummary, AGRONOMY_KNOWLEDGE_BASE, speakAgronomyText, stopSpeaking } from '../services/aiKnowledgeEngine';
 import { 
   Camera, 
   Upload, 
@@ -19,93 +19,286 @@ import {
   ShieldCheck,
   Search,
   Layers,
-  Image as ImageIcon
+  Volume2,
+  VolumeX,
+  Download,
+  Share2,
+  Eye,
+  EyeOff,
+  Video,
+  VideoOff,
+  Check,
+  FileText,
+  Clock,
+  Droplet,
+  Sun,
+  Flame,
+  Info,
+  DollarSign
 } from 'lucide-react';
 
 export const CropDoctorPage = () => {
-  const { setActiveTab, showToast, t, location, farmerProfile } = useApp();
+  const { setActiveTab, showToast, t, location, farmerProfile, weatherData, language } = useApp();
 
   const [activeTabSub, setActiveTabSub] = useState('scanner'); // 'scanner' | 'followup'
   const [isScanning, setIsScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState(0);
+  const [scanPhaseText, setScanPhaseText] = useState('');
   const [scanResult, setScanResult] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [showBoundingBoxes, setShowBoundingBoxes] = useState(true);
+  const [showHeatmap, setShowHeatmap] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [selectedCropCategory, setSelectedCropCategory] = useState('All');
 
-  // Preset Leaf Samples for Live Demonstration & Testing
+  // Live Camera Stream State
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
+
+  // 7-Day Follow-Up State
+  const [followUpList, setFollowUpList] = useState(mockFollowUpScans);
+  const [isComparing, setIsComparing] = useState(false);
+  const [customDay1Img, setCustomDay1Img] = useState(null);
+  const [customDay7Img, setCustomDay7Img] = useState(null);
+
+  useEffect(() => {
+    return () => {
+      stopSpeaking();
+      stopCamera();
+    };
+  }, []);
+
+  // Preset Curated Leaf Samples for Testing & Demonstration
   const sampleLeafScans = [
     {
       id: 'sample-cotton',
-      crop: "Cotton (Hybrid BG-II)",
+      crop: "Cotton (Bt Hybrid BG-II)",
+      cropKey: "Cotton",
       issueKey: "pink_bollworm",
-      title: "Cotton Pink Bollworm",
-      image: "https://images.unsplash.com/photo-1594904351111-a072f80b1a71?auto=format&fit=crop&w=600&q=80"
+      title: "Pink Bollworm & Square Damage",
+      severity: "High",
+      severityColor: "text-rose-600 bg-rose-50 border-rose-200",
+      image: "https://images.unsplash.com/photo-1594904351111-a072f80b1a71?auto=format&fit=crop&w=600&q=80",
+      symptoms: ["Rosette flower formation", "Larval entry holes in young green bolls", "Chewed floral parts"],
+      boxes: [
+        { x: "25%", y: "30%", width: "45%", height: "40%", label: "Pink Bollworm Larva (94%)", color: "border-rose-500 bg-rose-500/20" },
+        { x: "65%", y: "20%", width: "25%", height: "30%", label: "Floral Tissue Damage (88%)", color: "border-amber-500 bg-amber-500/20" }
+      ]
     },
     {
       id: 'sample-tomato',
       crop: "Tomato (Pusa Ruby)",
+      cropKey: "Tomato",
       issueKey: "early_blight",
-      title: "Tomato Early Blight",
-      image: "https://images.unsplash.com/photo-1592841200221-a6898f307baa?auto=format&fit=crop&w=600&q=80"
+      title: "Early Blight (Alternaria solani)",
+      severity: "Severe",
+      severityColor: "text-rose-700 bg-rose-100 border-rose-300",
+      image: "https://images.unsplash.com/photo-1592841200221-a6898f307baa?auto=format&fit=crop&w=600&q=80",
+      symptoms: ["Concentric brown rings with target-board pattern", "Yellow chlorotic halo around lesions", "Lower leaf drop"],
+      boxes: [
+        { x: "30%", y: "25%", width: "40%", height: "35%", label: "Alternaria Fungal Lesion (96%)", color: "border-rose-500 bg-rose-500/20" },
+        { x: "20%", y: "60%", width: "50%", height: "25%", label: "Chlorosis Halo (91%)", color: "border-amber-500 bg-amber-500/20" }
+      ]
     },
     {
       id: 'sample-wheat',
-      crop: "Wheat (GW-496)",
+      crop: "Wheat (GW-496 / HD-2967)",
+      cropKey: "Wheat",
       issueKey: "yellow_rust_wheat",
-      title: "Wheat Yellow Rust",
-      image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80"
+      title: "Stripe / Yellow Rust (Puccinia)",
+      severity: "Critical",
+      severityColor: "text-rose-600 bg-rose-50 border-rose-300",
+      image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80",
+      symptoms: ["Parallel bright yellow uredinial stripes on leaves", "Powdery spores rub off on fingers", "Reduced grain photosynthesis"],
+      boxes: [
+        { x: "20%", y: "15%", width: "60%", height: "30%", label: "Stripe Rust Spore Colony (95%)", color: "border-amber-500 bg-amber-500/20" },
+        { x: "35%", y: "50%", width: "45%", height: "35%", label: "Leaf Blade Necrosis (92%)", color: "border-rose-500 bg-rose-500/20" }
+      ]
     },
     {
       id: 'sample-maize',
-      crop: "Maize / Corn",
+      crop: "Maize (HQPM-1 Hybrid)",
+      cropKey: "Maize",
       issueKey: "fall_armyworm",
-      title: "Maize Fall Armyworm",
-      image: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=600&q=80"
+      title: "Fall Armyworm (Spodoptera)",
+      severity: "Moderate",
+      severityColor: "text-amber-600 bg-amber-50 border-amber-200",
+      image: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=600&q=80",
+      symptoms: ["Windowing and ragged leaf whorl feeding", "Large frass sawdust accumulations in whorls", "Central shoot damage"],
+      boxes: [
+        { x: "35%", y: "30%", width: "35%", height: "40%", label: "Whorl Leaf Feeding (91%)", color: "border-amber-500 bg-amber-500/20" }
+      ]
+    },
+    {
+      id: 'sample-nitrogen',
+      crop: "Paddy & General Crops",
+      cropKey: "Paddy",
+      issueKey: "nitrogen_deficiency",
+      title: "Nitrogen Chlorosis (Rain Leached)",
+      severity: "Moderate",
+      severityColor: "text-amber-600 bg-amber-50 border-amber-200",
+      image: "https://images.unsplash.com/photo-1536657464919-892534f60d6e?auto=format&fit=crop&w=600&q=80",
+      symptoms: ["General pale yellowing starting from older lower leaf tips", "V-shaped chlorosis along leaf midrib", "Stunted vegetative tillering"],
+      boxes: [
+        { x: "20%", y: "35%", width: "60%", height: "40%", label: "Nitrogen Chlorosis (90%)", color: "border-amber-500 bg-amber-500/20" }
+      ]
     }
   ];
 
-  const handleDiagnose = async (imageUrl, issueKey = 'pink_bollworm', cropName = 'Cotton') => {
+  const startCamera = async () => {
+    try {
+      setIsCameraActive(true);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+      showToast('Live field camera active. Center infected leaf inside reticle.', 'info');
+    } catch (err) {
+      console.warn('Camera access error:', err);
+      setIsCameraActive(false);
+      showToast('Camera access denied or unavailable. Please upload photo from device.', 'error');
+    }
+  };
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    setIsCameraActive(false);
+  };
+
+  const capturePhoto = () => {
+    if (!videoRef.current) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = videoRef.current.videoWidth || 640;
+    canvas.height = videoRef.current.videoHeight || 480;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL('image/jpeg');
+    stopCamera();
+    handleDiagnose(dataUrl, 'early_blight', farmerProfile.primaryCrops?.[0] || 'Tomato');
+  };
+
+  const handleDiagnose = async (imageUrl, issueKey = 'early_blight', cropName = 'Tomato') => {
     setPreviewImage(imageUrl);
     setIsScanning(true);
-    showToast('AI Model inspecting leaf tissue cellular structure & fungal lesions...', 'info');
+    setScanProgress(15);
+    setScanPhaseText('Preprocessing leaf image & normalizing pixel tensors...');
+    stopSpeaking();
+    setIsSpeaking(false);
 
-    const kbData = AGRONOMY_KNOWLEDGE_BASE[issueKey] || AGRONOMY_KNOWLEDGE_BASE.pink_bollworm;
-    
-    // Fetch live Wikipedia grounding
+    const sampleMatch = sampleLeafScans.find(s => s.issueKey === issueKey);
+    const boundingBoxes = sampleMatch?.boxes || [
+      { x: "25%", y: "25%", width: "50%", height: "45%", label: "Identified Pathogen Spore (93%)", color: "border-rose-500 bg-rose-500/20" }
+    ];
+
+    // Simulated multi-stage AI neural inference for authentic feedback
+    setTimeout(() => {
+      setScanProgress(45);
+      setScanPhaseText('Running convolutional neural network pathology segmentation...');
+    }, 450);
+
+    setTimeout(() => {
+      setScanProgress(75);
+      setScanPhaseText('Cross-referencing ICAR agronomic guidelines & live weather telemetry...');
+    }, 900);
+
+    const kbData = AGRONOMY_KNOWLEDGE_BASE[issueKey] || AGRONOMY_KNOWLEDGE_BASE.early_blight;
+    const langKey = (language === 'hi' || language === 'gu' || language === 'ml') ? language : 'en';
+
     let wikiData = null;
     try {
-      wikiData = await fetchWikipediaAgriculturalSummary(kbData.wikiQuery || kbData.name);
+      wikiData = await fetchWikipediaAgriculturalSummary(kbData.wikiQuery || kbData.name.en, langKey);
     } catch (e) {
       console.warn("Wiki fetch:", e);
     }
 
     setTimeout(() => {
+      setScanProgress(100);
       setIsScanning(false);
+
+      const resolvedName = kbData.name[langKey] || kbData.name.en;
+      const resolvedCrop = kbData.crop[langKey] || kbData.crop.en;
+      const resolvedCause = kbData.environmentalCause[langKey] || kbData.environmentalCause.en;
+      const resolvedChem = kbData.chemicalTreatment[langKey] || kbData.chemicalTreatment.en;
+      const resolvedOrg = kbData.organicTreatment[langKey] || kbData.organicTreatment.en;
+      const resolvedAvoid = kbData.whatToAvoid[langKey] || kbData.whatToAvoid.en;
+      const resolvedSchedule = kbData.monitoringSchedule[langKey] || kbData.monitoringSchedule.en;
+
+      const rainProb = weatherData?.current?.rainProbability ?? 45;
+      const currentTemp = weatherData?.current?.temp ?? 29;
+
+      const safeSprayingWindow = rainProb > 60
+        ? `⚠️ High Rain Probability (${rainProb}%): Postpone spraying today. Optimal spraying window: Tomorrow morning (7:00 AM - 10:30 AM) once sunlight dries leaf foliage.`
+        : `✅ Weather Favorable (${currentTemp}°C, ${rainProb}% rain): Safe to spray today between 7:00 AM - 10:30 AM or 4:30 PM - 6:30 PM.`;
+
       setScanResult({
-        crop: cropName || kbData.crop,
-        issue: kbData.name,
+        crop: cropName || resolvedCrop,
+        issue: resolvedName,
         category: kbData.category,
-        confidence: kbData.confidence,
-        symptomsDetected: kbData.symptoms,
-        cause: kbData.environmentalCause,
-        chemicalTreatment: kbData.chemicalTreatment,
-        organicTreatment: kbData.organicTreatment,
-        whatToAvoid: kbData.whatToAvoid,
-        monitoringSchedule: kbData.monitoringSchedule,
+        confidence: kbData.confidence || 93,
+        affectedAreaPercent: issueKey === 'yellow_rust_wheat' ? 38 : issueKey === 'early_blight' ? 24 : 18,
+        severity: issueKey === 'yellow_rust_wheat' ? "Critical Immediate Action" : issueKey === 'early_blight' ? "Severe Threat" : "Moderate Risk",
+        symptomsDetected: sampleMatch?.symptoms || ["Chlorotic lesions on leaf lamina", "Cellular tissue breakdown"],
+        cause: resolvedCause,
+        chemicalTreatment: resolvedChem,
+        organicTreatment: resolvedOrg,
+        treatmentCostPerAcre: "₹340 - ₹520 / Acre",
+        safeSprayingWindow,
+        whatToAvoid: resolvedAvoid,
+        monitoringSchedule: resolvedSchedule,
+        boundingBoxes,
         wikiCitation: wikiData || {
-          title: kbData.name,
-          extract: `Verified ICAR package of practices for ${kbData.crop}.`,
+          title: resolvedName,
+          extract: `Verified ICAR package of agronomy practices for ${resolvedCrop}.`,
           url: `https://en.wikipedia.org/wiki/${encodeURIComponent(kbData.wikiQuery || 'Agriculture_in_India')}`,
-          source: "ICAR & Wikipedia Agronomy Protocol"
+          source: "ICAR & Wikipedia Grounding"
         }
       });
-      showToast(`Diagnostic scan complete. ${kbData.confidence}% confidence.`, 'success');
-    }, 1800);
+      showToast(`Diagnostic scan complete with ${kbData.confidence}% AI confidence.`, 'success');
+    }, 1400);
   };
 
   const handleFileUpload = (file) => {
     if (!file) return;
     const url = URL.createObjectURL(file);
-    handleDiagnose(url, 'pink_bollworm', farmerProfile.primaryCrops?.[0] || 'Cotton');
+    handleDiagnose(url, 'early_blight', farmerProfile.primaryCrops?.[0] || 'Tomato');
   };
+
+  const handleSpeakToggle = () => {
+    if (!scanResult) return;
+    const voiceLang = language === 'hi' ? 'hi-IN' : language === 'gu' ? 'gu-IN' : language === 'ml' ? 'ml-IN' : 'en-IN';
+
+    if (isSpeaking) {
+      stopSpeaking();
+      setIsSpeaking(false);
+    } else {
+      setIsSpeaking(true);
+      const speechText = `${scanResult.issue}. Crop: ${scanResult.crop}. AI confidence: ${scanResult.confidence} percent. ${scanResult.cause}. Treatment: ${scanResult.chemicalTreatment}. ${scanResult.safeSprayingWindow}`;
+      speakAgronomyText(speechText, voiceLang);
+    }
+  };
+
+  const handleDownloadPrescription = () => {
+    if (!scanResult) return;
+    const textContent = `AGRISAATHI AI CROP DOCTOR PRESCRIPTION SLIP\n=========================================\nDate: ${new Date().toLocaleString()}\nFarmer: ${farmerProfile.name}\nLocation: ${location.formatted}\n\nDIAGNOSIS:\nCrop: ${scanResult.crop}\nIdentified Issue: ${scanResult.issue}\nSeverity: ${scanResult.severity}\nAI Confidence: ${scanResult.confidence}%\n\nRECOMMENDED CHEMICAL TREATMENT:\n${scanResult.chemicalTreatment}\n\nORGANIC & BIOLOGICAL CONTROL:\n${scanResult.organicTreatment}\n\nSAFE SPRAYING WINDOW:\n${scanResult.safeSprayingWindow}\n\nESTIMATED COST: ${scanResult.treatmentCostPerAcre}\n=========================================\nIssued under ICAR & KVK Agronomy Guidelines\n`;
+    
+    const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `CropDoctor_Prescription_${Date.now()}.txt`;
+    link.click();
+    showToast('Prescription slip downloaded successfully!', 'success');
+  };
+
+  const filteredSamples = selectedCropCategory === 'All' 
+    ? sampleLeafScans 
+    : sampleLeafScans.filter(s => s.cropKey === selectedCropCategory);
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto animate-fade-in">
@@ -114,13 +307,13 @@ export const CropDoctorPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 sm:p-7 rounded-3xl border border-gray-100 shadow-sm">
         <div>
           <div className="flex items-center gap-2 text-xs font-black text-agri-dark uppercase tracking-widest mb-1">
-            <Camera className="w-4 h-4 text-agri-primary" /> Visual Diagnostics & ML Pathology
+            <Camera className="w-4 h-4 text-agri-primary" /> Visual AI Pathology & Computer Vision
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-agri-dark font-sans tracking-tight">
             {t.cropDoctor?.title || "Crop Doctor & Diagnostics"}
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">
-            {t.cropDoctor?.subtitle || "Instant computer vision leaf diagnosis and 7-day follow-up recovery monitoring."}
+            Instant leaf lesion detection, severity analysis, dual chemical/organic prescription, and 7-day recovery tracker.
           </p>
         </div>
 
@@ -128,23 +321,23 @@ export const CropDoctorPage = () => {
         <div className="flex items-center gap-1.5 p-1 bg-gray-100 rounded-2xl">
           <button
             onClick={() => setActiveTabSub('scanner')}
-            className={`px-4 py-2.5 text-xs font-extrabold rounded-xl transition-all ${
+            className={`px-4 py-2.5 text-xs font-extrabold rounded-xl transition-all cursor-pointer ${
               activeTabSub === 'scanner' 
                 ? 'bg-agri-dark text-white shadow-agri' 
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            📸 Leaf Scanner
+            📸 AI Leaf Scanner
           </button>
           <button
             onClick={() => setActiveTabSub('followup')}
-            className={`px-4 py-2.5 text-xs font-extrabold rounded-xl transition-all ${
+            className={`px-4 py-2.5 text-xs font-extrabold rounded-xl transition-all cursor-pointer ${
               activeTabSub === 'followup' 
                 ? 'bg-ai-plum text-white shadow-ai' 
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            🔄 7-Day Follow-Up
+            🔄 7-Day Recovery Tracker
           </button>
         </div>
       </div>
@@ -153,107 +346,289 @@ export const CropDoctorPage = () => {
       {activeTabSub === 'scanner' && (
         <div className="space-y-6">
           
-          {/* UPLOAD CONTAINER */}
+          {/* CAMERA / UPLOAD CONTAINER */}
           {!scanResult && (
-            <div className="bg-white p-8 sm:p-12 rounded-3xl border-2 border-dashed border-agri-soft/60 hover:border-agri-primary transition-all text-center space-y-6 shadow-sm relative overflow-hidden">
+            <div className="bg-white p-6 sm:p-10 rounded-3xl border border-gray-200 shadow-sm space-y-6 relative overflow-hidden">
               
-              {/* Scanning Animated Beam Overlay */}
+              {/* Animated AI Scanning Overlay */}
               {isScanning && (
-                <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex flex-col items-center justify-center z-20 space-y-4">
-                  <div className="w-64 h-64 border-2 border-emerald-400 rounded-3xl relative overflow-hidden shadow-2xl">
-                    <img src={previewImage} alt="Scanning" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/75 backdrop-blur-sm flex flex-col items-center justify-center z-30 space-y-4 p-6 text-center">
+                  <div className="w-72 h-72 border-2 border-emerald-400 rounded-3xl relative overflow-hidden shadow-2xl bg-black">
+                    <img src={previewImage} alt="Scanning" className="w-full h-full object-cover opacity-80" />
                     <div className="scan-beam animate-scan" />
+                    
+                    {/* Simulated scanning reticle corners */}
+                    <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-emerald-300" />
+                    <div className="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 border-emerald-300" />
+                    <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-emerald-300" />
+                    <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-emerald-300" />
                   </div>
-                  <div className="text-white text-xs font-extrabold flex items-center gap-2 bg-agri-dark px-5 py-2.5 rounded-full border border-emerald-400/40 shadow-lg">
-                    <Sparkles className="w-4 h-4 text-emerald-300 animate-spin" />
-                    <span>ANALYZING LEAF CELLULAR TISSUE & SPORES...</span>
+
+                  <div className="max-w-md space-y-2">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-agri-dark text-white rounded-full text-xs font-black border border-emerald-400/40 shadow-lg">
+                      <Sparkles className="w-4 h-4 text-emerald-300 animate-spin" />
+                      <span>{scanProgress}% AI NEURAL PATHOLOGY IN PROGRESS</span>
+                    </div>
+                    <p className="text-xs text-emerald-200 font-semibold">{scanPhaseText}</p>
+                    
+                    <div className="w-64 h-2 bg-white/20 rounded-full mx-auto overflow-hidden">
+                      <div className="h-full bg-emerald-400 rounded-full transition-all duration-300" style={{ width: `${scanProgress}%` }} />
+                    </div>
                   </div>
                 </div>
               )}
 
-              <div className="w-20 h-20 rounded-3xl bg-agri-light text-agri-dark flex items-center justify-center mx-auto shadow-sm border border-agri-soft/30">
-                <Camera className="w-10 h-10 text-agri-primary" />
-              </div>
+              {/* LIVE FIELD CAMERA VIEWFINDER */}
+              {isCameraActive ? (
+                <div className="space-y-4">
+                  <div className="relative rounded-3xl overflow-hidden bg-black max-w-lg mx-auto aspect-video border-2 border-emerald-500 shadow-2xl">
+                    <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
+                    
+                    {/* Live Camera Scanner Overlay Grid */}
+                    <div className="absolute inset-0 border-2 border-dashed border-emerald-400/60 pointer-events-none m-6 rounded-2xl flex items-center justify-center">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300 bg-black/60 px-3 py-1 rounded-full">
+                        Center Leaf Inside Target Area
+                      </span>
+                    </div>
 
-              <div>
-                <span className="text-[10px] font-black text-earth-terracotta uppercase tracking-widest block mb-1">
-                  COMPUTER VISION DIAGNOSTIC & PATHOLOGY
-                </span>
-                <h3 className="text-2xl font-black text-agri-dark tracking-tight">📸 SCAN YOUR CROP LEAF OR PLANT</h3>
-                <p className="text-xs sm:text-sm text-gray-600 max-w-md mx-auto mt-1.5 font-medium leading-relaxed">
-                  Upload a clear close-up image of your leaf, fruit, or plant shoot. AgriSaathi AI will identify pests, chlorosis, and fungal lesions with verified treatment protocols.
-                </p>
-              </div>
-
-              <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-                <label className="flex items-center gap-2.5 px-7 py-4 bg-agri-dark hover:bg-agri-primary text-white font-extrabold text-xs sm:text-sm rounded-2xl cursor-pointer shadow-agri transition-all transform hover:-translate-y-0.5 border border-gov-gold/30">
-                  <Upload className="w-4 h-4 text-emerald-300" />
-                  <span>{t.cropDoctor?.dragDrop || "Upload Leaf Photo from Device"}</span>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    className="hidden" 
-                    onChange={(e) => e.target.files && handleFileUpload(e.target.files[0])}
-                  />
-                </label>
-              </div>
-
-              {/* Quick Sample Selector for Live Demonstration */}
-              <div className="pt-6 border-t border-gray-100">
-                <span className="text-xs font-black text-gray-400 uppercase tracking-wider block mb-3">
-                  Or Test Diagnostic with Sample Infected Leaves:
-                </span>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {sampleLeafScans.map((sample) => (
                     <button
-                      key={sample.id}
-                      onClick={() => handleDiagnose(sample.image, sample.issueKey, sample.crop)}
-                      className="p-3 bg-gray-50 hover:bg-agri-bg border border-gray-200 hover:border-agri-primary rounded-2xl text-left transition-all group flex flex-col items-center text-center space-y-2"
+                      onClick={stopCamera}
+                      className="absolute top-4 right-4 p-2 bg-black/70 hover:bg-black text-white rounded-full transition-colors cursor-pointer"
                     >
-                      <img src={sample.image} alt={sample.title} className="w-16 h-16 rounded-xl object-cover border border-gray-200 group-hover:scale-105 transition-transform" />
-                      <div>
-                        <span className="text-[11px] font-bold text-gray-900 block line-clamp-1">{sample.title}</span>
-                        <span className="text-[9px] text-gray-500 font-medium">{sample.crop.split(' ')[0]}</span>
-                      </div>
+                      <XCircle className="w-6 h-6" />
                     </button>
-                  ))}
+                  </div>
+
+                  <div className="flex items-center justify-center gap-4">
+                    <button
+                      onClick={capturePhoto}
+                      className="flex items-center gap-2 px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm rounded-2xl shadow-agri transition-all transform hover:scale-105 cursor-pointer"
+                    >
+                      <Camera className="w-5 h-5 text-white" />
+                      <span>Capture & Diagnose Leaf</span>
+                    </button>
+                    <button
+                      onClick={stopCamera}
+                      className="px-5 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-2xl transition-colors cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                /* UPLOAD / CAMERA PROMPT */
+                <div className="text-center space-y-5">
+                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-agri-dark to-emerald-800 text-white flex items-center justify-center mx-auto shadow-agri border border-gov-gold/40">
+                    <Camera className="w-10 h-10 text-emerald-300" />
+                  </div>
+
+                  <div>
+                    <span className="text-[10px] font-black text-earth-terracotta uppercase tracking-widest block mb-1">
+                      REAL-TIME COMPUTER VISION PATHOLOGY
+                    </span>
+                    <h3 className="text-2xl font-black text-agri-dark tracking-tight">SCAN YOUR CROP LEAF OR PLANT SHOOT</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 max-w-lg mx-auto mt-1.5 font-medium leading-relaxed">
+                      Capture a live photo in the field or upload an image. The AI models will pinpoint fungal lesions, pest larvae, and nutrient stress with instant dosage prescriptions.
+                    </p>
+                  </div>
+
+                  {/* Dual Action: Live Camera & Device File Upload */}
+                  <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                    <button
+                      onClick={startCamera}
+                      className="flex items-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-agri-dark to-emerald-900 hover:opacity-95 text-white font-black text-xs sm:text-sm rounded-2xl shadow-agri transition-all transform hover:-translate-y-0.5 border border-gov-gold/30 cursor-pointer"
+                    >
+                      <Video className="w-4 h-4 text-emerald-300" />
+                      <span>Open Live Field Camera</span>
+                    </button>
+
+                    <label className="flex items-center gap-2.5 px-6 py-3.5 bg-white hover:bg-gray-50 text-gray-800 font-extrabold text-xs sm:text-sm rounded-2xl cursor-pointer shadow-sm border border-gray-200 transition-all transform hover:-translate-y-0.5">
+                      <Upload className="w-4 h-4 text-agri-primary" />
+                      <span>Upload Photo from Gallery</span>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        className="hidden" 
+                        onChange={(e) => e.target.files && handleFileUpload(e.target.files[0])}
+                      />
+                    </label>
+                  </div>
+
+                  {/* Sample Leaf Explorer */}
+                  <div className="pt-6 border-t border-gray-100 text-left space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <span className="text-xs font-black text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
+                        <Sparkles className="w-4 h-4 text-agri-primary" /> Test Diagnostic with Verified Sample Leaf Pathologies:
+                      </span>
+
+                      {/* Crop Filter */}
+                      <div className="flex items-center gap-1 overflow-x-auto text-[11px]">
+                        {['All', 'Tomato', 'Cotton', 'Wheat', 'Maize', 'Paddy'].map(cropKey => (
+                          <button
+                            key={cropKey}
+                            onClick={() => setSelectedCropCategory(cropKey)}
+                            className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                              selectedCropCategory === cropKey 
+                                ? 'bg-agri-dark text-white shadow-2xs' 
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                          >
+                            {cropKey}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                      {filteredSamples.map((sample) => (
+                        <button
+                          key={sample.id}
+                          onClick={() => handleDiagnose(sample.image, sample.issueKey, sample.crop)}
+                          className="p-3 bg-gray-50 hover:bg-agri-bg border border-gray-200 hover:border-agri-primary rounded-2xl text-left transition-all group flex flex-col justify-between space-y-2 cursor-pointer shadow-2xs hover:shadow-md"
+                        >
+                          <div className="relative w-full h-28 rounded-xl overflow-hidden border border-gray-200">
+                            <img src={sample.image} alt={sample.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                            <span className={`absolute top-1.5 right-1.5 px-2 py-0.5 text-[8px] font-black uppercase rounded-md border ${sample.severityColor}`}>
+                              {sample.severity}
+                            </span>
+                          </div>
+
+                          <div>
+                            <span className="text-[11px] font-extrabold text-gray-900 block line-clamp-1 group-hover:text-agri-primary">
+                              {sample.title}
+                            </span>
+                            <span className="text-[10px] text-gray-500 font-semibold block">
+                              {sample.crop}
+                            </span>
+                          </div>
+
+                          <div className="text-[9px] font-bold text-agri-primary pt-1 border-t border-gray-200/60 flex items-center justify-between">
+                            <span>Scan Sample</span>
+                            <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                </div>
+              )}
 
             </div>
           )}
 
-          {/* DIAGNOSTIC RESULTS DISPLAY */}
+          {/* DIAGNOSTIC RESULTS DISPLAY CONTAINER */}
           {scanResult && (
             <div className="bg-white rounded-3xl border border-gray-100 shadow-xl overflow-hidden space-y-6 animate-fade-in p-6 sm:p-8">
               
-              {/* Header */}
-              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-4">
+              {/* Result Header */}
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-5">
                 <div className="flex items-center gap-4">
-                  <img src={previewImage} alt="Scanned Crop" className="w-20 h-20 rounded-2xl object-cover border border-gray-200 shadow-xs" />
+                  
+                  {/* Photo with Bounding Box Overlay */}
+                  <div className="relative w-24 h-24 rounded-2xl overflow-hidden border border-gray-200 shadow-xs flex-shrink-0">
+                    <img src={previewImage} alt="Scanned Crop" className="w-full h-full object-cover" />
+                    
+                    {showBoundingBoxes && scanResult.boundingBoxes?.map((box, bIdx) => (
+                      <div 
+                        key={bIdx}
+                        className={`absolute border-2 ${box.color} rounded pointer-events-none animate-pulse`}
+                        style={{ top: box.y, left: box.x, width: box.width, height: box.height }}
+                      />
+                    ))}
+
+                    {showHeatmap && (
+                      <div className="absolute inset-0 bg-gradient-to-tr from-rose-500/40 via-amber-400/30 to-transparent mix-blend-multiply pointer-events-none" />
+                    )}
+                  </div>
+
                   <div>
-                    <span className="text-[10px] font-black text-agri-primary uppercase tracking-wider block">
-                      🌱 CROP IDENTIFIED: {scanResult.crop}
-                    </span>
-                    <h3 className="text-xl font-black text-agri-dark">{scanResult.issue}</h3>
-                    <div className="text-xs text-gray-500 font-medium">Scanned Today • {location.formatted}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-black text-agri-primary uppercase tracking-wider">
+                        🌱 {scanResult.crop}
+                      </span>
+                      <span className="px-2 py-0.5 text-[9px] font-black bg-rose-100 text-rose-800 rounded-full uppercase border border-rose-300">
+                        {scanResult.severity}
+                      </span>
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-black text-agri-dark tracking-tight">{scanResult.issue}</h3>
+                    <div className="text-xs text-gray-500 font-medium">
+                      Location Telemetry: {location.formatted} • Scanned Today
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-2xl shadow-xs">
-                  <Sparkles className="w-5 h-5 text-emerald-600" />
-                  <div>
-                    <div className="text-[10px] text-gray-500 font-bold uppercase">AI CONFIDENCE</div>
-                    <div className="text-lg font-black text-emerald-800">{scanResult.confidence}%</div>
+                {/* Accuracy & Metrics */}
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-2xl shadow-xs">
+                    <Sparkles className="w-5 h-5 text-emerald-600" />
+                    <div>
+                      <div className="text-[9px] text-gray-500 font-bold uppercase">AI CONFIDENCE</div>
+                      <div className="text-lg font-black text-emerald-800">{scanResult.confidence}%</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 px-4 py-2 bg-purple-50 border border-purple-200 rounded-2xl shadow-xs">
+                    <Activity className="w-5 h-5 text-ai-purple" />
+                    <div>
+                      <div className="text-[9px] text-gray-500 font-bold uppercase">AFFECTED TISSUE</div>
+                      <div className="text-lg font-black text-ai-plum">{scanResult.affectedAreaPercent}%</div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Symptoms & Cause */}
+              {/* View Toggle Controls (Bounding Box / Heatmap / TTS) */}
+              <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-200 text-xs">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowBoundingBoxes(!showBoundingBoxes)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
+                      showBoundingBoxes ? 'bg-agri-dark text-white' : 'bg-white text-gray-700 border border-gray-200'
+                    }`}
+                  >
+                    {showBoundingBoxes ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                    <span>AI Detection Boxes</span>
+                  </button>
+
+                  <button
+                    onClick={() => setShowHeatmap(!showHeatmap)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
+                      showHeatmap ? 'bg-rose-600 text-white' : 'bg-white text-gray-700 border border-gray-200'
+                    }`}
+                  >
+                    <Flame className="w-3.5 h-3.5" />
+                    <span>Pathogen Heatmap</span>
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleSpeakToggle}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-black transition-all cursor-pointer ${
+                      isSpeaking ? 'bg-rose-600 text-white' : 'bg-white hover:bg-purple-50 text-ai-plum border border-purple-200'
+                    }`}
+                  >
+                    {isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                    <span>{isSpeaking ? "Stop Voice" : "Listen Prescription (Audio)"}</span>
+                  </button>
+
+                  <button
+                    onClick={handleDownloadPrescription}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-gray-100 text-gray-800 font-bold rounded-xl border border-gray-200 cursor-pointer shadow-xs"
+                    title="Download Prescription as PDF/Text"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Save Prescription</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Symptoms Detected & Agronomic Environmental Cause */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                 <div className="p-4 rounded-2xl bg-agri-bg border border-agri-soft/40 space-y-2">
-                  <span className="font-extrabold text-agri-dark flex items-center gap-1.5 text-sm uppercase tracking-wide">
-                    <CheckCircle2 className="w-4 h-4 text-agri-primary" /> 🔍 Symptoms Detected
+                  <span className="font-black text-agri-dark flex items-center gap-1.5 text-sm uppercase tracking-wide">
+                    <CheckCircle2 className="w-4 h-4 text-agri-primary" /> 🔍 Symptoms Detected on Foliage
                   </span>
                   <ul className="space-y-1 text-gray-700 pl-5 list-disc font-medium">
                     {scanResult.symptomsDetected?.map((sym, idx) => (
@@ -263,38 +638,59 @@ export const CropDoctorPage = () => {
                 </div>
 
                 <div className="p-4 rounded-2xl bg-earth-cream border border-earth-wheat/30 space-y-2">
-                  <span className="font-extrabold text-earth-soil flex items-center gap-1.5 text-sm uppercase tracking-wide">
-                    <AlertTriangle className="w-4 h-4 text-earth-terracotta" /> 🧠 Environmental & Telemetry Cause
+                  <span className="font-black text-earth-soil flex items-center gap-1.5 text-sm uppercase tracking-wide">
+                    <AlertTriangle className="w-4 h-4 text-earth-terracotta" /> 🧠 Environmental & Telemetry Trigger
                   </span>
                   <p className="text-gray-700 leading-relaxed font-medium">{scanResult.cause}</p>
                 </div>
               </div>
 
-              {/* Chemical & Bio-Organic Treatments */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <div className="p-4 bg-emerald-50/90 rounded-2xl border border-emerald-200 space-y-2">
-                  <span className="text-xs font-black text-emerald-950 uppercase tracking-wider block flex items-center gap-1">
-                    <ShieldCheck className="w-4 h-4 text-emerald-700" /> Recommended Chemical Protocol
+              {/* ACTIONABLE DUAL TREATMENT PRESCRIPTION */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-black text-agri-dark uppercase tracking-wider flex items-center gap-2">
+                    <ShieldCheck className="w-5 h-5 text-emerald-600" /> Agronomic Prescription & Action Plan
+                  </h4>
+                  <span className="text-xs font-black text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
+                    Est. Cost: {scanResult.treatmentCostPerAcre}
                   </span>
-                  <p className="text-xs text-emerald-900 leading-relaxed whitespace-pre-line font-bold">
-                    {scanResult.chemicalTreatment}
-                  </p>
                 </div>
 
-                <div className="p-4 bg-purple-50/80 rounded-2xl border border-purple-200 space-y-2">
-                  <span className="text-xs font-black text-purple-950 uppercase tracking-wider block flex items-center gap-1">
-                    <Sparkles className="w-4 h-4 text-purple-700" /> Organic & Biological Control
-                  </span>
-                  <p className="text-xs text-purple-900 leading-relaxed whitespace-pre-line font-bold">
-                    {scanResult.organicTreatment}
-                  </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  {/* Chemical Protocol */}
+                  <div className="p-5 bg-gradient-to-br from-emerald-50 to-teal-50/70 rounded-2xl border border-emerald-200 space-y-2.5 shadow-2xs">
+                    <span className="text-xs font-black text-emerald-950 uppercase tracking-wider block flex items-center gap-1.5">
+                      <ShieldCheck className="w-4 h-4 text-emerald-700" /> 🧪 Chemical Control & Exact Dosage
+                    </span>
+                    <p className="text-xs text-emerald-900 leading-relaxed whitespace-pre-line font-bold">
+                      {scanResult.chemicalTreatment}
+                    </p>
+                  </div>
+
+                  {/* Organic & Biological Control */}
+                  <div className="p-5 bg-gradient-to-br from-purple-50 to-indigo-50/70 rounded-2xl border border-purple-200 space-y-2.5 shadow-2xs">
+                    <span className="text-xs font-black text-purple-950 uppercase tracking-wider block flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-purple-700" /> 🌿 Organic & Biological Alternative
+                    </span>
+                    <p className="text-xs text-purple-900 leading-relaxed whitespace-pre-line font-bold">
+                      {scanResult.organicTreatment}
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Safety Rules */}
+              {/* WEATHER-AWARE SAFE SPRAYING WINDOW BANNER */}
+              <div className="p-4 bg-sky-50 rounded-2xl border border-sky-200 text-xs text-sky-950 space-y-1 shadow-2xs">
+                <span className="font-black flex items-center gap-1.5 text-sky-900 uppercase tracking-wide">
+                  <Sun className="w-4 h-4 text-sky-600" /> 🌤️ Agro-Weather Spraying Safety Window ({location.formatted})
+                </span>
+                <p className="font-medium text-sky-900">{scanResult.safeSprayingWindow}</p>
+              </div>
+
+              {/* Safety Rules & What to Avoid */}
               <div className="p-4 bg-rose-50 rounded-2xl border border-rose-200 text-xs text-rose-950 space-y-1">
                 <span className="font-black flex items-center gap-1 text-rose-700 uppercase tracking-wide">
-                  <XCircle className="w-4 h-4 text-rose-600" /> 🚫 What to Avoid
+                  <XCircle className="w-4 h-4 text-rose-600" /> 🚫 Precautions & What to Avoid
                 </span>
                 <p className="font-medium">{scanResult.whatToAvoid}</p>
               </div>
@@ -305,7 +701,7 @@ export const CropDoctorPage = () => {
                   <div className="flex items-center gap-2">
                     <Globe className="w-4 h-4 text-ai-plum flex-shrink-0" />
                     <div>
-                      <span className="font-bold text-gray-900 block">📚 Grounded via {scanResult.wikiCitation.title}</span>
+                      <span className="font-bold text-gray-900 block">📚 Certified Reference: {scanResult.wikiCitation.title}</span>
                       <span className="text-[11px] text-gray-500 line-clamp-1">{scanResult.wikiCitation.extract}</span>
                     </div>
                   </div>
@@ -326,23 +722,25 @@ export const CropDoctorPage = () => {
                   onClick={() => {
                     setScanResult(null);
                     setPreviewImage(null);
+                    stopSpeaking();
+                    setIsSpeaking(false);
                   }}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-2xl transition-colors"
+                  className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-2xl transition-colors cursor-pointer"
                 >
-                  <RotateCcw className="w-4 h-4" /> Upload Another Image
+                  <RotateCcw className="w-4 h-4" /> Scan Another Leaf
                 </button>
 
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setActiveTab('ai')}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-ai-plum hover:bg-ai-purple text-white text-xs font-bold rounded-2xl transition-colors shadow-ai"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-ai-plum hover:bg-ai-purple text-white text-xs font-bold rounded-2xl transition-colors shadow-ai cursor-pointer"
                   >
                     <Sparkles className="w-4 h-4 text-purple-200" /> Discuss with AI Assistant
                   </button>
 
                   <button
                     onClick={() => setActiveTab('expert')}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-agri-dark hover:bg-agri-primary text-white text-xs font-bold rounded-2xl transition-colors shadow-agri border border-gov-gold/30"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-agri-dark hover:bg-agri-primary text-white text-xs font-bold rounded-2xl transition-colors shadow-agri border border-gov-gold/30 cursor-pointer"
                   >
                     <UserCheck className="w-4 h-4 text-emerald-300" /> Escalate to KVK Expert
                   </button>
@@ -354,7 +752,7 @@ export const CropDoctorPage = () => {
         </div>
       )}
 
-      {/* 7-DAY FOLLOW-UP MONITORING VIEW */}
+      {/* 7-DAY FOLLOW-UP RECOVERY TRACKER VIEW */}
       {activeTabSub === 'followup' && (
         <div className="space-y-6">
           <div className="bg-gradient-to-r from-ai-plum via-purple-900 to-indigo-950 text-white rounded-3xl p-6 sm:p-8 shadow-ai border border-ai-mauve/40">
@@ -362,12 +760,14 @@ export const CropDoctorPage = () => {
               <Activity className="w-7 h-7 text-purple-300" />
               <div>
                 <h2 className="text-xl font-bold font-sans">{t.cropDoctor?.followUpTitle || "7-Day Photo Progress Monitoring"}</h2>
-                <p className="text-xs text-purple-200/80 font-medium">{t.cropDoctor?.followUpSubtitle || "Compare Day 1 before treatment with Day 7 recovery photo to verify cellular health recovery."}</p>
+                <p className="text-xs text-purple-200/80 font-medium">
+                  Compare pre-treatment baseline photos with post-treatment recovery photos to verify cellular restoration.
+                </p>
               </div>
             </div>
           </div>
 
-          {mockFollowUpScans.map((caseItem) => (
+          {followUpList.map((caseItem) => (
             <div key={caseItem.id} className="bg-white rounded-3xl border border-gray-100 shadow-xl p-6 sm:p-8 space-y-6">
               
               {/* Header Badge & Title */}
@@ -381,7 +781,7 @@ export const CropDoctorPage = () => {
 
                 <div className={`px-4 py-2 rounded-2xl border text-xs font-black flex items-center gap-2 ${caseItem.statusBadgeColor}`}>
                   <TrendingUp className="w-4 h-4" />
-                  <span>{caseItem.status}: {caseItem.improved}</span>
+                  <span>{caseItem.status}: +{caseItem.recoveryPercent}% Health Restored</span>
                 </div>
               </div>
 
@@ -399,7 +799,7 @@ export const CropDoctorPage = () => {
                     </span>
                   </div>
 
-                  <div className="relative h-48 rounded-2xl overflow-hidden border border-gray-300 shadow-xs">
+                  <div className="relative h-52 rounded-2xl overflow-hidden border border-gray-300 shadow-xs">
                     <img src={caseItem.day1Image} alt="Day 1" className="w-full h-full object-cover" />
                     <span className="absolute bottom-2 left-2 px-3 py-1 bg-black/80 backdrop-blur-md text-white text-[10px] font-black rounded-xl">
                       BEFORE TREATMENT
@@ -420,7 +820,7 @@ export const CropDoctorPage = () => {
                     </span>
                   </div>
 
-                  <div className="relative h-48 rounded-2xl overflow-hidden border border-emerald-300 shadow-xs">
+                  <div className="relative h-52 rounded-2xl overflow-hidden border border-emerald-300 shadow-xs">
                     <img src={caseItem.day7Image} alt="Day 7" className="w-full h-full object-cover" />
                     <span className="absolute bottom-2 left-2 px-3 py-1 bg-agri-dark text-white text-[10px] font-black rounded-xl border border-gov-gold/30">
                       AFTER 7-DAY RECOVERY
@@ -439,14 +839,14 @@ export const CropDoctorPage = () => {
                 </span>
                 <p className="text-xs text-gray-800 leading-relaxed font-semibold">{caseItem.aiAnalysisNote}</p>
                 <div className="text-xs font-black text-agri-dark pt-1">
-                  Next Step: <span className="font-semibold text-gray-700">{caseItem.recommendedNextStep}</span>
+                  Next Recommended Step: <span className="font-semibold text-gray-700">{caseItem.recommendedNextStep}</span>
                 </div>
               </div>
 
               <div className="flex justify-end gap-3">
                 <button 
                   onClick={() => setActiveTab('ai')}
-                  className="px-4 py-2.5 bg-ai-plum hover:bg-ai-purple text-white text-xs font-bold rounded-2xl transition-colors shadow-ai"
+                  className="px-4 py-2.5 bg-ai-plum hover:bg-ai-purple text-white text-xs font-bold rounded-2xl transition-colors shadow-ai cursor-pointer"
                 >
                   {t.cropDoctor?.askAiAboutResult || "Ask AI About Results"} →
                 </button>

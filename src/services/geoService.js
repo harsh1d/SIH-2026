@@ -25,6 +25,84 @@ export function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
 }
 
 /**
+ * Searches across ALL Indian villages, towns, cities, tehsils, and districts in real time
+ * Uses OpenStreetMap Nominatim with country code 'in' and address details
+ */
+export async function searchIndianLocations(query) {
+  if (!query || query.trim().length < 2) return [];
+
+  const cleanQuery = query.trim();
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanQuery)}&countrycodes=in&addressdetails=1&limit=12`;
+
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        return data.map(item => {
+          const addr = item.address || {};
+          const lat = parseFloat(item.lat);
+          const lng = parseFloat(item.lon);
+
+          const village =
+            addr.village ||
+            addr.suburb ||
+            addr.town ||
+            addr.hamlet ||
+            addr.neighbourhood ||
+            addr.city_district ||
+            addr.city ||
+            addr.county ||
+            item.name ||
+            'Local Area';
+
+          const district =
+            addr.state_district ||
+            addr.district ||
+            addr.county ||
+            addr.city ||
+            addr.state ||
+            'District';
+
+          const state = addr.state || 'India';
+          const pincode = addr.postcode || '';
+
+          const formatted = `${village}, ${district.replace(/ district/gi, '').trim()}, ${state}`;
+
+          return {
+            formatted,
+            village,
+            district: district.replace(/ district/gi, '').trim(),
+            state,
+            pincode,
+            lat,
+            lng,
+            displayName: item.display_name,
+            type: item.type || 'place',
+            isLiveResult: true
+          };
+        });
+      }
+    }
+  } catch (err) {
+    console.warn('Live location search error:', err?.message || err);
+  }
+
+  return [];
+}
+
+/**
  * Performs reverse geocoding for given lat/lng
  * Returns: { village, district, state, pincode, formatted, lat, lng }
  */
