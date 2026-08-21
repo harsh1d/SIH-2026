@@ -5,6 +5,7 @@ import { Sidebar } from './components/layout/Sidebar';
 import { Footer } from './components/layout/Footer';
 import { Toast } from './components/common/Toast';
 import { LocationModal } from './components/common/LocationModal';
+import { CommandPalette } from './components/common/CommandPalette';
 
 import { LandingPage } from './pages/LandingPage';
 import { Dashboard } from './pages/Dashboard';
@@ -21,7 +22,7 @@ import { AdminDashboard } from './pages/AdminDashboard';
 import { ProfilePage } from './pages/ProfilePage';
 
 const MainContent = () => {
-  const { activeTab } = useApp();
+  const { activeTab, isCommandPaletteOpen, setIsCommandPaletteOpen } = useApp();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const renderPage = () => {
@@ -78,7 +79,7 @@ const MainContent = () => {
         />
 
         {/* Page Content Viewport */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-full overflow-hidden">
+        <main id="main-content" className="flex-1 p-4 sm:p-6 lg:p-8 max-w-full overflow-hidden">
           {renderPage()}
         </main>
       </div>
@@ -88,6 +89,10 @@ const MainContent = () => {
 
       {/* Shared Modals & Micro-interactions */}
       <LocationModal />
+      <CommandPalette 
+        isOpen={isCommandPaletteOpen} 
+        onClose={() => setIsCommandPaletteOpen(false)} 
+      />
       <Toast />
     </div>
   );

@@ -24,6 +24,7 @@ export const AppProvider = ({ children }) => {
   const [expertCases, setExpertCases] = useState(mockExpertTickets);
   const [toastMessage, setToastMessage] = useState(null);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('agrisaathi_lang', language);
@@ -32,6 +33,18 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('agrisaathi_profile', JSON.stringify(farmerProfile));
   }, [farmerProfile]);
+
+  // Global Keyboard Shortcut for Command Palette (Ctrl+K or Cmd+K)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const t = translations[language] || translations.en;
 
@@ -51,12 +64,22 @@ export const AppProvider = ({ children }) => {
     showToast(`Location updated to ${newLoc.formatted}`, 'info');
   };
 
+  const updateFarmerProfile = (updates) => {
+    setFarmerProfile(prev => {
+      const updated = { ...prev, ...updates };
+      if (updates.location) {
+        setLocation(updates.location);
+      }
+      return updated;
+    });
+    showToast('Farmer Profile updated across all AI telemetry modules!', 'success');
+  };
+
   const useBrowserGeolocation = () => {
     if ('geolocation' in navigator) {
       showToast('Fetching browser GPS location...', 'info');
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          // Nearest simulated district for demo accuracy
           const detectedLoc = {
             village: "Halol (GPS Verified)",
             district: "Panchmahal",
@@ -125,6 +148,7 @@ export const AppProvider = ({ children }) => {
         t,
         farmerProfile,
         setFarmerProfile,
+        updateFarmerProfile,
         location,
         updateLocation,
         useBrowserGeolocation,
@@ -142,6 +166,8 @@ export const AppProvider = ({ children }) => {
         showToast,
         isLocationModalOpen,
         setIsLocationModalOpen,
+        isCommandPaletteOpen,
+        setIsCommandPaletteOpen,
         resetDemoData
       }}
     >

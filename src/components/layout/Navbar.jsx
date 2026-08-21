@@ -12,7 +12,9 @@ import {
   X,
   Sparkles,
   ShieldCheck,
-  ChevronDown
+  ChevronDown,
+  Search,
+  Command
 } from 'lucide-react';
 
 export const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
@@ -26,7 +28,8 @@ export const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
     setActiveTab, 
     activeRole, 
     setActiveRole,
-    resetDemoData 
+    resetDemoData,
+    setIsCommandPaletteOpen
   } = useApp();
 
   const [isLangOpen, setIsLangOpen] = useState(false);
@@ -81,25 +84,46 @@ export const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
           </div>
         </div>
 
-        {/* Center: Location Badge Bar */}
-        <div className="flex-1 max-w-md hidden md:block">
+        {/* Center: Quick Command Palette Trigger & Location Bar */}
+        <div className="flex-1 max-w-lg hidden md:flex items-center gap-2.5">
+          {/* Command Palette Button */}
+          <button
+            onClick={() => setIsCommandPaletteOpen(true)}
+            className="flex-1 flex items-center justify-between px-3.5 py-2 bg-gray-100/80 hover:bg-gray-200/70 border border-gray-200 rounded-2xl text-gray-500 text-xs font-semibold transition-all group"
+            title="Press Ctrl+K or Cmd+K to search"
+          >
+            <div className="flex items-center gap-2">
+              <Search className="w-4 h-4 text-gray-400 group-hover:text-agri-dark transition-colors" />
+              <span>Search crops, mandis, schemes, or ask AI...</span>
+            </div>
+            <kbd className="hidden lg:inline-flex items-center gap-0.5 px-2 py-0.5 text-[10px] font-extrabold bg-white border border-gray-200 rounded-md text-gray-400 shadow-2xs">
+              ⌘K
+            </kbd>
+          </button>
+
+          {/* Location Badge */}
           <button
             onClick={() => setIsLocationModalOpen(true)}
-            className="w-full flex items-center justify-between px-4 py-2 bg-agri-bg/80 hover:bg-agri-light border border-agri-soft/40 rounded-2xl transition-all group shadow-xs"
+            className="flex items-center gap-1.5 px-3 py-2 bg-agri-bg hover:bg-agri-light border border-agri-soft/40 rounded-2xl transition-all text-xs font-bold text-agri-dark truncate max-w-[170px]"
+            title="Click to change farm district"
           >
-            <div className="flex items-center gap-2 text-agri-dark font-medium text-xs sm:text-sm truncate">
-              <MapPin className="w-4 h-4 text-earth-terracotta flex-shrink-0 group-hover:scale-110 transition-transform" />
-              <span className="truncate">{location.formatted || "Halol, Panchmahal, Gujarat"}</span>
-            </div>
-            <span className="text-xs font-bold text-agri-primary group-hover:underline flex-shrink-0 ml-2">
-              {t.location.change}
-            </span>
+            <MapPin className="w-3.5 h-3.5 text-earth-terracotta flex-shrink-0" />
+            <span className="truncate">{location.formatted?.split(',')[0] || "Halol"}</span>
           </button>
         </div>
 
         {/* Right Side Controls */}
         <div className="flex items-center gap-2 sm:gap-2.5">
           
+          {/* Mobile Search Trigger */}
+          <button
+            onClick={() => setIsCommandPaletteOpen(true)}
+            className="md:hidden p-2 text-gray-600 hover:text-agri-dark bg-gray-100 hover:bg-gray-200 rounded-2xl transition-colors"
+            title="Search & Ask AI (Ctrl+K)"
+          >
+            <Search className="w-5 h-5" />
+          </button>
+
           {/* Mobile Location Trigger */}
           <button
             onClick={() => setIsLocationModalOpen(true)}
@@ -219,7 +243,7 @@ export const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
             {activeRole === 'expert' ? (
               <>
                 <ShieldCheck className="w-4 h-4 text-purple-200" />
-                <span>KVK Agronomist Mode</span>
+                <span>KVK Expert Mode</span>
               </>
             ) : (
               <>
@@ -232,7 +256,7 @@ export const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
           {/* Reset Demo Data Button */}
           <button
             onClick={resetDemoData}
-            className="p-2 text-gray-500 hover:text-earth-walnut hover:bg-earth-sand/40 rounded-2xl transition-colors"
+            className="hidden sm:block p-2 text-gray-500 hover:text-earth-walnut hover:bg-earth-sand/40 rounded-2xl transition-colors"
             title="Reset Hackathon Demo Data"
           >
             <RotateCcw className="w-4 h-4" />

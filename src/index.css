@@ -3,15 +3,34 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
   body {
     background-color: #F4F7F3;
     color: #1F2937;
     font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+    overflow-x: hidden;
     background-image: 
       radial-gradient(circle at 15% 15%, rgba(45, 122, 65, 0.04) 0%, transparent 40%),
       radial-gradient(circle at 85% 85%, rgba(107, 45, 92, 0.03) 0%, transparent 45%),
       radial-gradient(circle at 50% 50%, rgba(218, 156, 75, 0.02) 0%, transparent 60%);
     background-attachment: fixed;
+  }
+
+  html[data-font-size='small'] body {
+    font-size: 0.9375rem;
+  }
+
+  html[data-font-size='large'] body {
+    font-size: 1.125rem;
+  }
+
+  :focus-visible {
+    outline: 3px solid #D4AF37;
+    outline-offset: 3px;
   }
 }
 

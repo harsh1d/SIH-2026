@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { mockFollowUpScans } from '../data/mockData';
+import { fetchWikipediaAgriculturalSummary, AGRONOMY_KNOWLEDGE_BASE } from '../services/aiKnowledgeEngine';
 import { 
   Camera, 
   Upload, 
@@ -13,46 +14,97 @@ import {
   UserCheck, 
   Activity, 
   TrendingUp, 
-  FileText,
-  ShieldAlert,
+  Globe,
+  ExternalLink,
+  ShieldCheck,
   Search,
-  Calendar
+  Layers,
+  Image as ImageIcon
 } from 'lucide-react';
 
 export const CropDoctorPage = () => {
-  const { setActiveTab, showToast, t } = useApp();
+  const { setActiveTab, showToast, t, location, farmerProfile } = useApp();
 
   const [activeTabSub, setActiveTabSub] = useState('scanner'); // 'scanner' | 'followup'
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
 
-  const handleImageUpload = (file) => {
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    setPreviewImage(url);
-    setIsScanning(true);
-    showToast('AI Model inspecting leaf tissue cellular structure...', 'info');
+  // Preset Leaf Samples for Live Demonstration & Testing
+  const sampleLeafScans = [
+    {
+      id: 'sample-cotton',
+      crop: "Cotton (Hybrid BG-II)",
+      issueKey: "pink_bollworm",
+      title: "Cotton Pink Bollworm",
+      image: "https://images.unsplash.com/photo-1594904351111-a072f80b1a71?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      id: 'sample-tomato',
+      crop: "Tomato (Pusa Ruby)",
+      issueKey: "early_blight",
+      title: "Tomato Early Blight",
+      image: "https://images.unsplash.com/photo-1592841200221-a6898f307baa?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      id: 'sample-wheat',
+      crop: "Wheat (GW-496)",
+      issueKey: "yellow_rust_wheat",
+      title: "Wheat Yellow Rust",
+      image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      id: 'sample-maize',
+      crop: "Maize / Corn",
+      issueKey: "fall_armyworm",
+      title: "Maize Fall Armyworm",
+      image: "https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=600&q=80"
+    }
+  ];
 
-    // Simulate ML Image Classification delay
+  const handleDiagnose = async (imageUrl, issueKey = 'pink_bollworm', cropName = 'Cotton') => {
+    setPreviewImage(imageUrl);
+    setIsScanning(true);
+    showToast('AI Model inspecting leaf tissue cellular structure & fungal lesions...', 'info');
+
+    const kbData = AGRONOMY_KNOWLEDGE_BASE[issueKey] || AGRONOMY_KNOWLEDGE_BASE.pink_bollworm;
+    
+    // Fetch live Wikipedia grounding
+    let wikiData = null;
+    try {
+      wikiData = await fetchWikipediaAgriculturalSummary(kbData.wikiQuery || kbData.name);
+    } catch (e) {
+      console.warn("Wiki fetch:", e);
+    }
+
     setTimeout(() => {
       setIsScanning(false);
       setScanResult({
-        crop: "Cotton (Hybrid BG-II)",
-        issue: "Early Stage Pink Bollworm Infestation",
-        confidence: 87,
-        symptomsDetected: [
-          "Small entrance hole near boll base",
-          "Rosette petal flowering pattern on upper buds",
-          "Slight leaf wilting around fruit clusters"
-        ],
-        cause: "High atmospheric humidity (>75%) coupled with night temperature 26°C encouraging moth egg laying.",
-        treatment: "1. Install 5 Pheromone traps per acre immediately.\n2. Spray Profenophos 50% EC @ 2ml/L water if trap catch exceeds 8 moths/night.",
-        whatToAvoid: "Do NOT use broad-spectrum synthetic pyrethroids which destroy beneficial predator insects.",
-        expertRecommended: false
+        crop: cropName || kbData.crop,
+        issue: kbData.name,
+        category: kbData.category,
+        confidence: kbData.confidence,
+        symptomsDetected: kbData.symptoms,
+        cause: kbData.environmentalCause,
+        chemicalTreatment: kbData.chemicalTreatment,
+        organicTreatment: kbData.organicTreatment,
+        whatToAvoid: kbData.whatToAvoid,
+        monitoringSchedule: kbData.monitoringSchedule,
+        wikiCitation: wikiData || {
+          title: kbData.name,
+          extract: `Verified ICAR package of practices for ${kbData.crop}.`,
+          url: `https://en.wikipedia.org/wiki/${encodeURIComponent(kbData.wikiQuery || 'Agriculture_in_India')}`,
+          source: "ICAR & Wikipedia Agronomy Protocol"
+        }
       });
-      showToast('Diagnostic scan complete. 87% confidence.', 'success');
-    }, 2200);
+      showToast(`Diagnostic scan complete. ${kbData.confidence}% confidence.`, 'success');
+    }, 1800);
+  };
+
+  const handleFileUpload = (file) => {
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    handleDiagnose(url, 'pink_bollworm', farmerProfile.primaryCrops?.[0] || 'Cotton');
   };
 
   return (
@@ -62,13 +114,13 @@ export const CropDoctorPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 sm:p-7 rounded-3xl border border-gray-100 shadow-sm">
         <div>
           <div className="flex items-center gap-2 text-xs font-black text-agri-dark uppercase tracking-widest mb-1">
-            <Camera className="w-4 h-4 text-agri-primary" /> Visual Diagnostics & ML Monitoring
+            <Camera className="w-4 h-4 text-agri-primary" /> Visual Diagnostics & ML Pathology
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-agri-dark font-sans tracking-tight">
-            {t.cropDoctor.title || "Crop Doctor & Diagnostics"}
+            {t.cropDoctor?.title || "Crop Doctor & Diagnostics"}
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">
-            {t.cropDoctor.subtitle || "Instant computer vision leaf diagnosis and 7-day follow-up recovery monitoring."}
+            {t.cropDoctor?.subtitle || "Instant computer vision leaf diagnosis and 7-day follow-up recovery monitoring."}
           </p>
         </div>
 
@@ -103,7 +155,7 @@ export const CropDoctorPage = () => {
           
           {/* UPLOAD CONTAINER */}
           {!scanResult && (
-            <div className="bg-white p-8 sm:p-12 rounded-3xl border-2 border-dashed border-agri-soft/60 hover:border-agri-primary transition-all text-center space-y-5 shadow-sm relative overflow-hidden">
+            <div className="bg-white p-8 sm:p-12 rounded-3xl border-2 border-dashed border-agri-soft/60 hover:border-agri-primary transition-all text-center space-y-6 shadow-sm relative overflow-hidden">
               
               {/* Scanning Animated Beam Overlay */}
               {isScanning && (
@@ -114,7 +166,7 @@ export const CropDoctorPage = () => {
                   </div>
                   <div className="text-white text-xs font-extrabold flex items-center gap-2 bg-agri-dark px-5 py-2.5 rounded-full border border-emerald-400/40 shadow-lg">
                     <Sparkles className="w-4 h-4 text-emerald-300 animate-spin" />
-                    <span>ANALYZING LEAF CELLULAR TISSUE...</span>
+                    <span>ANALYZING LEAF CELLULAR TISSUE & SPORES...</span>
                   </div>
                 </div>
               )}
@@ -125,26 +177,49 @@ export const CropDoctorPage = () => {
 
               <div>
                 <span className="text-[10px] font-black text-earth-terracotta uppercase tracking-widest block mb-1">
-                  COMPUTER VISION DIAGNOSTIC
+                  COMPUTER VISION DIAGNOSTIC & PATHOLOGY
                 </span>
-                <h3 className="text-2xl font-black text-agri-dark tracking-tight">📸 SCAN YOUR CROP LEAF</h3>
+                <h3 className="text-2xl font-black text-agri-dark tracking-tight">📸 SCAN YOUR CROP LEAF OR PLANT</h3>
                 <p className="text-xs sm:text-sm text-gray-600 max-w-md mx-auto mt-1.5 font-medium leading-relaxed">
-                  Upload a clear close-up image of your leaf, fruit, or plant stalk. AI will scan pest spots, lesions, and fungal spores.
+                  Upload a clear close-up image of your leaf, fruit, or plant shoot. AgriSaathi AI will identify pests, chlorosis, and fungal lesions with verified treatment protocols.
                 </p>
               </div>
 
               <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
                 <label className="flex items-center gap-2.5 px-7 py-4 bg-agri-dark hover:bg-agri-primary text-white font-extrabold text-xs sm:text-sm rounded-2xl cursor-pointer shadow-agri transition-all transform hover:-translate-y-0.5 border border-gov-gold/30">
                   <Upload className="w-4 h-4 text-emerald-300" />
-                  <span>{t.cropDoctor.dragDrop || "Upload Leaf Photo"}</span>
+                  <span>{t.cropDoctor?.dragDrop || "Upload Leaf Photo from Device"}</span>
                   <input 
                     type="file" 
                     accept="image/*" 
                     className="hidden" 
-                    onChange={(e) => e.target.files && handleImageUpload(e.target.files[0])}
+                    onChange={(e) => e.target.files && handleFileUpload(e.target.files[0])}
                   />
                 </label>
               </div>
+
+              {/* Quick Sample Selector for Live Demonstration */}
+              <div className="pt-6 border-t border-gray-100">
+                <span className="text-xs font-black text-gray-400 uppercase tracking-wider block mb-3">
+                  Or Test Diagnostic with Sample Infected Leaves:
+                </span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {sampleLeafScans.map((sample) => (
+                    <button
+                      key={sample.id}
+                      onClick={() => handleDiagnose(sample.image, sample.issueKey, sample.crop)}
+                      className="p-3 bg-gray-50 hover:bg-agri-bg border border-gray-200 hover:border-agri-primary rounded-2xl text-left transition-all group flex flex-col items-center text-center space-y-2"
+                    >
+                      <img src={sample.image} alt={sample.title} className="w-16 h-16 rounded-xl object-cover border border-gray-200 group-hover:scale-105 transition-transform" />
+                      <div>
+                        <span className="text-[11px] font-bold text-gray-900 block line-clamp-1">{sample.title}</span>
+                        <span className="text-[9px] text-gray-500 font-medium">{sample.crop.split(' ')[0]}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
             </div>
           )}
 
@@ -158,10 +233,10 @@ export const CropDoctorPage = () => {
                   <img src={previewImage} alt="Scanned Crop" className="w-20 h-20 rounded-2xl object-cover border border-gray-200 shadow-xs" />
                   <div>
                     <span className="text-[10px] font-black text-agri-primary uppercase tracking-wider block">
-                      🌱 CROP DETECTED: {scanResult.crop}
+                      🌱 CROP IDENTIFIED: {scanResult.crop}
                     </span>
                     <h3 className="text-xl font-black text-agri-dark">{scanResult.issue}</h3>
-                    <div className="text-xs text-gray-500 font-medium">Scanned Today • Halol Gujarat</div>
+                    <div className="text-xs text-gray-500 font-medium">Scanned Today • {location.formatted}</div>
                   </div>
                 </div>
 
@@ -181,7 +256,7 @@ export const CropDoctorPage = () => {
                     <CheckCircle2 className="w-4 h-4 text-agri-primary" /> 🔍 Symptoms Detected
                   </span>
                   <ul className="space-y-1 text-gray-700 pl-5 list-disc font-medium">
-                    {scanResult.symptomsDetected.map((sym, idx) => (
+                    {scanResult.symptomsDetected?.map((sym, idx) => (
                       <li key={idx}>{sym}</li>
                     ))}
                   </ul>
@@ -189,20 +264,31 @@ export const CropDoctorPage = () => {
 
                 <div className="p-4 rounded-2xl bg-earth-cream border border-earth-wheat/30 space-y-2">
                   <span className="font-extrabold text-earth-soil flex items-center gap-1.5 text-sm uppercase tracking-wide">
-                    <AlertTriangle className="w-4 h-4 text-earth-terracotta" /> 🧠 AI Environmental Analysis
+                    <AlertTriangle className="w-4 h-4 text-earth-terracotta" /> 🧠 Environmental & Telemetry Cause
                   </span>
                   <p className="text-gray-700 leading-relaxed font-medium">{scanResult.cause}</p>
                 </div>
               </div>
 
-              {/* Recommended Action */}
-              <div className="p-5 bg-emerald-50/80 rounded-2xl border border-emerald-200 space-y-2">
-                <span className="text-xs font-black text-emerald-950 uppercase tracking-wider block">
-                  🌿 Recommended Treatment & Dosage
-                </span>
-                <p className="text-xs text-emerald-900 leading-relaxed whitespace-pre-line font-bold">
-                  {scanResult.treatment}
-                </p>
+              {/* Chemical & Bio-Organic Treatments */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div className="p-4 bg-emerald-50/90 rounded-2xl border border-emerald-200 space-y-2">
+                  <span className="text-xs font-black text-emerald-950 uppercase tracking-wider block flex items-center gap-1">
+                    <ShieldCheck className="w-4 h-4 text-emerald-700" /> Recommended Chemical Protocol
+                  </span>
+                  <p className="text-xs text-emerald-900 leading-relaxed whitespace-pre-line font-bold">
+                    {scanResult.chemicalTreatment}
+                  </p>
+                </div>
+
+                <div className="p-4 bg-purple-50/80 rounded-2xl border border-purple-200 space-y-2">
+                  <span className="text-xs font-black text-purple-950 uppercase tracking-wider block flex items-center gap-1">
+                    <Sparkles className="w-4 h-4 text-purple-700" /> Organic & Biological Control
+                  </span>
+                  <p className="text-xs text-purple-900 leading-relaxed whitespace-pre-line font-bold">
+                    {scanResult.organicTreatment}
+                  </p>
+                </div>
               </div>
 
               {/* Safety Rules */}
@@ -212,6 +298,27 @@ export const CropDoctorPage = () => {
                 </span>
                 <p className="font-medium">{scanResult.whatToAvoid}</p>
               </div>
+
+              {/* Wikipedia Live Grounding Link */}
+              {scanResult.wikiCitation && (
+                <div className="p-3.5 bg-gray-50 rounded-2xl border border-gray-200 flex items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-ai-plum flex-shrink-0" />
+                    <div>
+                      <span className="font-bold text-gray-900 block">📚 Grounded via {scanResult.wikiCitation.title}</span>
+                      <span className="text-[11px] text-gray-500 line-clamp-1">{scanResult.wikiCitation.extract}</span>
+                    </div>
+                  </div>
+                  <a 
+                    href={scanResult.wikiCitation.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 bg-white hover:bg-gray-100 text-ai-plum font-bold text-[10px] rounded-xl flex items-center gap-1 flex-shrink-0 border border-gray-300 shadow-xs"
+                  >
+                    Wikipedia Reference <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+              )}
 
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-gray-100">
@@ -230,7 +337,7 @@ export const CropDoctorPage = () => {
                     onClick={() => setActiveTab('ai')}
                     className="flex items-center gap-2 px-4 py-2.5 bg-ai-plum hover:bg-ai-purple text-white text-xs font-bold rounded-2xl transition-colors shadow-ai"
                   >
-                    <Sparkles className="w-4 h-4 text-purple-200" /> Ask AI About This
+                    <Sparkles className="w-4 h-4 text-purple-200" /> Discuss with AI Assistant
                   </button>
 
                   <button
@@ -254,8 +361,8 @@ export const CropDoctorPage = () => {
             <div className="flex items-center gap-3 mb-2">
               <Activity className="w-7 h-7 text-purple-300" />
               <div>
-                <h2 className="text-xl font-bold font-sans">{t.cropDoctor.followUpTitle || "7-Day Photo Progress Monitoring"}</h2>
-                <p className="text-xs text-purple-200/80 font-medium">{t.cropDoctor.followUpSubtitle || "Compare Day 1 before treatment with Day 7 recovery photo to verify health recovery."}</p>
+                <h2 className="text-xl font-bold font-sans">{t.cropDoctor?.followUpTitle || "7-Day Photo Progress Monitoring"}</h2>
+                <p className="text-xs text-purple-200/80 font-medium">{t.cropDoctor?.followUpSubtitle || "Compare Day 1 before treatment with Day 7 recovery photo to verify cellular health recovery."}</p>
               </div>
             </div>
           </div>
@@ -341,7 +448,7 @@ export const CropDoctorPage = () => {
                   onClick={() => setActiveTab('ai')}
                   className="px-4 py-2.5 bg-ai-plum hover:bg-ai-purple text-white text-xs font-bold rounded-2xl transition-colors shadow-ai"
                 >
-                  {t.cropDoctor.askAiAboutResult || "Ask AI About Results"} →
+                  {t.cropDoctor?.askAiAboutResult || "Ask AI About Results"} →
                 </button>
               </div>
 

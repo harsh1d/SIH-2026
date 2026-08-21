@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { ShieldCheck, Eye, Sparkles } from 'lucide-react';
 
@@ -12,6 +12,14 @@ export const GovTopBar = () => {
     { code: 'gu', label: 'ગુજરાતી' },
     { code: 'ml', label: 'മലയാളം' }
   ];
+
+  useEffect(() => {
+    document.documentElement.dataset.fontSize = fontSize;
+
+    return () => {
+      delete document.documentElement.dataset.fontSize;
+    };
+  }, [fontSize]);
 
   return (
     <div className="bg-agri-dark text-white text-[11px] font-sans border-b border-gov-gold/30">

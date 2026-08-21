@@ -11,8 +11,11 @@ import {
   CheckCircle2, 
   Clock, 
   AlertTriangle, 
-  ChevronRight,
-  ShieldCheck
+  ChevronRight, 
+  ShieldCheck,
+  Bot,
+  Sparkles,
+  ArrowRight
 } from 'lucide-react';
 
 export const MyFarmPage = () => {
@@ -24,7 +27,7 @@ export const MyFarmPage = () => {
   return (
     <div className="space-y-8 max-w-5xl mx-auto animate-fade-in">
       
-      {/* FARM PROFILE BANNER - EARTHY BROWN + GREEN */}
+      {/* FARM PROFILE BANNER */}
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6">
           <div className="flex items-center gap-4">
@@ -43,6 +46,13 @@ export const MyFarmPage = () => {
               </p>
             </div>
           </div>
+
+          <button
+            onClick={() => setActiveTab('profile')}
+            className="self-start sm:self-auto px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-extrabold rounded-xl transition-colors"
+          >
+            Edit Farm Parameters
+          </button>
         </div>
 
         {/* Telemetry Metrics */}
@@ -137,6 +147,22 @@ export const MyFarmPage = () => {
               </p>
             </div>
 
+          </div>
+
+          {/* AI ADVISORY QUICK BUTTON FOR THIS CROP */}
+          <div className="p-4 bg-gradient-to-r from-ai-plum via-purple-900 to-indigo-950 text-white rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-ai border border-ai-mauve/40">
+            <div className="flex items-center gap-2.5">
+              <Bot className="w-5 h-5 text-purple-200" />
+              <span className="text-xs font-bold">
+                Need specific fertigation, pest, or harvesting advice for {activeCrop.name} ({activeCrop.currentStage})?
+              </span>
+            </div>
+            <button
+              onClick={() => setActiveTab('ai')}
+              className="px-4 py-2 bg-white text-ai-plum hover:bg-purple-50 text-xs font-extrabold rounded-xl transition-colors shadow-xs flex items-center gap-1.5 flex-shrink-0"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-ai-purple" /> Consult AI Assistant
+            </button>
           </div>
 
           {/* VISUAL CROP LIFECYCLE TIMELINE */}

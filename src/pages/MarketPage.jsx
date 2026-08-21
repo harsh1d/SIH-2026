@@ -10,11 +10,14 @@ import {
   Filter, 
   IndianRupee, 
   Sparkles,
-  Info
+  Info,
+  Bot,
+  Truck,
+  ArrowRight
 } from 'lucide-react';
 
 export const MarketPage = () => {
-  const { location, t } = useApp();
+  const { location, t, setActiveTab, farmerProfile } = useApp();
 
   const [selectedCropIndex, setSelectedCropIndex] = useState(0);
   const [sortBy, setSortBy] = useState('highest'); // 'highest' | 'distance'
@@ -26,6 +29,10 @@ export const MarketPage = () => {
     return a.distanceKm - b.distanceKm;
   });
 
+  const bestMarket = sortedMarkets.reduce((prev, curr) => (prev.price > curr.price) ? prev : curr, sortedMarkets[0]);
+  const nearestMarket = sortedMarkets.reduce((prev, curr) => (prev.distanceKm < curr.distanceKm) ? prev : curr, sortedMarkets[0]);
+  const arbitrageDifference = bestMarket.price - nearestMarket.price;
+
   return (
     <div className="space-y-8 max-w-5xl mx-auto animate-fade-in">
       
@@ -33,23 +40,23 @@ export const MarketPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 sm:p-7 rounded-3xl border border-gray-100 shadow-sm">
         <div>
           <div className="flex items-center gap-2 text-xs font-black text-earth-walnut uppercase tracking-widest mb-1">
-            <TrendingUp className="w-4 h-4 text-earth-terracotta" /> APMC Mandi Intelligence & Rates
+            <TrendingUp className="w-4 h-4 text-earth-terracotta" /> APMC Mandi Intelligence & Price Arbitrage
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-agri-dark font-sans tracking-tight">
-            {t.market.title || "Market Mandi Prices"}
+            {t.market?.title || "Market Mandi Prices & Trends"}
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">
-            {t.market.subtitle || "Track modal prices across nearby APMC markets with 30-day price trend graphs."}
+            {t.market?.subtitle || "Track modal prices across nearby APMC markets with 30-day price trend graphs."}
           </p>
         </div>
 
-        {/* Commodity Selector Dropdown */}
-        <div className="flex items-center gap-2">
+        {/* Commodity Selector Buttons */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           {mockMandiRates.map((item, idx) => (
             <button
               key={idx}
               onClick={() => setSelectedCropIndex(idx)}
-              className={`px-4 py-2.5 rounded-2xl text-xs font-extrabold transition-all ${
+              className={`px-4 py-2.5 rounded-2xl text-xs font-extrabold whitespace-nowrap transition-all ${
                 selectedCropIndex === idx 
                   ? 'bg-earth-walnut text-white shadow-earth border border-earth-wheat/40' 
                   : 'bg-gray-100 text-gray-700 hover:bg-earth-sand/50'
@@ -61,7 +68,7 @@ export const MarketPage = () => {
         </div>
       </div>
 
-      {/* HIGHLIGHT STATS CARDS - EARTHY BROWN + WHEAT + GREEN */}
+      {/* HIGHLIGHT STATS CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         
         <div className="p-5 bg-white rounded-3xl border border-gray-100 shadow-sm space-y-1">
@@ -72,7 +79,7 @@ export const MarketPage = () => {
 
         <div className="p-5 bg-emerald-50/80 rounded-3xl border border-emerald-200 shadow-sm space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black text-emerald-800 uppercase tracking-widest">Highest Nearby Price</span>
+            <span className="text-[10px] font-black text-emerald-800 uppercase tracking-widest">Highest APMC Price</span>
             <span className="px-2 py-0.5 text-[9px] font-extrabold bg-emerald-600 text-white rounded-full uppercase">Best Rate</span>
           </div>
           <div className="text-2xl font-black text-emerald-950">₹{activeMandiData.highestPrice} <span className="text-xs font-normal text-gray-500">/ qtnl</span></div>
@@ -82,11 +89,40 @@ export const MarketPage = () => {
         </div>
 
         <div className="p-5 bg-earth-cream rounded-3xl border border-earth-wheat/40 shadow-sm space-y-1">
-          <span className="text-[10px] font-black text-earth-soil uppercase tracking-widest">Lowest District Price</span>
+          <span className="text-[10px] font-black text-earth-soil uppercase tracking-widest">District Average Modal Rate</span>
           <div className="text-2xl font-black text-earth-walnut">₹{activeMandiData.lowestPrice} <span className="text-xs font-normal text-gray-500">/ qtnl</span></div>
-          <span className="text-xs font-semibold text-gray-500">Panchmahal District Average</span>
+          <span className="text-xs font-semibold text-gray-500">Panchmahal APMC District Index</span>
         </div>
 
+      </div>
+
+      {/* AI ARBITRAGE & SELLING ADVISORY BANNER */}
+      <div className="bg-gradient-to-r from-ai-plum via-purple-900 to-indigo-950 rounded-3xl p-6 sm:p-7 text-white shadow-ai border border-ai-mauve/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-xs font-bold text-purple-200 border border-white/20">
+            <Sparkles className="w-3.5 h-3.5 text-purple-300" />
+            <span>AI Price Arbitrage Recommendation for {farmerProfile.name}</span>
+          </div>
+          <h3 className="text-base sm:text-lg font-black text-white">
+            {arbitrageDifference > 0 ? (
+              <>Transporting to <strong>{bestMarket.name} ({bestMarket.distanceKm} km)</strong> yields <span className="text-emerald-300 font-extrabold">+₹{arbitrageDifference} / quintal extra</span> over {nearestMarket.name}.</>
+            ) : (
+              <>Local Mandi {nearestMarket.name} offers the top regional rate today at ₹{nearestMarket.price}/qtnl.</>
+            )}
+          </h3>
+          <p className="text-xs text-purple-200/80 font-medium">
+            AI Projection: Hold harvest stock for 7-10 days if storage is available; regional demand index is up +4.2%.
+          </p>
+        </div>
+
+        <button
+          onClick={() => setActiveTab('ai')}
+          className="self-start md:self-auto px-5 py-3 bg-white text-ai-plum hover:bg-purple-50 font-black text-xs rounded-2xl shadow-md transition-colors flex items-center gap-2 flex-shrink-0"
+        >
+          <Bot className="w-4 h-4 text-ai-plum" />
+          <span>Ask AI Price Predictor</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
       </div>
 
       {/* PRICE TREND RECHARTS GRAPH */}
@@ -131,14 +167,14 @@ export const MarketPage = () => {
           </h3>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-gray-500">{t.market.sortBy || "Sort by"}:</span>
+            <span className="text-xs font-bold text-gray-500">{t.market?.sortBy || "Sort by"}:</span>
             <button
               onClick={() => setSortBy('highest')}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all ${
                 sortBy === 'highest' ? 'bg-agri-dark text-white shadow-agri' : 'bg-gray-100 text-gray-700'
               }`}
             >
-              {t.market.highestPrice || "Highest Price"}
+              {t.market?.highestPrice || "Highest Price"}
             </button>
             <button
               onClick={() => setSortBy('distance')}
@@ -146,7 +182,7 @@ export const MarketPage = () => {
                 sortBy === 'distance' ? 'bg-agri-dark text-white shadow-agri' : 'bg-gray-100 text-gray-700'
               }`}
             >
-              {t.market.distance || "Nearest Distance"}
+              {t.market?.distance || "Nearest Distance"}
             </button>
           </div>
         </div>

@@ -1,25 +1,41 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { User, MapPin, Sprout, Save, ShieldCheck, Check } from 'lucide-react';
+import { User, MapPin, Sprout, Save, ShieldCheck, Check, Droplets, Sparkles } from 'lucide-react';
 
 export const ProfilePage = () => {
-  const { farmerProfile, setFarmerProfile, location, showToast } = useApp();
+  const { farmerProfile, updateFarmerProfile, location, showToast } = useApp();
 
-  const [name, setName] = useState(farmerProfile.name);
-  const [phone, setPhone] = useState(farmerProfile.phone);
-  const [farmSize, setFarmSize] = useState(farmerProfile.farmSizeAcres);
-  const [soil, setSoil] = useState(farmerProfile.soilType);
+  const [name, setName] = useState(farmerProfile.name || '');
+  const [phone, setPhone] = useState(farmerProfile.phone || '');
+  const [farmSize, setFarmSize] = useState(farmerProfile.farmSizeAcres || 4.5);
+  const [soil, setSoil] = useState(farmerProfile.soilType || 'Black Cotton Soil (Regur)');
+  const [irrigation, setIrrigation] = useState(farmerProfile.irrigationType || 'Drip Irrigation + Tube Well');
+  const [selectedCrops, setSelectedCrops] = useState(farmerProfile.primaryCrops || ['Cotton', 'Wheat', 'Tomato']);
+
+  const cropOptions = ['Cotton', 'Wheat', 'Tomato', 'Maize', 'Soybean', 'Mustard', 'Sugarcane', 'Paddy'];
+
+  const toggleCrop = (crop) => {
+    if (selectedCrops.includes(crop)) {
+      if (selectedCrops.length > 1) {
+        setSelectedCrops(selectedCrops.filter(c => c !== crop));
+      } else {
+        showToast('Please keep at least one registered crop.', 'error');
+      }
+    } else {
+      setSelectedCrops([...selectedCrops, crop]);
+    }
+  };
 
   const handleSave = (e) => {
     e.preventDefault();
-    setFarmerProfile(prev => ({
-      ...prev,
+    updateFarmerProfile({
       name,
       phone,
       farmSizeAcres: Number(farmSize),
-      soilType: soil
-    }));
-    showToast('Farmer Profile updated successfully!');
+      soilType: soil,
+      irrigationType: irrigation,
+      primaryCrops: selectedCrops
+    });
   };
 
   return (
@@ -31,12 +47,17 @@ export const ProfilePage = () => {
             <User className="w-7 h-7 text-emerald-300" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-agri-dark font-sans tracking-tight">Farmer Profile Settings</h1>
-            <p className="text-xs text-gray-500 font-medium mt-0.5">Configure your farm parameters for hyper-personalized AI advisories.</p>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-black text-agri-dark font-sans tracking-tight">Farmer Profile & Telemetry</h1>
+              <span className="px-2.5 py-0.5 bg-purple-100 text-ai-plum font-extrabold text-[10px] rounded-full uppercase">
+                AI Grounding Baseline
+              </span>
+            </div>
+            <p className="text-xs text-gray-500 font-medium mt-0.5">Configure your farm parameters for hyper-personalized AI advisories and subsidy matching.</p>
           </div>
         </div>
 
-        <form onSubmit={handleSave} className="space-y-4 text-xs">
+        <form onSubmit={handleSave} className="space-y-5 text-xs">
           <div>
             <label className="font-extrabold text-gray-700 block mb-1">Farmer Full Name</label>
             <input 
@@ -84,6 +105,43 @@ export const ProfilePage = () => {
             </div>
           </div>
 
+          <div>
+            <label className="font-extrabold text-gray-700 block mb-1">Irrigation System Infrastructure</label>
+            <select 
+              value={irrigation} 
+              onChange={(e) => setIrrigation(e.target.value)} 
+              className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-2xl font-semibold focus:outline-none focus:ring-2 focus:ring-agri-primary"
+            >
+              <option value="Drip Irrigation + Tube Well">Drip Irrigation + Tube Well</option>
+              <option value="Micro-Sprinkler Irrigation">Micro-Sprinkler Irrigation</option>
+              <option value="Canal Gravity Flow">Canal Gravity Flow</option>
+              <option value="Rainfed (Non-irrigated)">Rainfed (Non-irrigated)</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="font-extrabold text-gray-700 block mb-2">Registered Primary Crops for Farm Telemetry</label>
+            <div className="flex flex-wrap gap-2">
+              {cropOptions.map((crop) => {
+                const isSelected = selectedCrops.includes(crop);
+                return (
+                  <button
+                    type="button"
+                    key={crop}
+                    onClick={() => toggleCrop(crop)}
+                    className={`px-3.5 py-2 rounded-xl font-extrabold text-xs transition-all ${
+                      isSelected 
+                        ? 'bg-agri-dark text-white shadow-xs border border-gov-gold/30' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    🌾 {crop} {isSelected && '✓'}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="p-4 bg-agri-bg rounded-2xl border border-agri-soft/40 space-y-1">
             <span className="font-extrabold text-agri-dark block text-[10px] uppercase tracking-wider">Active Location Telemetry</span>
             <span className="text-gray-700 font-bold">{location.formatted}</span>
@@ -91,9 +149,9 @@ export const ProfilePage = () => {
 
           <button 
             type="submit" 
-            className="w-full py-4 bg-agri-dark hover:bg-agri-primary text-white font-extrabold rounded-2xl shadow-agri transition-all text-xs flex items-center justify-center gap-2 border border-gov-gold/30"
+            className="w-full py-4 bg-agri-dark hover:bg-agri-primary text-white font-extrabold rounded-2xl shadow-agri transition-all text-xs flex items-center justify-center gap-2 border border-gov-gold/30 cursor-pointer"
           >
-            <Save className="w-4 h-4 text-emerald-300" /> Save Profile Preferences
+            <Save className="w-4 h-4 text-emerald-300" /> Save Profile Preferences & Update AI Baseline
           </button>
         </form>
       </div>
