@@ -12,6 +12,8 @@ import { Dashboard } from './pages/Dashboard';
 import { AIAssistantPage } from './pages/AIAssistantPage';
 import { CropDoctorPage } from './pages/CropDoctorPage';
 import { MyFarmPage } from './pages/MyFarmPage';
+import { CropJourneyPage } from './pages/CropJourneyPage';
+import { CropHealthPage } from './pages/CropHealthPage';
 import { WeatherPage } from './pages/WeatherPage';
 import { MarketPage } from './pages/MarketPage';
 import { SchemesPage } from './pages/SchemesPage';
@@ -36,9 +38,11 @@ const MainContent = () => {
       case 'cropDoctor':
         return <CropDoctorPage />;
       case 'myFarm':
-      case 'cropJourney':
-      case 'cropHealth':
         return <MyFarmPage />;
+      case 'cropJourney':
+        return <CropJourneyPage />;
+      case 'cropHealth':
+        return <CropHealthPage />;
       case 'weather':
         return <WeatherPage />;
       case 'market':

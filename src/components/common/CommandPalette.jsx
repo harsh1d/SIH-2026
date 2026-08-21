@@ -35,13 +35,14 @@ export const CommandPalette = ({ isOpen, onClose }) => {
   }, [isOpen]);
 
   const commandItems = [
-    // Direct Actions & Navigation
     { id: 'ai-ask', label: 'Ask AI Agricultural Specialist', category: 'AI Intelligence', icon: Bot, badge: 'Smart AI', action: () => { setActiveTab('ai'); onClose(); } },
     { id: 'crop-doc', label: 'Scan Leaf with Crop Doctor', category: 'Diagnostics', icon: Camera, badge: 'Computer Vision', action: () => { setActiveTab('cropDoctor'); onClose(); } },
-    { id: 'my-farm', label: 'My Farm Telemetry & Crop Stages', category: 'Farm Management', icon: Sprout, badge: `${farmerProfile.farmSizeAcres} Acres`, action: () => { setActiveTab('myFarm'); onClose(); } },
-    { id: 'mandi', label: 'APMC Mandi Rates & Arbitrage', category: 'Market', icon: TrendingUp, badge: 'Cotton ₹7,410', action: () => { setActiveTab('market'); onClose(); } },
-    { id: 'weather', label: 'Agro-Weather Radar & Rain Advisory', category: 'Weather', icon: CloudSun, badge: location.formatted?.split(',')[0] || 'Halol', action: () => { setActiveTab('weather'); onClose(); } },
-    { id: 'schemes', label: 'Government Subsidies & Eligibility', category: 'Gov Schemes', icon: Landmark, badge: 'PM-Kisan & GGRC', action: () => { setActiveTab('schemes'); onClose(); } },
+    { id: 'my-farm', label: 'My Farm Infrastructure & Land Parcels', category: 'Farm Management', icon: Sprout, badge: `${farmerProfile.farmSizeAcres} Acres`, action: () => { setActiveTab('myFarm'); onClose(); } },
+    { id: 'crop-journey', label: 'Crop Lifecycle Journey & Milestones', category: 'Phenology', icon: Calendar, badge: '5-Stage Roadmap', action: () => { setActiveTab('cropJourney'); onClose(); } },
+    { id: 'crop-health', label: 'Crop Health & Satellite NDVI Biomass', category: 'Biomass & Stress', icon: Activity, badge: 'NDVI Analytics', action: () => { setActiveTab('cropHealth'); onClose(); } },
+    { id: 'mandi', label: 'APMC Mandi Rates & Arbitrage', category: 'Market', icon: TrendingUp, badge: 'Mandi Rates', action: () => { setActiveTab('market'); onClose(); } },
+    { id: 'weather', label: 'Agro-Weather Radar & Rain Advisory', category: 'Weather', icon: CloudSun, badge: location.formatted?.split(',')[0] || 'Weather', action: () => { setActiveTab('weather'); onClose(); } },
+    { id: 'schemes', label: 'Government Subsidies & Eligibility', category: 'Gov Schemes', icon: Landmark, badge: 'Subsidies', action: () => { setActiveTab('schemes'); onClose(); } },
     { id: 'expert', label: 'Escalate Case to KVK Agronomist', category: 'Expert Support', icon: UserCheck, badge: 'ICAR Scientists', action: () => { setActiveTab('expert'); onClose(); } },
     { id: 'knowledge', label: 'Agronomy Knowledge Base & Wikipedia', category: 'Library', icon: BookOpen, badge: 'Live Guides', action: () => { setActiveTab('knowledge'); onClose(); } },
     { id: 'profile', label: 'Farmer Profile & Soil Configuration', category: 'Settings', icon: FileText, badge: farmerProfile.soilType?.split(' ')[0] || 'Soil', action: () => { setActiveTab('profile'); onClose(); } },
