@@ -28,13 +28,16 @@ export const MyFarmPage = () => {
   const [selectedParcelIdx, setSelectedParcelIdx] = useState(0);
   const [pumpRunning, setPumpRunning] = useState(true);
 
+  const farmSizeNum = Number(farmerProfile?.farmSizeAcres) || 4.5;
+  const cropsList = Array.isArray(crops) && crops.length > 0 ? crops : [{ name: "Cotton", variety: "Hybrid BG-II" }];
+
   const parcels = [
     {
       id: "PARCEL-A",
       name: "North Field Parcel (Block 1)",
-      areaAcres: (farmerProfile.farmSizeAcres * 0.6).toFixed(1),
-      crop: crops[0]?.name || "Cotton",
-      variety: crops[0]?.variety || "Bt Hybrid BG-II",
+      areaAcres: (farmSizeNum * 0.6).toFixed(1),
+      crop: cropsList[0]?.name || "Cotton",
+      variety: cropsList[0]?.variety || "Bt Hybrid BG-II",
       soilMoisture: "68%",
       soilHealth: "Optimal",
       irrigationZone: "Zone 1 - Drip Line Active",
@@ -43,9 +46,9 @@ export const MyFarmPage = () => {
     {
       id: "PARCEL-B",
       name: "Canal Side Parcel (Block 2)",
-      areaAcres: (farmerProfile.farmSizeAcres * 0.4).toFixed(1),
-      crop: crops[1]?.name || crops[0]?.name || "Wheat",
-      variety: crops[1]?.variety || "GW-496",
+      areaAcres: (farmSizeNum * 0.4).toFixed(1),
+      crop: cropsList[1]?.name || cropsList[0]?.name || "Wheat",
+      variety: cropsList[1]?.variety || "GW-496",
       soilMoisture: "72%",
       soilHealth: "Good",
       irrigationZone: "Zone 2 - Micro-Sprinkler Standby",

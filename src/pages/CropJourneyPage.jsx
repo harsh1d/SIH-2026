@@ -24,21 +24,21 @@ import {
 export const CropJourneyPage = () => {
   const { farmerProfile, location, agroRegion, crops, setActiveTab, t, showToast } = useApp();
 
-  const [selectedCropId, setSelectedCropId] = useState(crops[0]?.id);
+  const [selectedCropId, setSelectedCropId] = useState(crops?.[0]?.id || "CROP-COTTON");
   const [activeStageIdx, setActiveStageIdx] = useState(2); // Stage 3 (Flowering) by default
   const [logNotes, setLogNotes] = useState([
-    { id: 1, date: "3 Days ago", stage: "Flowering & Square Formation", text: "Completed foliar spray of Boron 20% (1g/L) across 2.5 acres to enhance flower retention.", author: farmerProfile.name },
-    { id: 2, date: "10 Days ago", stage: "Vegetative Growth & Branching", text: "Drip fertigation with 19:19:19 NPK (5 kg/acre) completed. Crop canopy looking healthy and vigorous.", author: farmerProfile.name }
+    { id: 1, date: "3 Days ago", stage: "Flowering & Square Formation", text: "Completed foliar spray of Boron 20% (1g/L) across 2.5 acres to enhance flower retention.", author: farmerProfile?.name || "Farmer" },
+    { id: 2, date: "10 Days ago", stage: "Vegetative Growth & Branching", text: "Drip fertigation with 19:19:19 NPK (5 kg/acre) completed. Crop canopy looking healthy and vigorous.", author: farmerProfile?.name || "Farmer" }
   ]);
   const [newLogText, setNewLogText] = useState('');
 
   useEffect(() => {
-    if (crops.length > 0 && !crops.some(c => c.id === selectedCropId)) {
-      setSelectedCropId(crops[0].id);
+    if (Array.isArray(crops) && crops.length > 0 && !crops.some(c => c && c.id === selectedCropId)) {
+      setSelectedCropId(crops[0]?.id || "CROP-COTTON");
     }
   }, [crops, selectedCropId]);
 
-  const activeCrop = crops.find(c => c.id === selectedCropId) || crops[0] || {
+  const activeCrop = (Array.isArray(crops) ? crops.find(c => c && c.id === selectedCropId) : null) || crops?.[0] || {
     name: "Cotton",
     variety: "Hybrid BG-II",
     sowingDate: "June 15, 2026",
@@ -55,7 +55,7 @@ export const CropJourneyPage = () => {
       date: "Just now",
       stage: activeCrop.stages?.[activeStageIdx]?.name || "Active Growth",
       text: newLogText.trim(),
-      author: farmerProfile.name
+      author: farmerProfile?.name || "Farmer"
     };
 
     setLogNotes([newEntry, ...logNotes]);

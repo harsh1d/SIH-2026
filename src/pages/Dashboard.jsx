@@ -23,19 +23,19 @@ import {
 export const Dashboard = () => {
   const { farmerProfile, location, agroRegion, crops, weatherData, mandiRates, alerts, setActiveTab, t } = useApp();
 
-  const primaryCrop = crops[0] || {
-    name: farmerProfile.primaryCrops?.[0] || "Cotton",
+  const primaryCrop = crops?.[0] || {
+    name: farmerProfile?.primaryCrops?.[0] || "Cotton",
     currentStage: "Flowering & Vegetative Growth",
     stageProgressPercent: 60,
     healthScore: 88,
     variety: "High Yield"
   };
 
-  const topAlert = alerts[0];
-  const topMandi = mandiRates[0] || {
+  const topAlert = alerts?.[0];
+  const topMandi = mandiRates?.[0] || {
     crop: primaryCrop.name,
     trend: "+3.5%",
-    markets: [{ name: `${location.district} APMC Yard`, price: 7250, change: "+₹250", distanceKm: 6 }]
+    markets: [{ name: `${location?.district || 'Regional'} APMC Yard`, price: 7250, change: "+₹250", distanceKm: 6 }]
   };
 
   return (
@@ -46,14 +46,14 @@ export const Dashboard = () => {
         <div>
           <div className="flex items-center gap-2 text-xs font-black text-earth-terracotta uppercase tracking-widest mb-1">
             <Sprout className="w-4 h-4 text-agri-primary" /> 
-            <span>AgriSaathi Station • {location.district || location.village || "Regional"} Hub</span>
+            <span>AgriSaathi Station • {location?.district || location?.village || "Regional"} Hub</span>
             <span className="hidden sm:inline-block text-gray-400 font-normal">| {agroRegion?.agroZone || "Agro-Zone"}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-agri-dark font-sans tracking-tight">
-            {t.dashboard?.greeting || "Good Morning"}, {farmerProfile.name} 🌱
+            {t.dashboard?.greeting || "Good Morning"}, {farmerProfile?.name || "Farmer"} 🌱
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">
-            {farmerProfile.agricultureType || "Precision agricultural overview & daily regional advisory."}
+            {farmerProfile?.agricultureType || "Precision agricultural overview & daily regional advisory."}
           </p>
         </div>
 
@@ -61,15 +61,15 @@ export const Dashboard = () => {
           <MapPin className="w-5 h-5 text-earth-terracotta flex-shrink-0" />
           <div className="text-xs">
             <div className="font-extrabold text-agri-dark flex items-center gap-1.5">
-              <span>{location.formatted}</span>
-              {location.isGpsVerified && (
+              <span>{location?.formatted || "Farm Location"}</span>
+              {location?.isGpsVerified && (
                 <span className="px-2 py-0.5 text-[9px] font-black bg-emerald-100 text-emerald-800 rounded-full border border-emerald-300">
                   GPS Active
                 </span>
               )}
             </div>
             <div className="text-gray-500 font-medium">
-              {farmerProfile.farmSizeAcres} {t.dashboard?.acresUnit || "Acres"} • {getSoilTranslation(farmerProfile.soilType, t)}
+              {farmerProfile?.farmSizeAcres || 4.5} {t.dashboard?.acresUnit || "Acres"} • {getSoilTranslation(farmerProfile?.soilType || "Black Cotton Soil", t)}
             </div>
           </div>
         </div>
@@ -89,7 +89,7 @@ export const Dashboard = () => {
               <span>✨ {t.dashboard?.advisoryTitle || "AI FARM ADVISORY"}</span>
             </div>
             <span className="text-xs text-purple-200/80 font-medium">
-              Live Weather: {weatherData.current?.temp}°C • {weatherData.current?.condition}
+              Live Weather: {weatherData?.current?.temp ?? 29}°C • {weatherData?.current?.condition || "Clear"}
             </span>
           </div>
 
@@ -98,7 +98,7 @@ export const Dashboard = () => {
               🌾 Precision Advisory for {getCropTranslation(primaryCrop.name, t)} ({getStageTranslation(primaryCrop.currentStage, t)})
             </h3>
             <p className="text-xs sm:text-sm text-purple-100/90 leading-relaxed max-w-3xl font-medium">
-              "{weatherData.agroImpact?.summary || `Precipitation probability is ${weatherData.current?.rainProbability}%. Maintain proper soil drainage and follow regular fertigation.`}"
+              "{weatherData?.agroImpact?.summary || `Precipitation probability is ${weatherData?.current?.rainProbability ?? 30}%. Maintain proper soil drainage and follow regular fertigation.`}"
             </p>
           </div>
 

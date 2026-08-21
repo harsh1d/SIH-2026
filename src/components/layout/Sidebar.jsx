@@ -51,7 +51,7 @@ export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
     {
       title: t.nav?.supportSection || "SUPPORT & SERVICES",
       items: [
-        { id: "alerts", label: t.nav?.alerts || "Smart Alerts", icon: Bell, count: alerts.length },
+        { id: "alerts", label: t.nav?.alerts || "Smart Alerts", icon: Bell, count: alerts?.length || 0 },
         { id: "expert", label: t.nav?.expertHelp || "Expert Consultation", icon: UserCheck },
         { id: "knowledge", label: t.nav?.knowledge || "Knowledge Hub", icon: BookOpen }
       ]

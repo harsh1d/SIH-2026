@@ -26,7 +26,7 @@ export const CropHealthPage = () => {
   const [selectedCropIndex, setSelectedCropIndex] = useState(0);
   const [activeNDVILayer, setActiveNDVILayer] = useState('ndvi'); // 'ndvi' | 'moisture' | 'thermal'
 
-  const activeCrop = crops[selectedCropIndex] || crops[0] || {
+  const activeCrop = (Array.isArray(crops) ? crops[selectedCropIndex] : null) || crops?.[0] || {
     name: "Cotton",
     healthScore: 88,
     healthStatus: "Optimal Growth",

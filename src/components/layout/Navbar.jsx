@@ -109,9 +109,9 @@ export const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
           >
             <MapPin className="w-3.5 h-3.5 text-earth-terracotta flex-shrink-0 group-hover:scale-110 transition-transform" />
             <span className="truncate">
-              {location.district ? `${location.village ? location.village + ', ' : ''}${location.district}` : (location.formatted?.split(',')[0] || "Halol")}
+              {location?.district ? `${location?.village ? location.village + ', ' : ''}${location.district}` : (location?.formatted?.split(',')[0] || "Halol")}
             </span>
-            {location.isGpsVerified && (
+            {location?.isGpsVerified && (
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0 animate-ping" />
             )}
           </button>
