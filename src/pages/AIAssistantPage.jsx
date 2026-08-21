@@ -50,15 +50,15 @@ export const AIAssistantPage = () => {
     const soil = farmerProfile.soilType || 'Black Cotton Soil';
 
     if (lang === 'hi') {
-      return `नमस्ते ${fName} जी! 🌱 मैं कृषि साथी एआई हूँ। आपके खेत (${loc}), मिट्टी (${soil}) और मौसम (${mockWeatherData.current.temp}°C, ${mockWeatherData.current.humidity}% नमी) का डेटा लोड हो चुका है।\n\nआज आपकी फसल स्वास्थ्य, कीट नियंत्रण या खाद के समय के लिए मैं क्या सहायता कर सकता हूँ?`;
+      return `नमस्ते ${fName} जी! 🌱\n\nमैं कृषि साथी एआई सहायक हूँ। आपके खेत (${loc}), मिट्टी (${soil}) और मौसम (${mockWeatherData.current.temp}°C, ${mockWeatherData.current.humidity}% नमी) की टेलीमेट्री सक्रिय है।\n\nआज आपकी फसल स्वास्थ्य, कीट नियंत्रण, मौसम या खाद के समय के लिए मैं क्या सहायता कर सकता हूँ?`;
     }
     if (lang === 'gu') {
-      return `નમસ્તે ${fName} જી! 🌱 હું કૃષિ સાથી એઆઈ સહાયક છું. તમારા ખેતર (${loc}), જમીન (${soil}) અને જીવંત હવામાન (${mockWeatherData.current.temp}°C) નું ટેલિમેટ્રી લોડ થઈ ગયું છે.\n\nઆજે તમારા પાકના રક્ષણ, રોગ નિયંત્રણ કે મંડી ભાવ માટે હું કેવી રીતે મદદ કરી શકું?`;
+      return `નમસ્તે ${fName} જી! 🌱\n\nહું કૃષિ સાથી એઆઈ સહાયક છું. તમારા ખેતર (${loc}), જમીન (${soil}) અને જીવંત હવામાન (${mockWeatherData.current.temp}°C) નું ટેલિમેટ્રી લોડ થઈ ગયું છે.\n\nઆજે તમારા પાકના રક્ષણ, રોગ નિયંત્રણ કે મંડી ભાવ માટે હું કેવી રીતે મદદ કરી શકું?`;
     }
     if (lang === 'ml') {
-      return `നമസ്കാരം ${fName} ജി! 🌱 ഞാൻ കൃഷി സാഥി എഐ ആണ്. നിങ്ങളുടെ ഫാം ലൊക്കേഷൻ (${loc}), മണ്ണ് (${soil}), കാലാവസ്ഥ (${mockWeatherData.current.temp}°C) വിവരങ്ങൾ തയ്യാറാണ്.\n\nഇന്ന് നിങ്ങളുടെ വിള പരിപാലനത്തിൽ ഞാൻ എങ്ങനെ സഹായിക്കണം?`;
+      return `നമസ്കാരം ${fName} ജി! 🌱\n\nഞാൻ കൃഷി സാഥി എഐ ആണ്. നിങ്ങളുടെ ഫാം ലൊക്കേഷൻ (${loc}), മണ്ണ് (${soil}), കാലാവസ്ഥ (${mockWeatherData.current.temp}°C) വിവരങ്ങൾ തയ്യാറാണ്.\n\nഇന്ന് നിങ്ങളുടെ വിള പരിപാലനത്തിൽ ഞാൻ എങ്ങനെ സഹായിക്കണം?`;
     }
-    return `Namaste ${fName} Ji! 🌱 I am AgriSaathi AI, your precision agronomy assistant. I have synthesized your live telemetry for ${loc}, Soil: ${soil}, registered crops: ${farmerProfile.primaryCrops?.join(', ') || 'Cotton, Wheat'}, and local weather (${mockWeatherData.current.temp}°C, ${mockWeatherData.current.humidity}% humidity).\n\nHow can I help optimize your crop yields and protect against pests today?`;
+    return `Namaste ${fName} Ji! 🌱\n\nI am AgriSaathi AI, your precision agronomy assistant. I have synthesized your live telemetry for ${loc}, Soil: ${soil}, registered crops: ${farmerProfile.primaryCrops?.join(', ') || 'Cotton, Wheat'}, and local weather (${mockWeatherData.current.temp}°C, ${mockWeatherData.current.humidity}% humidity).\n\nHow can I help optimize your crop yields and protect against pests today?`;
   };
 
   const [messages, setMessages] = useState([
@@ -106,7 +106,6 @@ export const AIAssistantPage = () => {
         { label: "🌾 गेहूं में पीला रतुआ", query: "गेहूं में पीला रतुआ (येलो रस्ट) की रोकथाम कैसे करें?" },
         { label: "🌧️ आज का मौसम व छिड़काव", query: "क्या आज बारिश होगी और क्या कीटनाशक छिड़कना सुरक्षित है?" },
         { label: "💰 आज का मंडी भाव", query: "आसपास की मंडी में आज का सबसे अच्छा कपास भाव क्या है?" },
-        { label: "🪨 मिट्टी के अनुसार फसल", query: `${farmerProfile.soilType} के लिए सबसे उपयुक्त फसल कौन सी है?` },
         { label: "🏛️ सरकारी योजना व सब्सिडी", query: "मेरे खेत के लिए सरकारी सब्सिडी और पीएम किसान योजना की जानकारी दें।" }
       ];
     }
@@ -117,8 +116,17 @@ export const AIAssistantPage = () => {
         { label: "🌾 ઘઉંમાં ગેરુ રોગ", query: "ઘઉંમાં પીળા ગેરુ રોગની રોકથામ કેવી રીતે કરવી?" },
         { label: "🌧️ વરસાદ અને દવાનો છંટકાવ", query: "શું આજે વરસાદ આવશે અને દવાનો છંટકાવ કરવો યોગ્ય છે?" },
         { label: "💰 આજનો કપાસ મંડી ભાવ", query: "નજીકની મંડીમાં આજનો સૌથી ઊંચો કપાસનો ભાવ શું છે?" },
-        { label: "🪨 જમીન મુજબ યોગ્ય પાક", query: `${farmerProfile.soilType} માટે કયો પાક સૌથી સારો રહેશે?` },
         { label: "🏛️ સબસિડી અને સરકારી યોજના", query: "ડ્રિપ ઇરિગેશન અને ખેડૂત સબસિડી વિશે જણાવો." }
+      ];
+    }
+    if (lang === 'ml') {
+      return [
+        { label: "🌱 പരുത്തി ഇല മഞ്ഞളിപ്പ്", query: "പരുത്തി ഇലകൾ മഞ്ഞളിക്കുന്നു, എന്ത് ചെയ്യണം?" },
+        { label: "🐛 പിങ്ക് ബോൾവോം പുഴു", query: "പിങ്ക് ബോൾവോം പുഴുവിനെ എങ്ങനെ നിയന്ത്രിക്കാം?" },
+        { label: "🌾 ഗോതമ്പ് തുരുമ്പ് രോഗം", query: "ഗോതമ്പിലെ മഞ്ഞ തുരുമ്പ് രോഗം എങ്ങനെ തടയാം?" },
+        { label: "🌧️ മഴയും മരുന്ന് തളിക്കലും", query: "ഇന്ന് മഴ പെയ്യുമോ? കീടനാശിനി തളിക്കുന്നത് സുരക്ഷിതമാണോ?" },
+        { label: "💰 ഇന്നത്തെ വിപണി വില", query: "ഇന്നത്തെ ഏറ്റവും ഉയർന്ന പരുത്തി വിപണി വില എത്രയാണ്?" },
+        { label: "🏛️ കൃഷി സബ്സിഡികൾ", query: "എന്റെ ഫാമിനുള്ള സർക്കാർ സബ്സിഡികൾ പറയുക." }
       ];
     }
     return [
@@ -127,7 +135,6 @@ export const AIAssistantPage = () => {
       { label: "🌾 Yellow Rust in Wheat", query: "How to prevent Stripe/Yellow rust in Wheat crop?" },
       { label: "🌧️ Rain & Spraying window", query: "Will it rain today and is it safe to spray pesticides?" },
       { label: "💰 Today's APMC Mandi prices", query: "What is today's highest cotton mandi price nearby?" },
-      { label: "🪨 Soil suitable crops", query: `Which crops are most profitable for ${farmerProfile.soilType}?` },
       { label: "🏛️ Drip & Kisan Subsidies", query: "Tell me about government subsidy eligibility for my farm" }
     ];
   };
@@ -141,7 +148,13 @@ export const AIAssistantPage = () => {
 
   const handleVoiceInput = () => {
     if (typeof window === 'undefined' || !('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      const fallbackQuery = language === 'hi' ? "कपास की पत्तियां पीली पड़ रही हैं" : "My cotton leaves are turning yellow after rain";
+      const fallbackQuery = language === 'hi' 
+        ? "क्या आज बारिश होगी और क्या कीटनाशक छिड़कना सुरक्षित है?" 
+        : language === 'gu'
+          ? "શું આજે વરસાદ આવશે અને દવાનો છંટકાવ કરવો યોગ્ય છે?"
+          : language === 'ml'
+            ? "ഇന്ന് മഴ പെയ്യുമോ? കീടനാശിനി തളിക്കുന്നത് സുരക്ഷിതമാണോ?"
+            : "Will it rain today and is it safe to spray pesticides?";
       setQueryInput(fallbackQuery);
       showToast(`Voice API simulated: "${fallbackQuery}"`, 'info');
       return;
@@ -192,7 +205,8 @@ export const AIAssistantPage = () => {
   };
 
   const handleCopy = (msgId, text) => {
-    navigator.clipboard.writeText(text);
+    const cleanText = (text || '').replace(/[*#`_]/g, '').trim();
+    navigator.clipboard.writeText(cleanText);
     setCopiedMsgId(msgId);
     showToast('Copied to clipboard!', 'success');
     setTimeout(() => setCopiedMsgId(null), 2000);
@@ -235,7 +249,7 @@ export const AIAssistantPage = () => {
     setIsThinking(true);
 
     try {
-      // Synthesize response using our Grounded AI Knowledge Engine
+      // Synthesize response using our Grounded AI Knowledge Engine with strict language passing
       const aiResult = await generateSmartAgriResponse({
         userQuery: userMsgText,
         userImage: userMsg.image,
@@ -243,7 +257,8 @@ export const AIAssistantPage = () => {
         location,
         weatherData: mockWeatherData,
         mandiRates: mockMandiRates,
-        conversationHistory: updatedHistory
+        conversationHistory: updatedHistory,
+        language: language
       });
 
       const aiMsg = {
@@ -272,6 +287,34 @@ export const AIAssistantPage = () => {
     }
   };
 
+  // Helper to render clean formatted text without raw markdown asterisks
+  const renderFormattedText = (text) => {
+    if (!text) return null;
+    const lines = text.split('\n');
+    return (
+      <div className="space-y-1.5">
+        {lines.map((line, lIdx) => {
+          if (!line.trim()) return <div key={lIdx} className="h-1" />;
+          const parts = line.split(/(\*\*.*?\*\*)/g);
+          return (
+            <div key={lIdx} className="leading-relaxed">
+              {parts.map((part, pIdx) => {
+                if (part.startsWith('**') && part.endsWith('**')) {
+                  return (
+                    <strong key={pIdx} className="font-black text-agri-dark">
+                      {part.slice(2, -2)}
+                    </strong>
+                  );
+                }
+                return <span key={pIdx}>{part}</span>;
+              })}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6 max-w-5xl mx-auto animate-fade-in">
       
@@ -290,7 +333,7 @@ export const AIAssistantPage = () => {
                 </span>
               </div>
               <p className="text-xs text-purple-200/90 font-medium mt-1">
-                {farmerProfile.name} • {location.formatted} • {farmerProfile.soilType} • {farmerProfile.farmSizeAcres} Acres
+                {farmerProfile.name} • {location.formatted} • {farmerProfile.soilType} • {farmerProfile.farmSizeAcres} {t.dashboard?.acresUnit || "Acres"}
               </p>
             </div>
           </div>
@@ -336,8 +379,8 @@ export const AIAssistantPage = () => {
               <div className="flex-1 space-y-3">
                 {/* Text Response */}
                 {msg.text && (
-                  <div className="bg-ai-light/50 border border-ai-mauve/20 rounded-3xl rounded-tl-none p-4 sm:p-5 text-xs sm:text-sm text-gray-800 font-medium leading-relaxed shadow-xs whitespace-pre-wrap space-y-3">
-                    <div>{msg.text}</div>
+                  <div className="bg-ai-light/50 border border-ai-mauve/20 rounded-3xl rounded-tl-none p-4 sm:p-5 text-xs sm:text-sm text-gray-800 font-medium leading-relaxed shadow-xs space-y-3">
+                    <div>{renderFormattedText(msg.text)}</div>
                     
                     {/* Live Wikipedia Citation Badge */}
                     {msg.wikiCitation && (
@@ -427,7 +470,7 @@ export const AIAssistantPage = () => {
                         <CheckCircle2 className="w-4 h-4 text-agri-primary" /> 🌱 {t.ai?.recommendedAction || "ACTION PROTOCOL & DOSAGE"}
                       </span>
                       <div className="text-xs text-gray-800 leading-relaxed bg-emerald-50/80 p-4 rounded-2xl border border-agri-soft/50 whitespace-pre-line font-semibold">
-                        {msg.data.recommendedAction}
+                        {renderFormattedText(msg.data.recommendedAction)}
                       </div>
                     </div>
 
@@ -510,7 +553,15 @@ export const AIAssistantPage = () => {
         {isThinking && (
           <div className="flex gap-3 items-center text-xs font-bold text-ai-purple animate-pulse py-3 px-2">
             <Bot className="w-5 h-5 text-ai-plum animate-bounce" />
-            <span>Consulting ICAR Agronomy Database & live Wikipedia knowledge for {farmerProfile.name || 'you'}...</span>
+            <span>
+              {language === 'hi' 
+                ? `आईसीएआर कृषि डाटाबेस व मौसम के आधार पर विश्लेषण किया जा रहा है...` 
+                : language === 'gu'
+                  ? `કૃષિ જ્ઞાનકોશ અને હવામાન ડેટાનું વિશ્લેષણ થઈ રહ્યું છે...`
+                  : language === 'ml'
+                    ? `വിള വിവരങ്ങളും കാലാവസ്ഥയും പരിശോധിക്കുന്നു...`
+                    : `Consulting ICAR Agronomy Database & live knowledge for ${farmerProfile.name || 'you'}...`}
+            </span>
           </div>
         )}
 
