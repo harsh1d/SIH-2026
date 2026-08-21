@@ -10,7 +10,25 @@
  * - State & Central Subsidy Schemes
  */
 
-import { calculateHaversineDistance } from '../services/geoService';
+/**
+ * Calculates Haversine distance in kilometers between two GPS coordinates
+ */
+export function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+  if (typeof lat1 !== 'number' || typeof lon1 !== 'number' || typeof lat2 !== 'number' || typeof lon2 !== 'number') {
+    return Infinity;
+  }
+  const R = 6371; // Earth's radius in km
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) *
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
 
 export const defaultFarmerProfile = {
   id: "FARMER-IND-8921",
@@ -956,10 +974,15 @@ export const locationDatabase = AGRO_REGIONS_DATABASE.map(item => ({
 export function getAgroRegionForLocation(loc = {}) {
   if (!loc) return AGRO_REGIONS_DATABASE[0];
 
+  // If string passed, convert to object
+  if (typeof loc === 'string') {
+    loc = { formatted: loc, district: loc.split(',')[0]?.trim() || '', state: loc.split(',')[2]?.trim() || '' };
+  }
+
   // 1. Direct formatted string match
   if (loc.formatted) {
     const directMatch = AGRO_REGIONS_DATABASE.find(
-      r => r.formatted.toLowerCase() === loc.formatted.toLowerCase()
+      r => r.formatted && r.formatted.toLowerCase() === loc.formatted.toLowerCase()
     );
     if (directMatch) return directMatch;
   }
@@ -1319,8 +1342,10 @@ export function generateMandiRatesForRegion(agroRegion, activeCrops = []) {
  * Generates dynamic localized weather telemetry
  */
 export function generateWeatherDataForRegion(location = {}, agroRegion = {}, liveWeather = null) {
-  const locFormatted = location.formatted || agroRegion.formatted || "Halol, Gujarat";
-  const primaryCropName = agroRegion.primaryCrops?.[0] || "Cotton";
+  const locSafe = location || {};
+  const agroSafe = agroRegion || AGRO_REGIONS_DATABASE[0];
+  const locFormatted = locSafe.formatted || agroSafe.formatted || "Halol, Gujarat";
+  const primaryCropName = agroSafe.primaryCrops?.[0] || "Cotton";
 
   if (liveWeather && liveWeather.current) {
     const isRainy = (liveWeather.current.rainProbability || 0) > 60;
@@ -1400,10 +1425,12 @@ const defaultDailyForecast = [
  * Generates dynamic Alerts for the location
  */
 export function generateAlertsForRegion(location = {}, agroRegion = {}, weather = {}) {
-  const dist = location.district || agroRegion.district || "District";
-  const st = location.state || agroRegion.state || "State";
-  const primaryCrop = agroRegion.primaryCrops?.[0] || "Cotton";
-  const rainProb = weather.current?.rainProbability ?? 85;
+  const locSafe = location || {};
+  const agroSafe = agroRegion || AGRO_REGIONS_DATABASE[0];
+  const dist = locSafe.district || agroSafe.district || "District";
+  const st = locSafe.state || agroSafe.state || "State";
+  const primaryCrop = agroSafe.primaryCrops?.[0] || "Cotton";
+  const rainProb = weather?.current?.rainProbability ?? 85;
 
   return [
     {
@@ -1443,8 +1470,10 @@ export function generateAlertsForRegion(location = {}, agroRegion = {}, weather 
  * Generates dynamic Schemes tailored to the user's state & Central India schemes
  */
 export function generateSchemesForLocation(location = {}, agroRegion = {}) {
-  const stateSchemes = agroRegion?.stateSchemes || [];
-  const stateName = location.state || agroRegion.state || "Gujarat";
+  const locSafe = location || {};
+  const agroSafe = agroRegion || AGRO_REGIONS_DATABASE[0];
+  const stateSchemes = agroSafe.stateSchemes || [];
+  const stateName = locSafe.state || agroSafe.state || "Gujarat";
 
   const centralSchemes = [
     {
@@ -1455,8 +1484,8 @@ export function generateSchemesForLocation(location = {}, agroRegion = {}) {
       benefitAmount: "₹6,000 / year (3 equal installments of ₹2,000 via DBT)",
       eligibility: "All landholding farmer families with cultivable land across all states.",
       isEligibleForUser: true,
-      documentsRequired: ["Aadhaar Card", "Land Khatauni / Jamabandi Record", "Aadhaar-linked Bank Account"],
-      applicationProcess: "Online through PM-KISAN portal or via nearest Common Service Centre (CSC).",
+      documentsRequired: ["Aadhaar Card", "Bank Account linked with Aadhaar", "Land Ownership Documents (Khatauni/7-12)"],
+      applicationProcess: "Apply online at pmkisan.gov.in or through Village Agriculture Officer / CSC.",
       deadline: "Open All Year",
       officialLink: "https://pmkisan.gov.in"
     },
