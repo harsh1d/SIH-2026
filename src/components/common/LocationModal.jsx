@@ -88,22 +88,15 @@ export const LocationModal = () => {
   ];
 
   // Filter curated database
-  const localFiltered = (locationDatabase || []).filter(loc => {
-    if (!loc) return false;
-    const term = (searchTerm || '').toLowerCase();
-    const formatted = (loc.formatted || '').toLowerCase();
-    const district = (loc.district || '').toLowerCase();
-    const state = (loc.state || '').toLowerCase();
-    const village = (loc.village || '').toLowerCase();
-
+  const localFiltered = locationDatabase.filter(loc => {
     const matchesSearch = 
-      formatted.includes(term) ||
-      district.includes(term) ||
-      state.includes(term) ||
-      village.includes(term) ||
-      (Array.isArray(loc.primaryCrops) && loc.primaryCrops.some(c => c && c.toLowerCase().includes(term)));
+      loc.formatted.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      loc.district.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      loc.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (loc.village && loc.village.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (loc.primaryCrops && loc.primaryCrops.some(c => c.toLowerCase().includes(searchTerm.toLowerCase())));
 
-    const matchesState = selectedStateFilter === 'All' || state.includes(selectedStateFilter.toLowerCase());
+    const matchesState = selectedStateFilter === 'All' || loc.state.toLowerCase().includes(selectedStateFilter.toLowerCase());
 
     return matchesSearch && matchesState;
   });
@@ -111,21 +104,12 @@ export const LocationModal = () => {
   // Combine curated database + live OpenStreetMap geocoded Indian villages/cities
   const combinedResults = [...localFiltered];
 
-  if (Array.isArray(liveSearchResults) && liveSearchResults.length > 0) {
+  if (liveSearchResults.length > 0) {
     liveSearchResults.forEach(liveLoc => {
-      if (!liveLoc) return;
-      const liveFormatted = (liveLoc.formatted || '').toLowerCase();
-      const liveDistrict = (liveLoc.district || '').toLowerCase();
-      const liveVillage = (liveLoc.village || '').toLowerCase();
-
-      const alreadyPresent = combinedResults.some(c => {
-        if (!c) return false;
-        const cFormatted = (c.formatted || '').toLowerCase();
-        const cDistrict = (c.district || '').toLowerCase();
-        const cVillage = (c.village || '').toLowerCase();
-        return cFormatted === liveFormatted || (cDistrict && cDistrict === liveDistrict && cVillage && cVillage === liveVillage);
-      });
-
+      const alreadyPresent = combinedResults.some(
+        c => c.formatted.toLowerCase() === liveLoc.formatted.toLowerCase() ||
+             (c.district.toLowerCase() === liveLoc.district.toLowerCase() && c.village.toLowerCase() === liveLoc.village.toLowerCase())
+      );
       if (!alreadyPresent) {
         combinedResults.push(liveLoc);
       }
@@ -252,10 +236,9 @@ export const LocationModal = () => {
               </div>
             ) : (
               combinedResults.map((loc, idx) => {
-                if (!loc) return null;
                 const isSelected = 
-                  (location?.formatted && loc.formatted && location.formatted === loc.formatted) || 
-                  (location?.district && loc.district && location.district.toLowerCase() === loc.district.toLowerCase() && location?.village === loc.village);
+                  location.formatted === loc.formatted || 
+                  (location.district && loc.district && location.district.toLowerCase() === loc.district.toLowerCase() && location.village === loc.village);
 
                 return (
                   <button

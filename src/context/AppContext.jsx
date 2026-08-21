@@ -16,106 +16,50 @@ import { reverseGeocodeCoords, fetchLiveAgroWeather } from '../services/geoServi
 
 const AppContext = createContext();
 
-// Defensive location normalizer
-const normalizeLocationObject = (loc) => {
-  if (!loc) return defaultFarmerProfile.location;
-  if (typeof loc === 'string') {
-    const parts = loc.split(',').map(s => s.trim());
-    return {
-      village: parts[0] || "Halol",
-      district: parts[1] || parts[0] || "Panchmahal",
-      state: parts[2] || "Gujarat",
-      pincode: "389350",
-      lat: 22.4988,
-      lng: 73.4731,
-      formatted: loc,
-      isGpsVerified: false
-    };
-  }
-  return {
-    village: loc.village || "Halol",
-    district: loc.district || "Panchmahal",
-    state: loc.state || "Gujarat",
-    pincode: loc.pincode || "389350",
-    lat: typeof loc.lat === 'number' ? loc.lat : 22.4988,
-    lng: typeof loc.lng === 'number' ? loc.lng : 73.4731,
-    formatted: loc.formatted || `${loc.village || 'Halol'}, ${loc.district || 'Panchmahal'}, ${loc.state || 'Gujarat'}`,
-    isGpsVerified: !!loc.isGpsVerified
-  };
-};
-
 export const AppProvider = ({ children }) => {
   const [language, setLanguage] = useState(() => {
-    try {
-      return localStorage.getItem('agrisaathi_lang') || 'en';
-    } catch {
-      return 'en';
-    }
+    return localStorage.getItem('agrisaathi_lang') || 'en';
   });
 
   const [farmerProfile, setFarmerProfile] = useState(() => {
-    try {
-      const saved = localStorage.getItem('agrisaathi_profile');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed && typeof parsed === 'object') {
-          return {
-            ...defaultFarmerProfile,
-            ...parsed,
-            location: normalizeLocationObject(parsed.location),
-            primaryCrops: Array.isArray(parsed.primaryCrops) && parsed.primaryCrops.length > 0
-              ? parsed.primaryCrops
-              : defaultFarmerProfile.primaryCrops
-          };
-        }
-      }
-    } catch (e) {
-      console.warn('Profile parse error, restoring defaults:', e);
-    }
-    return defaultFarmerProfile;
+    const saved = localStorage.getItem('agrisaathi_profile');
+    return saved ? JSON.parse(saved) : defaultFarmerProfile;
   });
 
   const [location, setLocation] = useState(() => {
-    return normalizeLocationObject(farmerProfile.location);
+    return farmerProfile.location || defaultFarmerProfile.location;
   });
 
   // Matched Agro-Climatic Zone
   const [agroRegion, setAgroRegion] = useState(() => {
-    const safeLoc = normalizeLocationObject(farmerProfile.location);
-    return getAgroRegionForLocation(safeLoc);
+    return getAgroRegionForLocation(farmerProfile.location);
   });
 
   // Dynamic Reactive State across all modules
   const [crops, setCrops] = useState(() => {
-    const safeLoc = normalizeLocationObject(farmerProfile.location);
-    const matched = getAgroRegionForLocation(safeLoc);
+    const matched = getAgroRegionForLocation(farmerProfile.location);
     return generateCropsForRegion(matched, farmerProfile.primaryCrops);
   });
 
   const [weatherData, setWeatherData] = useState(() => {
-    const safeLoc = normalizeLocationObject(farmerProfile.location);
-    const matched = getAgroRegionForLocation(safeLoc);
-    return generateWeatherDataForRegion(safeLoc, matched);
+    const matched = getAgroRegionForLocation(farmerProfile.location);
+    return generateWeatherDataForRegion(farmerProfile.location, matched);
   });
 
   const [mandiRates, setMandiRates] = useState(() => {
-    const safeLoc = normalizeLocationObject(farmerProfile.location);
-    const matched = getAgroRegionForLocation(safeLoc);
+    const matched = getAgroRegionForLocation(farmerProfile.location);
     const initialCrops = generateCropsForRegion(matched, farmerProfile.primaryCrops);
     return generateMandiRatesForRegion(matched, initialCrops);
   });
 
   const [alerts, setAlerts] = useState(() => {
-    const safeLoc = normalizeLocationObject(farmerProfile.location);
-    const matched = getAgroRegionForLocation(safeLoc);
-    const initWeather = generateWeatherDataForRegion(safeLoc, matched);
-    return generateAlertsForRegion(safeLoc, matched, initWeather);
+    const matched = getAgroRegionForLocation(farmerProfile.location);
+    return generateAlertsForRegion(farmerProfile.location, matched, weatherData);
   });
 
   const [schemes, setSchemes] = useState(() => {
-    const safeLoc = normalizeLocationObject(farmerProfile.location);
-    const matched = getAgroRegionForLocation(safeLoc);
-    return generateSchemesForLocation(safeLoc, matched);
+    const matched = getAgroRegionForLocation(farmerProfile.location);
+    return generateSchemesForLocation(farmerProfile.location, matched);
   });
 
   const [activeRole, setActiveRole] = useState('farmer'); // 'farmer' | 'expert' | 'admin'
@@ -130,15 +74,11 @@ export const AppProvider = ({ children }) => {
   const [gpsStatusText, setGpsStatusText] = useState('');
 
   useEffect(() => {
-    try {
-      localStorage.setItem('agrisaathi_lang', language);
-    } catch {}
+    localStorage.setItem('agrisaathi_lang', language);
   }, [language]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('agrisaathi_profile', JSON.stringify(farmerProfile));
-    } catch {}
+    localStorage.setItem('agrisaathi_profile', JSON.stringify(farmerProfile));
   }, [farmerProfile]);
 
   // Global Keyboard Shortcut for Command Palette (Ctrl+K or Cmd+K)
@@ -165,8 +105,7 @@ export const AppProvider = ({ children }) => {
   /**
    * Updates Location & Synchronizes Agro-Climatic Zone, Crops, Soil, Weather, Mandis & Alerts
    */
-  const updateLocation = useCallback(async (newLocRaw, shouldSyncAgro = true, profileOverrides = {}) => {
-    const newLoc = normalizeLocationObject(newLocRaw);
+  const updateLocation = useCallback(async (newLoc, shouldSyncAgro = true, profileOverrides = {}) => {
     const resolvedRegion = getAgroRegionForLocation(newLoc);
     setAgroRegion(resolvedRegion);
     setLocation(newLoc);
@@ -242,17 +181,15 @@ export const AppProvider = ({ children }) => {
     setFarmerProfile(prev => {
       const updated = { ...prev, ...updates };
       if (updates.location) {
-        setLocation(normalizeLocationObject(updates.location));
+        setLocation(updates.location);
       }
       return updated;
     });
 
     // If crops or location were updated, re-sync crop models and mandis
-    if (updates.primaryCrops || updates.location) {
-      const targetLoc = normalizeLocationObject(updates.location || location);
-      const matchedRegion = getAgroRegionForLocation(targetLoc);
-      const targetCrops = updates.primaryCrops || farmerProfile.primaryCrops;
-      const newCrops = generateCropsForRegion(matchedRegion, targetCrops);
+    if (updates.primaryCrops) {
+      const matchedRegion = getAgroRegionForLocation(updates.location || location);
+      const newCrops = generateCropsForRegion(matchedRegion, updates.primaryCrops);
       setCrops(newCrops);
       const newMandis = generateMandiRatesForRegion(matchedRegion, newCrops);
       setMandiRates(newMandis);
@@ -309,6 +246,7 @@ export const AppProvider = ({ children }) => {
           setIsLocationModalOpen(false);
         } catch (err) {
           console.warn('Geocoding processing fallback:', err);
+          // Fallback nearest region by coords
           const nearestAgro = getAgroRegionForLocation({ lat: latitude, lng: longitude });
           const detectedLoc = {
             village: `${nearestAgro.village} (GPS Verified)`,
@@ -371,10 +309,6 @@ export const AppProvider = ({ children }) => {
   };
 
   const resetDemoData = () => {
-    try {
-      localStorage.removeItem('agrisaathi_profile');
-      localStorage.removeItem('agrisaathi_lang');
-    } catch {}
     setFarmerProfile(defaultFarmerProfile);
     setLocation(defaultFarmerProfile.location);
     const baseRegion = getAgroRegionForLocation(defaultFarmerProfile.location);

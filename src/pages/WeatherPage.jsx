@@ -44,7 +44,7 @@ export const WeatherPage = () => {
         </div>
 
         <div className="flex items-center gap-2 text-xs font-bold text-agri-dark bg-agri-bg px-4 py-2.5 rounded-2xl border border-agri-soft/50 shadow-xs">
-          <MapPin className="w-4 h-4 text-earth-terracotta" /> {location?.formatted || "Farm Location"}
+          <MapPin className="w-4 h-4 text-earth-terracotta" /> {location.formatted}
         </div>
       </div>
 
@@ -59,7 +59,7 @@ export const WeatherPage = () => {
             <div>
               <div className="text-4xl sm:text-5xl font-black font-sans tracking-tight">{current.temp}°C</div>
               <div className="text-sm font-extrabold text-emerald-200 mt-1">
-                {current.condition} • {location?.formatted || "Farm Location"}
+                {current.condition} • {location.formatted}
               </div>
               <span className="text-[11px] text-emerald-300/80 font-medium">
                 {agroRegion?.agroZone || "Agro-Climatic Zone"} • Avg Rainfall: {agroRegion?.avgRainfall || "850mm"}

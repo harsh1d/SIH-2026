@@ -22,18 +22,18 @@ export const MarketPage = () => {
   const [sortBy, setSortBy] = useState('highest'); // 'highest' | 'distance'
 
   useEffect(() => {
-    if (selectedCropIndex >= (mandiRates?.length || 0)) {
+    if (selectedCropIndex >= mandiRates.length) {
       setSelectedCropIndex(0);
     }
   }, [mandiRates, selectedCropIndex]);
 
-  const activeMandiData = mandiRates?.[selectedCropIndex] || mandiRates?.[0] || {
+  const activeMandiData = mandiRates[selectedCropIndex] || mandiRates[0] || {
     crop: "Cotton",
     variety: "Long Staple",
     highestPrice: 7410,
     lowestPrice: 7120,
     trend: "+4.2%",
-    markets: [{ name: "Local APMC Yard", district: location?.district || "District", price: 7250, change: "+₹250", distanceKm: 6 }],
+    markets: [{ name: "Local APMC Yard", district: location.district, price: 7250, change: "+₹250", distanceKm: 6 }],
     chartData: []
   };
 
