@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { User, MapPin, Sprout, Save, ShieldCheck, Check, Droplets, Sparkles } from 'lucide-react';
+import { User, MapPin, Sprout, Save, ShieldCheck, Check, Droplets, Sparkles, Compass } from 'lucide-react';
 
 export const ProfilePage = () => {
-  const { farmerProfile, updateFarmerProfile, location, showToast } = useApp();
+  const { farmerProfile, updateFarmerProfile, location, agroRegion, setIsLocationModalOpen, showToast } = useApp();
 
   const [name, setName] = useState(farmerProfile.name || '');
   const [phone, setPhone] = useState(farmerProfile.phone || '');
@@ -12,7 +12,26 @@ export const ProfilePage = () => {
   const [irrigation, setIrrigation] = useState(farmerProfile.irrigationType || 'Drip Irrigation + Tube Well');
   const [selectedCrops, setSelectedCrops] = useState(farmerProfile.primaryCrops || ['Cotton', 'Wheat', 'Tomato']);
 
-  const cropOptions = ['Cotton', 'Wheat', 'Tomato', 'Maize', 'Soybean', 'Mustard', 'Sugarcane', 'Paddy'];
+  // Sync form state when farmerProfile or location changes in AppContext
+  useEffect(() => {
+    setName(farmerProfile.name || '');
+    setPhone(farmerProfile.phone || '');
+    setFarmSize(farmerProfile.farmSizeAcres || 4.5);
+    setSoil(farmerProfile.soilType || 'Black Cotton Soil (Regur)');
+    setIrrigation(farmerProfile.irrigationType || 'Drip Irrigation + Tube Well');
+    setSelectedCrops(farmerProfile.primaryCrops || ['Cotton', 'Wheat', 'Tomato']);
+  }, [farmerProfile]);
+
+  const cropOptions = ['Cotton', 'Wheat', 'Tomato', 'Paddy', 'Mustard', 'Soybean', 'Sugarcane', 'Maize'];
+  const soilOptions = [
+    'Black Cotton Soil (Regur)',
+    'Indo-Gangetic Fertile Alluvial Loam',
+    'Alluvial Soil',
+    'Medium Black Calcareous Soil',
+    'Red & Yellow Sandy Soil',
+    'Laterite Clay Soil',
+    'Brown Mountain Loamy Soil'
+  ];
 
   const toggleCrop = (crop) => {
     if (selectedCrops.includes(crop)) {
@@ -42,19 +61,51 @@ export const ProfilePage = () => {
     <div className="space-y-8 max-w-3xl mx-auto animate-fade-in">
       
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
-        <div className="flex items-center gap-4 border-b border-gray-100 pb-4">
-          <div className="w-14 h-14 rounded-2xl bg-agri-dark text-white flex items-center justify-center font-bold text-xl shadow-md border border-gov-gold/40">
-            <User className="w-7 h-7 text-emerald-300" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-black text-agri-dark font-sans tracking-tight">Farmer Profile & Telemetry</h1>
-              <span className="px-2.5 py-0.5 bg-purple-100 text-ai-plum font-extrabold text-[10px] rounded-full uppercase">
-                AI Grounding Baseline
-              </span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-agri-dark text-white flex items-center justify-center font-bold text-xl shadow-md border border-gov-gold/40">
+              <User className="w-7 h-7 text-emerald-300" />
             </div>
-            <p className="text-xs text-gray-500 font-medium mt-0.5">Configure your farm parameters for hyper-personalized AI advisories and subsidy matching.</p>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-black text-agri-dark font-sans tracking-tight">Farmer Profile & Telemetry</h1>
+                <span className="px-2.5 py-0.5 bg-purple-100 text-ai-plum font-extrabold text-[10px] rounded-full uppercase">
+                  AI Grounding Baseline
+                </span>
+              </div>
+              <p className="text-xs text-gray-500 font-medium mt-0.5">Configure your farm parameters for hyper-personalized AI advisories and subsidy matching.</p>
+            </div>
           </div>
+
+          <button
+            type="button"
+            onClick={() => setIsLocationModalOpen(true)}
+            className="flex items-center gap-1.5 px-4 py-2 bg-agri-bg hover:bg-agri-light text-agri-dark text-xs font-black rounded-xl border border-agri-soft/50 transition-colors cursor-pointer"
+          >
+            <Compass className="w-4 h-4 text-earth-terracotta" />
+            <span>Change Location / GPS</span>
+          </button>
+        </div>
+
+        {/* Location & Agro-Zone Badge */}
+        <div className="p-4 bg-gradient-to-r from-agri-bg to-emerald-50 rounded-2xl border border-agri-soft/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="space-y-0.5">
+            <span className="font-black text-agri-dark uppercase tracking-wider text-[10px]">Active Farm Location</span>
+            <div className="font-extrabold text-sm text-agri-dark flex items-center gap-1.5">
+              <MapPin className="w-4 h-4 text-earth-terracotta" /> {location.formatted}
+            </div>
+            <div className="text-[11px] text-gray-600 font-medium">
+              Agro-Climatic Zone: <strong className="text-earth-walnut">{agroRegion?.agroZone || "National Agricultural Zone"}</strong>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsLocationModalOpen(true)}
+            className="self-start sm:self-auto text-xs font-bold text-agri-primary hover:underline"
+          >
+            Switch District →
+          </button>
         </div>
 
         <form onSubmit={handleSave} className="space-y-5 text-xs">
@@ -97,10 +148,9 @@ export const ProfilePage = () => {
                 onChange={(e) => setSoil(e.target.value)} 
                 className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-2xl font-semibold focus:outline-none focus:ring-2 focus:ring-agri-primary"
               >
-                <option value="Black Cotton Soil (Regur)">Black Cotton Soil (Regur)</option>
-                <option value="Alluvial Soil">Alluvial Soil</option>
-                <option value="Red & Yellow Sandy Soil">Red & Yellow Sandy Soil</option>
-                <option value="Laterite Clay Soil">Laterite Clay Soil</option>
+                {soilOptions.map((s, idx) => (
+                  <option key={idx} value={s}>{s}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -113,8 +163,12 @@ export const ProfilePage = () => {
               className="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-2xl font-semibold focus:outline-none focus:ring-2 focus:ring-agri-primary"
             >
               <option value="Drip Irrigation + Tube Well">Drip Irrigation + Tube Well</option>
-              <option value="Micro-Sprinkler Irrigation">Micro-Sprinkler Irrigation</option>
-              <option value="Canal Gravity Flow">Canal Gravity Flow</option>
+              <option value="Canal Gravity + Submersible Deep Tube Well">Canal Gravity + Submersible Deep Tube Well</option>
+              <option value="Narmada Canal Lift + Drip Irrigation">Narmada Canal Lift + Drip Irrigation</option>
+              <option value="Drip Irrigation + Farm Pond (Shettale) + Well">Drip Irrigation + Farm Pond (Shettale) + Well</option>
+              <option value="Tube Well + Sprinkler & Check Dam Lift">Tube Well + Sprinkler & Check Dam Lift</option>
+              <option value="Borewell Drip + River Lift Irrigation">Borewell Drip + River Lift Irrigation</option>
+              <option value="Monsoon Rainfed + River Lift & Micro-Sprinkler">Monsoon Rainfed + River Lift & Micro-Sprinkler</option>
               <option value="Rainfed (Non-irrigated)">Rainfed (Non-irrigated)</option>
             </select>
           </div>
@@ -129,7 +183,7 @@ export const ProfilePage = () => {
                     type="button"
                     key={crop}
                     onClick={() => toggleCrop(crop)}
-                    className={`px-3.5 py-2 rounded-xl font-extrabold text-xs transition-all ${
+                    className={`px-3.5 py-2 rounded-xl font-extrabold text-xs transition-all cursor-pointer ${
                       isSelected 
                         ? 'bg-agri-dark text-white shadow-xs border border-gov-gold/30' 
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -140,11 +194,6 @@ export const ProfilePage = () => {
                 );
               })}
             </div>
-          </div>
-
-          <div className="p-4 bg-agri-bg rounded-2xl border border-agri-soft/40 space-y-1">
-            <span className="font-extrabold text-agri-dark block text-[10px] uppercase tracking-wider">Active Location Telemetry</span>
-            <span className="text-gray-700 font-bold">{location.formatted}</span>
           </div>
 
           <button 

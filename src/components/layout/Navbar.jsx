@@ -104,11 +104,16 @@ export const Navbar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
           {/* Location Badge */}
           <button
             onClick={() => setIsLocationModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-2 bg-agri-bg hover:bg-agri-light border border-agri-soft/40 rounded-2xl transition-all text-xs font-bold text-agri-dark truncate max-w-[170px]"
-            title="Click to change farm district"
+            className="flex items-center gap-1.5 px-3 py-2 bg-agri-bg hover:bg-agri-light border border-agri-soft/40 rounded-2xl transition-all text-xs font-bold text-agri-dark truncate max-w-[190px] cursor-pointer group"
+            title="Click to change farm location or detect GPS"
           >
-            <MapPin className="w-3.5 h-3.5 text-earth-terracotta flex-shrink-0" />
-            <span className="truncate">{location.formatted?.split(',')[0] || "Halol"}</span>
+            <MapPin className="w-3.5 h-3.5 text-earth-terracotta flex-shrink-0 group-hover:scale-110 transition-transform" />
+            <span className="truncate">
+              {location.district ? `${location.village ? location.village + ', ' : ''}${location.district}` : (location.formatted?.split(',')[0] || "Halol")}
+            </span>
+            {location.isGpsVerified && (
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0 animate-ping" />
+            )}
           </button>
         </div>
 

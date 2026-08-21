@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 
 export const AIAssistantPage = () => {
-  const { location, farmerProfile, setActiveTab, t, language, showToast } = useApp();
+  const { location, farmerProfile, weatherData, mandiRates, setActiveTab, t, language, showToast } = useApp();
 
   const [queryInput, setQueryInput] = useState('');
   const [isRecording, setIsRecording] = useState(false);
@@ -48,17 +48,19 @@ export const AIAssistantPage = () => {
     const fName = farmerProfile.name || 'Farmer';
     const loc = location.formatted || 'Halol, Gujarat';
     const soil = farmerProfile.soilType || 'Black Cotton Soil';
+    const temp = weatherData?.current?.temp ?? 29;
+    const humidity = weatherData?.current?.humidity ?? 78;
 
     if (lang === 'hi') {
-      return `नमस्ते ${fName} जी! 🌱\n\nमैं कृषि साथी एआई सहायक हूँ। आपके खेत (${loc}), मिट्टी (${soil}) और मौसम (${mockWeatherData.current.temp}°C, ${mockWeatherData.current.humidity}% नमी) की टेलीमेट्री सक्रिय है।\n\nआज आपकी फसल स्वास्थ्य, कीट नियंत्रण, मौसम या खाद के समय के लिए मैं क्या सहायता कर सकता हूँ?`;
+      return `नमस्ते ${fName} जी! 🌱\n\nमैं कृषि साथी एआई सहायक हूँ। आपके खेत (${loc}), मिट्टी (${soil}) और मौसम (${temp}°C, ${humidity}% नमी) की टेलीमेट्री सक्रिय है।\n\nआज आपकी फसल स्वास्थ्य, कीट नियंत्रण, मौसम या खाद के समय के लिए मैं क्या सहायता कर सकता हूँ?`;
     }
     if (lang === 'gu') {
-      return `નમસ્તે ${fName} જી! 🌱\n\nહું કૃષિ સાથી એઆઈ સહાયક છું. તમારા ખેતર (${loc}), જમીન (${soil}) અને જીવંત હવામાન (${mockWeatherData.current.temp}°C) નું ટેલિમેટ્રી લોડ થઈ ગયું છે.\n\nઆજે તમારા પાકના રક્ષણ, રોગ નિયંત્રણ કે મંડી ભાવ માટે હું કેવી રીતે મદદ કરી શકું?`;
+      return `નમસ્તે ${fName} જી! 🌱\n\nહું કૃષિ સાથી એઆઈ સહાયક છું. તમારા ખેતર (${loc}), જમીન (${soil}) અને જીવંત હવામાન (${temp}°C) નું ટેલિમેટ્રી લોડ થઈ ગયું છે.\n\nઆજે તમારા પાકના રક્ષણ, રોગ નિયંત્રણ કે મંડી ભાવ માટે હું કેવી રીતે મદદ કરી શકું?`;
     }
     if (lang === 'ml') {
-      return `നമസ്കാരം ${fName} ജി! 🌱\n\nഞാൻ കൃഷി സാഥി എഐ ആണ്. നിങ്ങളുടെ ഫാം ലൊക്കേഷൻ (${loc}), മണ്ണ് (${soil}), കാലാവസ്ഥ (${mockWeatherData.current.temp}°C) വിവരങ്ങൾ തയ്യാറാണ്.\n\nഇന്ന് നിങ്ങളുടെ വിള പരിപാലനത്തിൽ ഞാൻ എങ്ങനെ സഹായിക്കണം?`;
+      return `നമസ്കാരം ${fName} ജി! 🌱\n\nഞാൻ കൃഷി സാഥി എഐ ആണ്. നിങ്ങളുടെ ഫാം ലൊക്കേഷൻ (${loc}), മണ്ണ് (${soil}), കാലാവസ്ഥ (${temp}°C) വിവരങ്ങൾ തയ്യാറാണ്.\n\nഇന്ന് നിങ്ങളുടെ വിള പരിപാലനത്തിൽ ഞാൻ എങ്ങനെ സഹായിക്കണം?`;
     }
-    return `Namaste ${fName} Ji! 🌱\n\nI am AgriSaathi AI, your precision agronomy assistant. I have synthesized your live telemetry for ${loc}, Soil: ${soil}, registered crops: ${farmerProfile.primaryCrops?.join(', ') || 'Cotton, Wheat'}, and local weather (${mockWeatherData.current.temp}°C, ${mockWeatherData.current.humidity}% humidity).\n\nHow can I help optimize your crop yields and protect against pests today?`;
+    return `Namaste ${fName} Ji! 🌱\n\nI am AgriSaathi AI, your precision agronomy assistant. I have synthesized your live telemetry for ${loc}, Soil: ${soil}, registered crops: ${farmerProfile.primaryCrops?.join(', ') || 'Cotton, Wheat'}, and local weather (${temp}°C, ${humidity}% humidity).\n\nHow can I help optimize your crop yields and protect against pests today?`;
   };
 
   const [messages, setMessages] = useState([
@@ -255,8 +257,8 @@ export const AIAssistantPage = () => {
         userImage: userMsg.image,
         farmerProfile,
         location,
-        weatherData: mockWeatherData,
-        mandiRates: mockMandiRates,
+        weatherData,
+        mandiRates,
         conversationHistory: updatedHistory,
         language: language
       });

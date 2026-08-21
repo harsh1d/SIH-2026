@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { mockSchemes, mockNews } from '../data/mockData';
+import { mockNews } from '../data/mockData';
 import { 
   Landmark, 
   Newspaper, 
@@ -14,11 +14,12 @@ import {
   Building,
   Filter,
   Check,
-  X
+  X,
+  MapPin
 } from 'lucide-react';
 
 export const SchemesPage = () => {
-  const { farmerProfile, location, t, showToast } = useApp();
+  const { farmerProfile, location, agroRegion, schemes, t, showToast } = useApp();
 
   const [activeTabSub, setActiveTabSub] = useState('schemes'); // 'schemes' | 'news'
   const [filterCategory, setFilterCategory] = useState('All');
@@ -26,37 +27,7 @@ export const SchemesPage = () => {
   const [applicationSubmitted, setApplicationSubmitted] = useState(false);
   const [trackingId, setTrackingId] = useState(null);
 
-  const extendedSchemes = [
-    ...mockSchemes,
-    {
-      id: "SCHEME-KCC-03",
-      title: "Kisan Credit Card (KCC) 4% Interest Subvention",
-      dept: "Ministry of Finance & NABARD",
-      category: "Credit & Loans",
-      deadline: "Open All Year",
-      benefitAmount: "₹3,00,000 Collateral-Free Agri Credit @ 4% Effective Interest",
-      eligibility: "All landholder farmers, tenant farmers, and oral lessees cultivating eligible crops.",
-      isEligibleForUser: true,
-      documentsRequired: ["Land 7/12 & 8A Record", "Aadhaar Card", "Bank Passbook Copy", "No-Dues Certificate from Lead Bank"],
-      applicationProcess: "Apply at local Primary Agricultural Credit Society (PACS) or nationalised bank branch.",
-      officialLink: "https://myscheme.gov.in"
-    },
-    {
-      id: "SCHEME-SOLAR-04",
-      title: "PM-KUSUM Solar Agricultural Pump Subsidy",
-      dept: "Ministry of New and Renewable Energy",
-      category: "Subsidies",
-      deadline: "30 Sept 2026",
-      benefitAmount: "60% Central/State Subsidy for standalone 3HP to 7.5HP Solar Pumps",
-      eligibility: "Farmers with verified agricultural land holding and existing tube well or borewell.",
-      isEligibleForUser: true,
-      documentsRequired: ["Land Ownership 7/12 extract", "Electricity Connection Certificate", "Aadhaar Card", "Bank Details"],
-      applicationProcess: "Apply via Gujarat Energy Development Agency (GEDA) portal.",
-      officialLink: "https://pmkusum.mnre.gov.in"
-    }
-  ];
-
-  const filteredSchemes = extendedSchemes.filter(scm => {
+  const filteredSchemes = (schemes || []).filter(scm => {
     if (filterCategory === 'All') return true;
     return scm.category.toLowerCase().includes(filterCategory.toLowerCase());
   });
@@ -86,7 +57,7 @@ export const SchemesPage = () => {
             {t.schemes?.title || "Government Schemes & Subsidies"}
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">
-            {t.schemes?.subtitle || "Personalized eligibility calculations based on your 4.5 Acre farm in Panchmahal."}
+            Personalized eligibility calculations for {farmerProfile.name}'s {farmerProfile.farmSizeAcres} Acre farm in {location.formatted}.
           </p>
         </div>
 
@@ -94,7 +65,7 @@ export const SchemesPage = () => {
         <div className="flex items-center gap-1.5 p-1 bg-gray-100 rounded-2xl">
           <button
             onClick={() => setActiveTabSub('schemes')}
-            className={`px-4 py-2.5 text-xs font-extrabold rounded-xl transition-all ${
+            className={`px-4 py-2.5 text-xs font-extrabold rounded-xl transition-all cursor-pointer ${
               activeTabSub === 'schemes' 
                 ? 'bg-earth-walnut text-white shadow-earth border border-earth-wheat/40' 
                 : 'text-gray-600 hover:text-gray-900'
@@ -104,7 +75,7 @@ export const SchemesPage = () => {
           </button>
           <button
             onClick={() => setActiveTabSub('news')}
-            className={`px-4 py-2.5 text-xs font-extrabold rounded-xl transition-all ${
+            className={`px-4 py-2.5 text-xs font-extrabold rounded-xl transition-all cursor-pointer ${
               activeTabSub === 'news' 
                 ? 'bg-agri-dark text-white shadow-agri' 
                 : 'text-gray-600 hover:text-gray-900'
@@ -131,7 +102,7 @@ export const SchemesPage = () => {
                 <button
                   key={idx}
                   onClick={() => setFilterCategory(cat)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     filterCategory === cat
                       ? 'bg-agri-dark text-white shadow-xs'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -157,7 +128,7 @@ export const SchemesPage = () => {
                       </span>
                       {scm.isEligibleForUser && (
                         <span className="text-[10px] font-extrabold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 flex items-center gap-1 border border-emerald-300">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> {t.schemes?.eligible || "Eligible for Your Farm Size (4.5 Acres)"}
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Eligible for Your Farm ({farmerProfile.farmSizeAcres} Acres)
                         </span>
                       )}
                     </div>
@@ -187,7 +158,7 @@ export const SchemesPage = () => {
                   <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 space-y-2">
                     <span className="font-black text-agri-dark block text-xs uppercase tracking-wide">📄 {t.schemes?.documents || "Required Documents"}</span>
                     <ul className="list-disc pl-5 space-y-1 text-gray-700 font-medium">
-                      {scm.documentsRequired.map((doc, idx) => (
+                      {scm.documentsRequired?.map((doc, idx) => (
                         <li key={idx}>{doc}</li>
                       ))}
                     </ul>
@@ -200,7 +171,7 @@ export const SchemesPage = () => {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleSimulateApply(scm)}
-                      className="px-4 py-2.5 bg-agri-dark hover:bg-agri-primary text-white font-extrabold text-xs rounded-2xl transition-colors shadow-agri flex items-center gap-1.5"
+                      className="px-4 py-2.5 bg-agri-dark hover:bg-agri-primary text-white font-extrabold text-xs rounded-2xl transition-colors shadow-agri flex items-center gap-1.5 cursor-pointer"
                     >
                       <Sparkles className="w-3.5 h-3.5 text-emerald-300" /> Simulate Direct Apply
                     </button>
@@ -263,7 +234,7 @@ export const SchemesPage = () => {
               </div>
               <button 
                 onClick={() => setApplyingScheme(null)}
-                className="p-1 rounded-full text-gray-400 hover:text-gray-700"
+                className="p-1 rounded-full text-gray-400 hover:text-gray-700 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -280,7 +251,7 @@ export const SchemesPage = () => {
 
                 <div className="space-y-2">
                   <span className="font-bold text-gray-700 block">Verified Digital Locker Documents:</span>
-                  {applyingScheme.documentsRequired.map((doc, idx) => (
+                  {applyingScheme.documentsRequired?.map((doc, idx) => (
                     <div key={idx} className="flex items-center gap-2 p-2.5 bg-emerald-50 text-emerald-950 rounded-xl border border-emerald-200">
                       <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                       <span className="font-semibold">{doc} (DigiLocker Verified)</span>
@@ -302,14 +273,14 @@ export const SchemesPage = () => {
                 </div>
                 <h4 className="text-base font-black text-emerald-950">Application Submitted Successfully!</h4>
                 <p className="text-xs text-emerald-900 font-medium">
-                  Your application has been routed to the District Agriculture Officer (Panchmahal).
+                  Your application has been routed to the District Agriculture Officer ({location.district || location.state}).
                 </p>
                 <div className="p-3 bg-white rounded-xl border border-emerald-300 text-xs font-black text-agri-dark">
                   Tracking ID: <span className="text-emerald-700 font-mono text-sm">{trackingId}</span>
                 </div>
                 <button
                   onClick={() => setApplyingScheme(null)}
-                  className="px-6 py-2 bg-agri-dark text-white font-bold text-xs rounded-xl mt-2"
+                  className="px-6 py-2 bg-agri-dark text-white font-bold text-xs rounded-xl mt-2 cursor-pointer"
                 >
                   Done
                 </button>

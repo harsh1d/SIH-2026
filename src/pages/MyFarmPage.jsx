@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { mockCrops } from '../data/mockData';
 import { getCropTranslation, getStageTranslation, getSoilTranslation } from '../data/translations';
 import { 
   Sprout, 
@@ -16,14 +15,31 @@ import {
   ShieldCheck,
   Bot,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Compass
 } from 'lucide-react';
 
 export const MyFarmPage = () => {
-  const { farmerProfile, location, setActiveTab, t } = useApp();
+  const { farmerProfile, location, agroRegion, crops, setActiveTab, t } = useApp();
 
-  const [selectedCropId, setSelectedCropId] = useState(mockCrops[0].id);
-  const activeCrop = mockCrops.find(c => c.id === selectedCropId) || mockCrops[0];
+  const [selectedCropId, setSelectedCropId] = useState(crops[0]?.id);
+
+  // Update selected crop if crops list changes (e.g. location changed)
+  useEffect(() => {
+    if (crops.length > 0 && !crops.some(c => c.id === selectedCropId)) {
+      setSelectedCropId(crops[0].id);
+    }
+  }, [crops, selectedCropId]);
+
+  const activeCrop = crops.find(c => c.id === selectedCropId) || crops[0];
+
+  if (!activeCrop) {
+    return (
+      <div className="p-8 text-center bg-white rounded-3xl border border-gray-100">
+        <p className="text-gray-500">No active crops registered for this location yet.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto animate-fade-in">
@@ -39,11 +55,11 @@ export const MyFarmPage = () => {
               <div className="flex items-center gap-2">
                 <h1 className="text-2xl font-black text-agri-dark font-sans tracking-tight">{farmerProfile.name}'s Farm</h1>
                 <span className="px-2.5 py-0.5 text-[10px] font-extrabold bg-emerald-100 text-emerald-800 rounded-full border border-emerald-300">
-                  Verified Farm Telemetry
+                  {location.isGpsVerified ? "GPS Grounded Telemetry" : "Verified Farm Telemetry"}
                 </span>
               </div>
               <p className="text-xs text-gray-500 font-medium flex items-center gap-1.5 mt-0.5">
-                <MapPin className="w-3.5 h-3.5 text-earth-terracotta" /> {location.formatted}
+                <MapPin className="w-3.5 h-3.5 text-earth-terracotta" /> {location.formatted} • <strong className="text-agri-dark">{agroRegion?.agroZone || "Agro-Zone"}</strong>
               </p>
             </div>
           </div>
@@ -89,7 +105,7 @@ export const MyFarmPage = () => {
             <span className="text-gray-500 font-bold block text-[10px] uppercase tracking-wider">
               {t.myFarm?.activeCrops || "Active Crops"}
             </span>
-            <span className="text-base font-black text-purple-950">{mockCrops.length} Registered</span>
+            <span className="text-base font-black text-purple-950">{crops.length} Registered</span>
           </div>
         </div>
       </div>
@@ -97,7 +113,7 @@ export const MyFarmPage = () => {
       {/* MULTI-CROP SELECTOR TABS */}
       <div className="space-y-6">
         <div className="flex items-center gap-3 overflow-x-auto pb-2">
-          {mockCrops.map((crop) => {
+          {crops.map((crop) => {
             const isSelected = crop.id === activeCrop.id;
             return (
               <button
@@ -131,7 +147,7 @@ export const MyFarmPage = () => {
                 <span>{activeCrop.variety}</span> • <span>{activeCrop.areaAcres} {t.dashboard?.acresUnit || "Acres"}</span>
               </div>
               <h2 className="text-2xl font-black text-agri-dark font-sans">
-                {getCropTranslation(activeCrop.name, t)} Farm Profile
+                {getCropTranslation(activeCrop.name, t)} Farm Telemetry
               </h2>
               
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs pt-2">
@@ -160,7 +176,7 @@ export const MyFarmPage = () => {
                 {activeCrop.healthStatus}
               </span>
               <p className="text-[11px] text-gray-500 pt-1 font-semibold">
-                Pest Risk: <strong className="text-amber-600">{activeCrop.risks.pest}</strong>
+                Pest Risk: <strong className="text-amber-600">{activeCrop.risks?.pest || "Low"}</strong>
               </p>
             </div>
 
@@ -195,7 +211,7 @@ export const MyFarmPage = () => {
 
             {/* Stage Progress Nodes */}
             <div className="space-y-4">
-              {activeCrop.stages.map((stg, sIdx) => {
+              {activeCrop.stages?.map((stg, sIdx) => {
                 const isCurrent = stg.status === 'current';
                 const isCompleted = stg.status === 'completed';
 

@@ -1,6 +1,5 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { mockWeatherData } from '../data/mockData';
 import { 
   CloudSun, 
   CloudRain, 
@@ -12,12 +11,20 @@ import {
   Sparkles, 
   AlertTriangle,
   Info,
-  ShieldCheck
+  ShieldCheck,
+  Compass
 } from 'lucide-react';
 
 export const WeatherPage = () => {
-  const { location, t } = useApp();
-  const weather = mockWeatherData;
+  const { location, agroRegion, weatherData, t } = useApp();
+  const weather = weatherData || {};
+  const current = weather.current || {
+    temp: 29,
+    condition: "Partly Cloudy with Humidity",
+    humidity: 78,
+    windSpeed: 14,
+    rainProbability: 85
+  };
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto animate-fade-in">
@@ -50,8 +57,13 @@ export const WeatherPage = () => {
               <CloudRain className="w-14 h-14 text-emerald-300 animate-pulse" />
             </div>
             <div>
-              <div className="text-4xl sm:text-5xl font-black font-sans tracking-tight">{weather.current.temp}°C</div>
-              <div className="text-sm font-extrabold text-emerald-200 mt-1">{weather.current.condition} • {location.formatted}</div>
+              <div className="text-4xl sm:text-5xl font-black font-sans tracking-tight">{current.temp}°C</div>
+              <div className="text-sm font-extrabold text-emerald-200 mt-1">
+                {current.condition} • {location.formatted}
+              </div>
+              <span className="text-[11px] text-emerald-300/80 font-medium">
+                {agroRegion?.agroZone || "Agro-Climatic Zone"} • Avg Rainfall: {agroRegion?.avgRainfall || "850mm"}
+              </span>
             </div>
           </div>
 
@@ -60,7 +72,7 @@ export const WeatherPage = () => {
               <Droplet className="w-5 h-5 text-sky-300" />
               <div>
                 <span className="text-[10px] text-emerald-200 font-extrabold uppercase block">HUMIDITY</span>
-                <span className="font-extrabold text-sm">{weather.current.humidity}%</span>
+                <span className="font-extrabold text-sm">{current.humidity}%</span>
               </div>
             </div>
 
@@ -68,7 +80,7 @@ export const WeatherPage = () => {
               <Wind className="w-5 h-5 text-teal-300" />
               <div>
                 <span className="text-[10px] text-emerald-200 font-extrabold uppercase block">WIND SPEED</span>
-                <span className="font-extrabold text-sm">{weather.current.windSpeed} km/h</span>
+                <span className="font-extrabold text-sm">{current.windSpeed} km/h</span>
               </div>
             </div>
           </div>
@@ -81,7 +93,7 @@ export const WeatherPage = () => {
           </div>
           
           <div className="space-y-2">
-            {weather.agroImpact.recommendations.map((rec, idx) => (
+            {weather.agroImpact?.recommendations?.map((rec, idx) => (
               <p key={idx} className="text-xs sm:text-sm text-emerald-100 font-semibold leading-relaxed">
                 "{rec}"
               </p>
@@ -91,58 +103,62 @@ export const WeatherPage = () => {
       </div>
 
       {/* HOURLY FORECAST SCROLL */}
-      <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-3">
-        <h3 className="font-black text-sm text-agri-dark uppercase tracking-wider">
-          {t.weather?.hourlyTitle || "Hourly Precipitation Forecast"}
-        </h3>
-        <div className="flex items-center gap-4 overflow-x-auto pb-2">
-          {weather.hourly.map((h, idx) => (
-            <div key={idx} className="flex-shrink-0 w-28 p-3.5 bg-agri-bg rounded-2xl border border-agri-soft/40 text-center space-y-1">
-              <span className="text-[11px] font-extrabold text-gray-500 block">{h.time}</span>
-              <CloudRain className="w-7 h-7 text-agri-primary mx-auto my-1" />
-              <span className="text-xs font-black text-agri-dark block">{h.temp}°C</span>
-              <span className="text-[10px] font-bold text-sky-600 block">☔ {h.rainProb}% Rain</span>
-            </div>
-          ))}
+      {weather.hourly && (
+        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-3">
+          <h3 className="font-black text-sm text-agri-dark uppercase tracking-wider">
+            {t.weather?.hourlyTitle || "Hourly Precipitation Forecast"}
+          </h3>
+          <div className="flex items-center gap-4 overflow-x-auto pb-2">
+            {weather.hourly.map((h, idx) => (
+              <div key={idx} className="flex-shrink-0 w-28 p-3.5 bg-agri-bg rounded-2xl border border-agri-soft/40 text-center space-y-1">
+                <span className="text-[11px] font-extrabold text-gray-500 block">{h.time}</span>
+                <CloudRain className="w-7 h-7 text-agri-primary mx-auto my-1" />
+                <span className="text-xs font-black text-agri-dark block">{h.temp}°C</span>
+                <span className="text-[10px] font-bold text-sky-600 block">☔ {h.rainProb}% Rain</span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* 7-DAY FORECAST CARDS */}
-      <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-4">
-        <h3 className="font-black text-sm text-agri-dark uppercase tracking-wider">
-          {t.weather?.dailyTitle || "7-Day Agriculture Forecast"}
-        </h3>
-        <div className="space-y-2.5">
-          {weather.daily.map((d, idx) => (
-            <div key={idx} className="flex items-center justify-between p-4 bg-gray-50 hover:bg-agri-bg rounded-2xl transition-colors text-xs border border-gray-100">
-              <div className="flex items-center gap-3 w-36">
-                <CloudRain className="w-5 h-5 text-agri-primary flex-shrink-0" />
-                <div>
-                  <span className="font-extrabold text-agri-dark block">{d.day}</span>
-                  <span className="text-[10px] text-gray-400 font-medium">{d.date}</span>
+      {weather.daily && (
+        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-4">
+          <h3 className="font-black text-sm text-agri-dark uppercase tracking-wider">
+            {t.weather?.dailyTitle || "7-Day Agriculture Forecast"}
+          </h3>
+          <div className="space-y-2.5">
+            {weather.daily.map((d, idx) => (
+              <div key={idx} className="flex items-center justify-between p-4 bg-gray-50 hover:bg-agri-bg rounded-2xl transition-colors text-xs border border-gray-100">
+                <div className="flex items-center gap-3 w-36">
+                  <CloudRain className="w-5 h-5 text-agri-primary flex-shrink-0" />
+                  <div>
+                    <span className="font-extrabold text-agri-dark block">{d.day}</span>
+                    <span className="text-[10px] text-gray-400 font-medium">{d.date}</span>
+                  </div>
+                </div>
+
+                <span className="text-gray-700 font-semibold hidden sm:inline-block">{d.condition}</span>
+
+                <div className="flex items-center gap-4">
+                  <span className="font-bold text-sky-600 bg-sky-50 px-3 py-1 rounded-full text-[11px]">
+                    ☔ {d.rainProb}% Rain
+                  </span>
+                  <span className="font-black text-agri-dark">
+                    {d.maxTemp}° / <span className="text-gray-400 font-normal">{d.minTemp}°C</span>
+                  </span>
                 </div>
               </div>
-
-              <span className="text-gray-700 font-semibold hidden sm:inline-block">{d.condition}</span>
-
-              <div className="flex items-center gap-4">
-                <span className="font-bold text-sky-600 bg-sky-50 px-3 py-1 rounded-full text-[11px]">
-                  ☔ {d.rainProb}% Rain
-                </span>
-                <span className="font-black text-agri-dark">
-                  {d.maxTemp}° / <span className="text-gray-400 font-normal">{d.minTemp}°C</span>
-                </span>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* API INTEGRATION PLACEHOLDER */}
       <div className="p-4 bg-earth-cream rounded-2xl border border-earth-wheat/40 text-xs text-earth-walnut flex items-center gap-3 font-medium">
         <Info className="w-5 h-5 text-earth-terracotta flex-shrink-0" />
         <span>
-          <strong>IMD Telemetry Connected:</strong> Live agro-meteorological station coordinates ({location.formatted}).
+          <strong>IMD & Open-Meteo Telemetry Connected:</strong> Live agro-meteorological station coordinates ({location.formatted}).
         </span>
       </div>
 
