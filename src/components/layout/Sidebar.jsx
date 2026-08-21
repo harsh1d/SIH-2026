@@ -25,42 +25,42 @@ export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
 
   const navSections = [
     {
-      title: "OVERVIEW",
+      title: t.nav?.overview || "OVERVIEW",
       items: [
-        { id: "dashboard", label: t.nav.dashboard, icon: Home }
+        { id: "dashboard", label: t.nav?.dashboard || "Dashboard", icon: Home }
       ]
     },
     {
-      title: "MY FARM",
+      title: t.nav?.myFarmSection || "MY FARM",
       items: [
-        { id: "myFarm", label: t.nav.myFarm, icon: Sprout },
-        { id: "cropDoctor", label: t.nav.cropDoctor, icon: Camera, badge: "AI Scan" },
-        { id: "cropJourney", label: t.nav.cropJourney, icon: Calendar },
-        { id: "cropHealth", label: t.nav.cropHealth, icon: Activity }
+        { id: "myFarm", label: t.nav?.myFarm || "My Farm", icon: Sprout },
+        { id: "cropDoctor", label: t.nav?.cropDoctor || "Crop Doctor", icon: Camera, badge: "AI Scan" },
+        { id: "cropJourney", label: t.nav?.cropJourney || "Crop Journey", icon: Calendar },
+        { id: "cropHealth", label: t.nav?.cropHealth || "Crop Health", icon: Activity }
       ]
     },
     {
-      title: "SMART TOOLS",
+      title: t.nav?.toolsSection || "SMART TOOLS",
       items: [
-        { id: "ai", label: t.nav.aiAssistant, icon: Bot, isAi: true },
-        { id: "weather", label: t.nav.weather, icon: CloudSun },
-        { id: "market", label: t.nav.market, icon: TrendingUp },
-        { id: "schemes", label: t.nav.schemes, icon: Landmark }
+        { id: "ai", label: t.nav?.aiAssistant || "AI Assistant", icon: Bot, isAi: true },
+        { id: "weather", label: t.nav?.weather || "Weather Radar", icon: CloudSun },
+        { id: "market", label: t.nav?.market || "Mandi Rates", icon: TrendingUp },
+        { id: "schemes", label: t.nav?.schemes || "Schemes & News", icon: Landmark }
       ]
     },
     {
-      title: "SUPPORT & SERVICES",
+      title: t.nav?.supportSection || "SUPPORT & SERVICES",
       items: [
-        { id: "alerts", label: t.nav.alerts, icon: Bell, count: alerts.length },
-        { id: "expert", label: t.nav.expertHelp, icon: UserCheck },
-        { id: "knowledge", label: t.nav.knowledge, icon: BookOpen }
+        { id: "alerts", label: t.nav?.alerts || "Smart Alerts", icon: Bell, count: alerts.length },
+        { id: "expert", label: t.nav?.expertHelp || "Expert Consultation", icon: UserCheck },
+        { id: "knowledge", label: t.nav?.knowledge || "Knowledge Hub", icon: BookOpen }
       ]
     },
     {
-      title: "SYSTEM & ADMIN",
+      title: t.nav?.systemSection || "SYSTEM & ADMIN",
       items: [
-        { id: "admin", label: t.nav.admin, icon: BarChart3 },
-        { id: "profile", label: t.nav.profile, icon: User }
+        { id: "admin", label: t.nav?.admin || "Agronomist Portal", icon: BarChart3 },
+        { id: "profile", label: t.nav?.profile || "Farmer Profile", icon: User }
       ]
     }
   ];
@@ -93,7 +93,7 @@ export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
 
           {/* Location Indicator for Mobile Sidebar Header */}
           <div className="md:hidden p-3.5 bg-agri-bg rounded-2xl border border-agri-soft/50 mb-2">
-            <div className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider">Farm Location</div>
+            <div className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider">{t.location?.current || "Farm Location"}</div>
             <button 
               onClick={() => {
                 setIsLocationModalOpen(true);
@@ -116,7 +116,7 @@ export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
                 
-                let itemClass = "w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-extrabold transition-all duration-200 ";
+                let itemClass = "w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-extrabold transition-all duration-200 cursor-pointer ";
 
                 if (isActive) {
                   if (item.isAi) {
@@ -170,14 +170,14 @@ export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
         <div className="p-4 border-t border-agri-soft/40 bg-gradient-to-br from-agri-bg to-ai-light/40">
           <button 
             onClick={() => handleNavClick('ai')}
-            className="w-full flex items-center gap-3 p-3 bg-white hover:bg-ai-light border border-ai-mauve/30 rounded-2xl shadow-xs text-left group transition-all"
+            className="w-full flex items-center gap-3 p-3 bg-white hover:bg-ai-light border border-ai-mauve/30 rounded-2xl shadow-xs text-left group transition-all cursor-pointer"
           >
             <div className="p-2 rounded-xl bg-ai-plum text-white group-hover:scale-110 transition-transform">
               <Sparkles className="w-4 h-4 text-purple-200" />
             </div>
             <div>
               <div className="text-xs font-black text-ai-plum flex items-center gap-1">
-                Ask AI Assistant
+                {t.dashboard?.askAi || "Ask AI Assistant"}
               </div>
               <div className="text-[11px] text-gray-500 font-medium">24/7 Crop advisory</div>
             </div>

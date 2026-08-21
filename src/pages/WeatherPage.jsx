@@ -11,7 +11,8 @@ import {
   MapPin, 
   Sparkles, 
   AlertTriangle,
-  Info
+  Info,
+  ShieldCheck
 } from 'lucide-react';
 
 export const WeatherPage = () => {
@@ -25,13 +26,13 @@ export const WeatherPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 sm:p-7 rounded-3xl border border-gray-100 shadow-sm">
         <div>
           <div className="flex items-center gap-2 text-xs font-black text-agri-dark uppercase tracking-widest mb-1">
-            <CloudSun className="w-4 h-4 text-agri-primary" /> Agro-Meteorological Intelligence
+            <CloudSun className="w-4 h-4 text-agri-primary" /> {t.weather?.title || "Agro-Meteorological Intelligence"}
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-agri-dark font-sans tracking-tight">
-            Weather & Farming Impact
+            {t.weather?.title || "Weather Radar & Farming Impact"}
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">
-            Real-time weather forecast contextualized into crop irrigation & pesticide spraying advice.
+            {t.weather?.subtitle || "Real-time weather forecast contextualized into crop irrigation & pesticide spraying advice."}
           </p>
         </div>
 
@@ -40,7 +41,7 @@ export const WeatherPage = () => {
         </div>
       </div>
 
-      {/* CURRENT WEATHER HERO CARD - BOTANICAL SAGE GREEN */}
+      {/* CURRENT WEATHER HERO CARD */}
       <div className="bg-gradient-to-r from-agri-dark via-emerald-950 to-teal-950 text-white rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden space-y-6 border border-gov-gold/30">
         
         <div className="flex flex-wrap items-center justify-between gap-6 border-b border-emerald-800/60 pb-6">
@@ -76,7 +77,7 @@ export const WeatherPage = () => {
         {/* 🌾 FARMING IMPACT ADVISORY BANNER */}
         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 space-y-3 shadow-xs">
           <div className="flex items-center gap-2 text-xs font-black text-gov-gold uppercase tracking-wider">
-            <Sparkles className="w-4 h-4 text-gov-gold" /> 🌾 FARMING IMPACT ADVISORY
+            <Sparkles className="w-4 h-4 text-gov-gold" /> 🌾 {t.dashboard?.advisoryTitle || "FARMING IMPACT ADVISORY"}
           </div>
           
           <div className="space-y-2">
@@ -91,7 +92,9 @@ export const WeatherPage = () => {
 
       {/* HOURLY FORECAST SCROLL */}
       <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-3">
-        <h3 className="font-black text-sm text-agri-dark uppercase tracking-wider">Hourly Precipitation Forecast</h3>
+        <h3 className="font-black text-sm text-agri-dark uppercase tracking-wider">
+          {t.weather?.hourlyTitle || "Hourly Precipitation Forecast"}
+        </h3>
         <div className="flex items-center gap-4 overflow-x-auto pb-2">
           {weather.hourly.map((h, idx) => (
             <div key={idx} className="flex-shrink-0 w-28 p-3.5 bg-agri-bg rounded-2xl border border-agri-soft/40 text-center space-y-1">
@@ -106,7 +109,9 @@ export const WeatherPage = () => {
 
       {/* 7-DAY FORECAST CARDS */}
       <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-4">
-        <h3 className="font-black text-sm text-agri-dark uppercase tracking-wider">7-Day Agriculture Forecast</h3>
+        <h3 className="font-black text-sm text-agri-dark uppercase tracking-wider">
+          {t.weather?.dailyTitle || "7-Day Agriculture Forecast"}
+        </h3>
         <div className="space-y-2.5">
           {weather.daily.map((d, idx) => (
             <div key={idx} className="flex items-center justify-between p-4 bg-gray-50 hover:bg-agri-bg rounded-2xl transition-colors text-xs border border-gray-100">
@@ -137,7 +142,7 @@ export const WeatherPage = () => {
       <div className="p-4 bg-earth-cream rounded-2xl border border-earth-wheat/40 text-xs text-earth-walnut flex items-center gap-3 font-medium">
         <Info className="w-5 h-5 text-earth-terracotta flex-shrink-0" />
         <span>
-          <strong>IMD API Integration:</strong> Live telemetry connects to Indian Meteorological Department (IMD) API or OpenWeatherMap with <code className="bg-white px-2 py-0.5 rounded text-earth-soil font-bold border border-earth-wheat/30">VITE_WEATHER_API_KEY</code>.
+          <strong>IMD Telemetry Connected:</strong> Live agro-meteorological station coordinates ({location.formatted}).
         </span>
       </div>
 

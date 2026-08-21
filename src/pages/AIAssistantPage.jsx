@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 
 export const AIAssistantPage = () => {
-  const { location, farmerProfile, setActiveTab, t, showToast } = useApp();
+  const { location, farmerProfile, setActiveTab, t, language, showToast } = useApp();
 
   const [queryInput, setQueryInput] = useState('');
   const [isRecording, setIsRecording] = useState(false);
@@ -44,14 +44,45 @@ export const AIAssistantPage = () => {
 
   const messagesEndRef = useRef(null);
 
+  const getInitialGreeting = (lang) => {
+    const fName = farmerProfile.name || 'Farmer';
+    const loc = location.formatted || 'Halol, Gujarat';
+    const soil = farmerProfile.soilType || 'Black Cotton Soil';
+
+    if (lang === 'hi') {
+      return `नमस्ते ${fName} जी! 🌱 मैं कृषि साथी एआई हूँ। आपके खेत (${loc}), मिट्टी (${soil}) और मौसम (${mockWeatherData.current.temp}°C, ${mockWeatherData.current.humidity}% नमी) का डेटा लोड हो चुका है।\n\nआज आपकी फसल स्वास्थ्य, कीट नियंत्रण या खाद के समय के लिए मैं क्या सहायता कर सकता हूँ?`;
+    }
+    if (lang === 'gu') {
+      return `નમસ્તે ${fName} જી! 🌱 હું કૃષિ સાથી એઆઈ સહાયક છું. તમારા ખેતર (${loc}), જમીન (${soil}) અને જીવંત હવામાન (${mockWeatherData.current.temp}°C) નું ટેલિમેટ્રી લોડ થઈ ગયું છે.\n\nઆજે તમારા પાકના રક્ષણ, રોગ નિયંત્રણ કે મંડી ભાવ માટે હું કેવી રીતે મદદ કરી શકું?`;
+    }
+    if (lang === 'ml') {
+      return `നമസ്കാരം ${fName} ജി! 🌱 ഞാൻ കൃഷി സാഥി എഐ ആണ്. നിങ്ങളുടെ ഫാം ലൊക്കേഷൻ (${loc}), മണ്ണ് (${soil}), കാലാവസ്ഥ (${mockWeatherData.current.temp}°C) വിവരങ്ങൾ തയ്യാറാണ്.\n\nഇന്ന് നിങ്ങളുടെ വിള പരിപാലനത്തിൽ ഞാൻ എങ്ങനെ സഹായിക്കണം?`;
+    }
+    return `Namaste ${fName} Ji! 🌱 I am AgriSaathi AI, your precision agronomy assistant. I have synthesized your live telemetry for ${loc}, Soil: ${soil}, registered crops: ${farmerProfile.primaryCrops?.join(', ') || 'Cotton, Wheat'}, and local weather (${mockWeatherData.current.temp}°C, ${mockWeatherData.current.humidity}% humidity).\n\nHow can I help optimize your crop yields and protect against pests today?`;
+  };
+
   const [messages, setMessages] = useState([
     {
       id: 1,
       sender: 'ai',
-      text: `Namaste ${farmerProfile.name || 'Farmer'} Ji! 🌱 I am AgriSaathi AI, your precision agronomy assistant. I have synthesized your live telemetry for ${location.formatted || 'Halol, Gujarat'}, Soil: ${farmerProfile.soilType || 'Black Cotton Soil'}, registered crops: ${farmerProfile.primaryCrops?.join(', ') || 'Cotton, Wheat'}, and local weather (${mockWeatherData.current.temp}°C, ${mockWeatherData.current.humidity}% humidity).\n\nHow can I help optimize your crop yields and protect against pests today?`,
+      text: getInitialGreeting(language),
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
+
+  // Update greeting if language changes and only initial message is present
+  useEffect(() => {
+    if (messages.length === 1 && messages[0].sender === 'ai') {
+      setMessages([
+        {
+          id: 1,
+          sender: 'ai',
+          text: getInitialGreeting(language),
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
+      ]);
+    }
+  }, [language]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -61,22 +92,47 @@ export const AIAssistantPage = () => {
     scrollToBottom();
   }, [messages, isThinking]);
 
-  // Clean up speech on unmount
   useEffect(() => {
     return () => {
       stopSpeaking();
     };
   }, []);
 
-  const dynamicQuickChips = [
-    { label: "🌱 Cotton leaf yellowing", query: "My cotton leaves are turning yellow after rain. What should I do?" },
-    { label: "🐛 Pink Bollworm dosage", query: "How to identify and control Pink Bollworm in Cotton?" },
-    { label: "🌾 Yellow Rust in Wheat", query: "How to prevent Stripe/Yellow rust in Wheat crop?" },
-    { label: "🌧️ Rain & Spraying window", query: "Will it rain today and is it safe to spray pesticides?" },
-    { label: "💰 Today's APMC Mandi prices", query: "What is today's highest cotton mandi price nearby?" },
-    { label: "🪨 Soil suitable crops", query: `Which crops are most profitable for ${farmerProfile.soilType}?` },
-    { label: "🏛️ Drip & Kisan Subsidies", query: "Tell me about government subsidy eligibility for my farm" }
-  ];
+  const getQuickChips = (lang) => {
+    if (lang === 'hi') {
+      return [
+        { label: "🌱 कपास में पीली पत्तियां", query: "कपास की पत्तियां पीली पड़ रही हैं, क्या उपाय करें?" },
+        { label: "🐛 गुलाबी सुंडी (पिंक बोलवर्म)", query: "कपास में पिंक बोलवर्म कीट नियंत्रण की दवा बताएं।" },
+        { label: "🌾 गेहूं में पीला रतुआ", query: "गेहूं में पीला रतुआ (येलो रस्ट) की रोकथाम कैसे करें?" },
+        { label: "🌧️ आज का मौसम व छिड़काव", query: "क्या आज बारिश होगी और क्या कीटनाशक छिड़कना सुरक्षित है?" },
+        { label: "💰 आज का मंडी भाव", query: "आसपास की मंडी में आज का सबसे अच्छा कपास भाव क्या है?" },
+        { label: "🪨 मिट्टी के अनुसार फसल", query: `${farmerProfile.soilType} के लिए सबसे उपयुक्त फसल कौन सी है?` },
+        { label: "🏛️ सरकारी योजना व सब्सिडी", query: "मेरे खेत के लिए सरकारी सब्सिडी और पीएम किसान योजना की जानकारी दें।" }
+      ];
+    }
+    if (lang === 'gu') {
+      return [
+        { label: "🌱 કપાસના પીળા પાંદડા", query: "કપાસના પાંદડા પીળા પડી રહ્યા છે, શું ઉપાય કરવો?" },
+        { label: "🐛 ગુલાબી ઈયળ નિયંત્રણ", query: "કપાસમાં ગુલાબી ઈયળના નિયંત્રણ માટે કઈ દવા છાંટવી?" },
+        { label: "🌾 ઘઉંમાં ગેરુ રોગ", query: "ઘઉંમાં પીળા ગેરુ રોગની રોકથામ કેવી રીતે કરવી?" },
+        { label: "🌧️ વરસાદ અને દવાનો છંટકાવ", query: "શું આજે વરસાદ આવશે અને દવાનો છંટકાવ કરવો યોગ્ય છે?" },
+        { label: "💰 આજનો કપાસ મંડી ભાવ", query: "નજીકની મંડીમાં આજનો સૌથી ઊંચો કપાસનો ભાવ શું છે?" },
+        { label: "🪨 જમીન મુજબ યોગ્ય પાક", query: `${farmerProfile.soilType} માટે કયો પાક સૌથી સારો રહેશે?` },
+        { label: "🏛️ સબસિડી અને સરકારી યોજના", query: "ડ્રિપ ઇરિગેશન અને ખેડૂત સબસિડી વિશે જણાવો." }
+      ];
+    }
+    return [
+      { label: "🌱 Cotton leaf yellowing", query: "My cotton leaves are turning yellow after rain. What should I do?" },
+      { label: "🐛 Pink Bollworm dosage", query: "How to identify and control Pink Bollworm in Cotton?" },
+      { label: "🌾 Yellow Rust in Wheat", query: "How to prevent Stripe/Yellow rust in Wheat crop?" },
+      { label: "🌧️ Rain & Spraying window", query: "Will it rain today and is it safe to spray pesticides?" },
+      { label: "💰 Today's APMC Mandi prices", query: "What is today's highest cotton mandi price nearby?" },
+      { label: "🪨 Soil suitable crops", query: `Which crops are most profitable for ${farmerProfile.soilType}?` },
+      { label: "🏛️ Drip & Kisan Subsidies", query: "Tell me about government subsidy eligibility for my farm" }
+    ];
+  };
+
+  const dynamicQuickChips = getQuickChips(language);
 
   const handleSuggestedClick = (questionText) => {
     setQueryInput(questionText);
@@ -85,16 +141,16 @@ export const AIAssistantPage = () => {
 
   const handleVoiceInput = () => {
     if (typeof window === 'undefined' || !('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      const fallbackQuery = "My cotton leaves are turning yellow after rain";
+      const fallbackQuery = language === 'hi' ? "कपास की पत्तियां पीली पड़ रही हैं" : "My cotton leaves are turning yellow after rain";
       setQueryInput(fallbackQuery);
-      showToast('Voice API simulated: "My cotton leaves are turning yellow after rain"', 'info');
+      showToast(`Voice API simulated: "${fallbackQuery}"`, 'info');
       return;
     }
 
     try {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
-      recognition.lang = 'en-IN';
+      recognition.lang = language === 'hi' ? 'hi-IN' : language === 'gu' ? 'gu-IN' : language === 'ml' ? 'ml-IN' : 'en-IN';
 
       setIsRecording(true);
       showToast('Listening... Speak your query clearly', 'info');
@@ -124,13 +180,14 @@ export const AIAssistantPage = () => {
   };
 
   const handleSpeakToggle = (msgId, textToSpeak) => {
+    const voiceLang = language === 'hi' ? 'hi-IN' : language === 'gu' ? 'gu-IN' : language === 'ml' ? 'ml-IN' : 'en-IN';
     if (speakingMsgId === msgId) {
       stopSpeaking();
       setSpeakingMsgId(null);
     } else {
       stopSpeaking();
       setSpeakingMsgId(msgId);
-      speakAgronomyText(textToSpeak);
+      speakAgronomyText(textToSpeak, voiceLang);
     }
   };
 
@@ -146,7 +203,7 @@ export const AIAssistantPage = () => {
       {
         id: Date.now(),
         sender: 'ai',
-        text: `Namaste ${farmerProfile.name || 'Farmer'} Ji! Chat refreshed. Telemetry connected to ${location.formatted}. How can I assist you now?`,
+        text: getInitialGreeting(language),
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
     ]);
@@ -218,7 +275,7 @@ export const AIAssistantPage = () => {
   return (
     <div className="space-y-6 max-w-5xl mx-auto animate-fade-in">
       
-      {/* HEADER BANNER - AI PLUM + PURPLE GRADIENT WITH TELEMETRY */}
+      {/* HEADER BANNER */}
       <div className="bg-gradient-to-r from-ai-plum via-purple-900 to-indigo-950 rounded-3xl p-6 sm:p-8 text-white shadow-ai border border-ai-mauve/40">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -227,23 +284,23 @@ export const AIAssistantPage = () => {
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-black font-sans tracking-tight">🌱 AgriSaathi AI Copilot</h1>
+                <h1 className="text-xl sm:text-2xl font-black font-sans tracking-tight">🌱 {t.ai?.title || "AgriSaathi AI Copilot"}</h1>
                 <span className="px-2.5 py-0.5 text-[10px] font-extrabold bg-purple-500/40 text-purple-200 rounded-full border border-purple-400/30 uppercase tracking-wider flex items-center gap-1">
-                  <Globe className="w-3 h-3 text-emerald-300" /> Wikipedia Grounded
+                  <Globe className="w-3 h-3 text-emerald-300" /> {t.ai?.badge || "Wikipedia Grounded"}
                 </span>
               </div>
               <p className="text-xs text-purple-200/90 font-medium mt-1">
-                Connected to {farmerProfile.name} • {location.formatted} • {farmerProfile.soilType} • {farmerProfile.farmSizeAcres} Acres
+                {farmerProfile.name} • {location.formatted} • {farmerProfile.soilType} • {farmerProfile.farmSizeAcres} Acres
               </p>
             </div>
           </div>
 
           <button
             onClick={clearChat}
-            className="self-start sm:self-auto flex items-center gap-1.5 px-3.5 py-2 bg-white/10 hover:bg-white/20 text-purple-200 hover:text-white rounded-xl text-xs font-bold border border-white/15 transition-colors"
+            className="self-start sm:self-auto flex items-center gap-1.5 px-3.5 py-2 bg-white/10 hover:bg-white/20 text-purple-200 hover:text-white rounded-xl text-xs font-bold border border-white/15 transition-colors cursor-pointer"
             title="Reset Conversation"
           >
-            <Trash2 className="w-3.5 h-3.5" /> Clear Chat
+            <Trash2 className="w-3.5 h-3.5" /> {t.ai?.clearChat || "Clear Chat"}
           </button>
         </div>
       </div>
@@ -267,7 +324,7 @@ export const AIAssistantPage = () => {
 
           // AI Sender
           const textForTTS = msg.isStructured && msg.data
-            ? `${msg.data.issue}. Cause: ${msg.data.whyHappening}. Recommended Action: ${msg.data.recommendedAction}`
+            ? `${msg.data.issue}. ${msg.data.whyHappening}. ${msg.data.recommendedAction}`
             : msg.text;
 
           return (
@@ -309,7 +366,7 @@ export const AIAssistantPage = () => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleSpeakToggle(msg.id, textForTTS)}
-                          className={`p-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors ${
+                          className={`p-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer ${
                             speakingMsgId === msg.id 
                               ? 'bg-rose-50 text-rose-600' 
                               : 'hover:bg-purple-100 text-ai-plum'
@@ -317,12 +374,12 @@ export const AIAssistantPage = () => {
                           title="Listen with Text-to-Speech"
                         >
                           {speakingMsgId === msg.id ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-                          <span className="text-[10px]">{speakingMsgId === msg.id ? 'Stop Audio' : 'Listen'}</span>
+                          <span className="text-[10px]">{speakingMsgId === msg.id ? (t.ai?.stopVoice || 'Stop Audio') : (t.ai?.listenVoice || 'Listen')}</span>
                         </button>
 
                         <button
                           onClick={() => handleCopy(msg.id, msg.text)}
-                          className="p-1.5 hover:bg-purple-100 text-gray-500 hover:text-ai-plum rounded-lg text-xs transition-colors"
+                          className="p-1.5 hover:bg-purple-100 text-gray-500 hover:text-ai-plum rounded-lg text-xs transition-colors cursor-pointer"
                           title="Copy message"
                         >
                           {copiedMsgId === msg.id ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
@@ -340,7 +397,7 @@ export const AIAssistantPage = () => {
                     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ai-mauve/20 pb-3">
                       <div>
                         <span className="text-[10px] font-black text-ai-plum uppercase tracking-wider block">
-                          ✨ AI AGRONOMY INSIGHT • {msg.data.category || 'Identified Diagnosis'}
+                          ✨ {t.ai?.issue || "Identified Diagnosis"} • {msg.data.category || 'Agronomic Issue'}
                         </span>
                         <h4 className="text-base font-black text-agri-dark">{msg.data.issue}</h4>
                         <span className="text-[11px] text-gray-500 font-semibold">{msg.data.telemetryContext}</span>
@@ -349,7 +406,7 @@ export const AIAssistantPage = () => {
                       <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-2xl border border-ai-mauve/30 shadow-xs">
                         <Sparkles className="w-4 h-4 text-ai-purple" />
                         <span className="text-xs font-black text-ai-plum">
-                          Confidence: {msg.data.confidence}%
+                          {t.ai?.confidence || "Confidence"}: {msg.data.confidence}%
                         </span>
                       </div>
                     </div>
@@ -357,7 +414,7 @@ export const AIAssistantPage = () => {
                     {/* CAUSE ANALYSIS */}
                     <div className="space-y-1">
                       <span className="text-xs font-black text-gray-700 flex items-center gap-1.5 uppercase tracking-wide">
-                        <Search className="w-4 h-4 text-earth-terracotta" /> 🔍 AGRONOMIC ANALYSIS & CAUSE
+                        <Search className="w-4 h-4 text-earth-terracotta" /> 🔍 {t.ai?.causes || "ANALYSIS & CAUSE"}
                       </span>
                       <p className="text-xs text-gray-700 leading-relaxed bg-white p-3.5 rounded-2xl border border-gray-100 font-medium">
                         {msg.data.whyHappening}
@@ -367,7 +424,7 @@ export const AIAssistantPage = () => {
                     {/* RECOMMENDED PRESCRIPTION */}
                     <div className="space-y-1">
                       <span className="text-xs font-black text-agri-dark flex items-center gap-1.5 uppercase tracking-wide">
-                        <CheckCircle2 className="w-4 h-4 text-agri-primary" /> 🌱 ACTION PROTOCOL & DOSAGE
+                        <CheckCircle2 className="w-4 h-4 text-agri-primary" /> 🌱 {t.ai?.recommendedAction || "ACTION PROTOCOL & DOSAGE"}
                       </span>
                       <div className="text-xs text-gray-800 leading-relaxed bg-emerald-50/80 p-4 rounded-2xl border border-agri-soft/50 whitespace-pre-line font-semibold">
                         {msg.data.recommendedAction}
@@ -377,7 +434,7 @@ export const AIAssistantPage = () => {
                     {/* CAUTION */}
                     <div className="space-y-1">
                       <span className="text-xs font-black text-rose-700 flex items-center gap-1.5 uppercase tracking-wide">
-                        <AlertTriangle className="w-4 h-4 text-rose-600" /> ⚠️ PRECAUTIONS & WHAT TO AVOID
+                        <AlertTriangle className="w-4 h-4 text-rose-600" /> ⚠️ {t.ai?.whatToAvoid || "PRECAUTIONS & WHAT TO AVOID"}
                       </span>
                       <p className="text-xs text-rose-950 leading-relaxed bg-rose-50/80 p-3.5 rounded-2xl border border-rose-200 font-medium">
                         {msg.data.whatToAvoid}
@@ -408,12 +465,12 @@ export const AIAssistantPage = () => {
                     {/* Timeline & Escalation */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-2">
                       <div className="p-3.5 bg-white rounded-2xl border border-gray-100 space-y-0.5">
-                        <span className="font-bold text-gray-500 text-[10px] uppercase block">Follow-Up Schedule</span>
+                        <span className="font-bold text-gray-500 text-[10px] uppercase block">{t.ai?.whenToCheck || "Follow-Up Schedule"}</span>
                         <span className="text-gray-800 font-semibold">{msg.data.whenToCheck}</span>
                       </div>
 
                       <div className="p-3.5 bg-white rounded-2xl border border-gray-100 space-y-0.5">
-                        <span className="font-bold text-earth-walnut text-[10px] uppercase block">When to Contact Expert</span>
+                        <span className="font-bold text-earth-walnut text-[10px] uppercase block">{t.ai?.expertEscalation || "When to Contact Expert"}</span>
                         <span className="text-gray-800 font-semibold">{msg.data.whenToContactExpert}</span>
                       </div>
                     </div>
@@ -423,22 +480,22 @@ export const AIAssistantPage = () => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleSpeakToggle(msg.id, textForTTS)}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors ${
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${
                             speakingMsgId === msg.id 
                               ? 'bg-rose-50 text-rose-600' 
                               : 'bg-white text-ai-plum hover:bg-purple-50 border border-purple-200'
                           }`}
                         >
                           {speakingMsgId === msg.id ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-                          <span>{speakingMsgId === msg.id ? 'Stop Audio' : 'Voice Readout'}</span>
+                          <span>{speakingMsgId === msg.id ? (t.ai?.stopVoice || 'Stop Audio') : (t.ai?.listenVoice || 'Voice Readout')}</span>
                         </button>
                       </div>
 
                       <button
                         onClick={() => setActiveTab('expert')}
-                        className="flex items-center gap-2 px-4 py-2 bg-ai-plum hover:bg-ai-purple text-white text-xs font-bold rounded-2xl transition-colors shadow-ai"
+                        className="flex items-center gap-2 px-4 py-2 bg-ai-plum hover:bg-ai-purple text-white text-xs font-bold rounded-2xl transition-colors shadow-ai cursor-pointer"
                       >
-                        <UserCheck className="w-4 h-4 text-purple-200" /> Escalate to KVK Agronomist
+                        <UserCheck className="w-4 h-4 text-purple-200" /> {t.ai?.escalateKVK || "Escalate to KVK Agronomist"}
                       </button>
                     </div>
 
@@ -466,7 +523,7 @@ export const AIAssistantPage = () => {
             </div>
             <button
               onClick={handleRetry}
-              className="flex items-center gap-1.5 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl text-xs font-black transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl text-xs font-black transition-colors cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" /> Try Again
             </button>
@@ -478,13 +535,13 @@ export const AIAssistantPage = () => {
 
       {/* QUICK SUGGESTION CHIPS */}
       <div className="space-y-2">
-        <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Recommended Questions for Your Farm</span>
+        <span className="text-xs font-black text-gray-400 uppercase tracking-widest">{t.ai?.suggestedQuestions || "Recommended Questions for Your Farm"}</span>
         <div className="flex flex-wrap gap-2">
           {dynamicQuickChips.map((chip, idx) => (
             <button
               key={idx}
               onClick={() => handleSuggestedClick(chip.query)}
-              className="px-3.5 py-2 bg-white hover:bg-ai-light border border-ai-mauve/30 rounded-full text-xs font-bold text-ai-plum transition-colors shadow-xs"
+              className="px-3.5 py-2 bg-white hover:bg-ai-light border border-ai-mauve/30 rounded-full text-xs font-bold text-ai-plum transition-colors shadow-xs cursor-pointer"
             >
               {chip.label}
             </button>
@@ -502,7 +559,7 @@ export const AIAssistantPage = () => {
           </div>
           <button 
             onClick={() => setSelectedImage(null)}
-            className="p-1.5 text-gray-400 hover:text-rose-600 rounded-full hover:bg-white"
+            className="p-1.5 text-gray-400 hover:text-rose-600 rounded-full hover:bg-white cursor-pointer"
           >
             <XCircle className="w-5 h-5" />
           </button>
@@ -513,7 +570,7 @@ export const AIAssistantPage = () => {
       <div className="bg-white rounded-3xl p-3 border border-gray-200 shadow-agri flex items-center gap-2">
         
         {/* Attachment Button */}
-        <label className="p-3 text-gray-500 hover:text-agri-primary hover:bg-agri-bg rounded-2xl cursor-pointer transition-colors" title="Attach Leaf Photo">
+        <label className="p-3 text-gray-500 hover:text-agri-primary hover:bg-agri-bg rounded-2xl cursor-pointer transition-colors" title={t.ai?.attachImage || "Attach Leaf Photo"}>
           <Paperclip className="w-5 h-5" />
           <input 
             type="file" 
@@ -532,12 +589,12 @@ export const AIAssistantPage = () => {
         {/* Voice Input Button */}
         <button
           onClick={handleVoiceInput}
-          className={`p-3 rounded-2xl transition-all ${
+          className={`p-3 rounded-2xl transition-all cursor-pointer ${
             isRecording 
               ? 'bg-rose-600 text-white animate-pulse' 
               : 'text-gray-500 hover:text-ai-plum hover:bg-ai-light'
           }`}
-          title="Voice Query Input (Speech to Text)"
+          title={t.ai?.voiceInput || "Voice Query Input (Speech to Text)"}
         >
           <Mic className="w-5 h-5" />
         </button>
@@ -561,7 +618,7 @@ export const AIAssistantPage = () => {
         <button
           onClick={() => submitQuery()}
           disabled={isThinking || (!queryInput.trim() && !selectedImage)}
-          className="p-3.5 bg-ai-plum hover:bg-ai-purple text-white disabled:bg-gray-200 disabled:text-gray-400 rounded-2xl transition-all shadow-ai"
+          className="p-3.5 bg-ai-plum hover:bg-ai-purple text-white disabled:bg-gray-200 disabled:text-gray-400 rounded-2xl transition-all shadow-ai cursor-pointer"
         >
           <Send className="w-5 h-5" />
         </button>

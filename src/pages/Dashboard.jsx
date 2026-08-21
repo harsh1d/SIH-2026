@@ -33,13 +33,13 @@ export const Dashboard = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 sm:p-7 rounded-3xl border border-agri-soft/40 shadow-gov">
         <div>
           <div className="flex items-center gap-2 text-xs font-black text-earth-terracotta uppercase tracking-widest mb-1">
-            <Sprout className="w-4 h-4 text-agri-primary" /> Official Agriculture Portal • Halol Station
+            <Sprout className="w-4 h-4 text-agri-primary" /> {t.dashboard?.stationTitle || "Official Agriculture Portal • Halol Station"}
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-agri-dark font-sans tracking-tight">
-            {t.dashboard.greeting}, {farmerProfile.name} 🌱
+            {t.dashboard?.greeting || "Good Morning"}, {farmerProfile.name} 🌱
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 font-medium mt-0.5">
-            {t.dashboard.subGreeting || "Here is your agricultural overview & daily advisory."}
+            {t.dashboard?.subGreeting || "Here is your precision agricultural overview & daily advisory."}
           </p>
         </div>
 
@@ -47,7 +47,7 @@ export const Dashboard = () => {
           <MapPin className="w-5 h-5 text-earth-terracotta flex-shrink-0" />
           <div className="text-xs">
             <div className="font-extrabold text-agri-dark">{location.formatted}</div>
-            <div className="text-gray-500 font-medium">4.5 Acres • Black Cotton Soil</div>
+            <div className="text-gray-500 font-medium">{farmerProfile.farmSizeAcres} Acres • {farmerProfile.soilType}</div>
           </div>
         </div>
       </div>
@@ -63,9 +63,9 @@ export const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-extrabold text-purple-200 border border-white/20">
               <Sparkles className="w-4 h-4 text-purple-300 animate-pulse" />
-              <span>✨ AI FARM ADVISORY</span>
+              <span>✨ {t.dashboard?.advisoryTitle || "AI FARM ADVISORY"}</span>
             </div>
-            <span className="text-xs text-purple-200/80 font-medium">Updated 30 mins ago</span>
+            <span className="text-xs text-purple-200/80 font-medium">Updated 10 mins ago</span>
           </div>
 
           <div className="space-y-2">
@@ -80,19 +80,19 @@ export const Dashboard = () => {
           <div className="pt-2 flex flex-wrap items-center gap-3">
             <button
               onClick={() => setActiveTab('ai')}
-              className="flex items-center gap-2 px-5 py-2.5 bg-white text-ai-plum font-extrabold text-xs rounded-2xl hover:bg-purple-50 transition-colors shadow-md"
+              className="flex items-center gap-2 px-5 py-2.5 bg-white text-ai-plum font-extrabold text-xs rounded-2xl hover:bg-purple-50 transition-colors shadow-md cursor-pointer"
             >
               <Bot className="w-4 h-4 text-ai-purple" />
-              <span>Ask AI Follow-Up Query</span>
+              <span>{t.dashboard?.askFollowUp || "Ask AI Follow-Up Query"}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
 
             <button
               onClick={() => setActiveTab('weather')}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-2xl border border-white/20 transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-2xl border border-white/20 transition-colors cursor-pointer"
             >
               <CloudSun className="w-4 h-4 text-emerald-300" />
-              <span>Detailed Weather Impact</span>
+              <span>{t.dashboard?.detailedWeatherImpact || "Detailed Weather Impact"}</span>
             </button>
           </div>
         </div>
@@ -103,46 +103,46 @@ export const Dashboard = () => {
         
         <button
           onClick={() => setActiveTab('ai')}
-          className="p-5 bg-white hover:bg-ai-light/50 border border-gray-100 hover:border-ai-mauve/40 rounded-3xl shadow-sm text-left transition-all group"
+          className="p-5 bg-white hover:bg-ai-light/50 border border-gray-100 hover:border-ai-mauve/40 rounded-3xl shadow-sm text-left transition-all group cursor-pointer"
         >
           <div className="w-11 h-11 rounded-2xl bg-ai-plum text-white flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-xs">
             <Bot className="w-5 h-5 text-purple-200" />
           </div>
-          <div className="text-xs font-black text-agri-dark">🤖 Ask AI Assistant</div>
-          <div className="text-[11px] text-gray-500 font-medium">Query in voice / text</div>
+          <div className="text-xs font-black text-agri-dark">🤖 {t.dashboard?.askAi || "Ask AI Assistant"}</div>
+          <div className="text-[11px] text-gray-500 font-medium">{t.dashboard?.askAiSub || "Voice / text query"}</div>
         </button>
 
         <button
           onClick={() => setActiveTab('cropDoctor')}
-          className="p-5 bg-white hover:bg-agri-light/60 border border-gray-100 hover:border-agri-soft rounded-3xl shadow-sm text-left transition-all group"
+          className="p-5 bg-white hover:bg-agri-light/60 border border-gray-100 hover:border-agri-soft rounded-3xl shadow-sm text-left transition-all group cursor-pointer"
         >
           <div className="w-11 h-11 rounded-2xl bg-agri-dark text-white flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-xs">
             <Camera className="w-5 h-5 text-emerald-300" />
           </div>
-          <div className="text-xs font-black text-agri-dark">📸 Scan Crop Doctor</div>
-          <div className="text-[11px] text-gray-500 font-medium">Pest & leaf scan</div>
+          <div className="text-xs font-black text-agri-dark">📸 {t.dashboard?.scanCrop || "Scan Crop Leaf"}</div>
+          <div className="text-[11px] text-gray-500 font-medium">{t.dashboard?.scanCropSub || "Pest & leaf scan"}</div>
         </button>
 
         <button
           onClick={() => setActiveTab('market')}
-          className="p-5 bg-white hover:bg-earth-cream/60 border border-gray-100 hover:border-earth-wheat/50 rounded-3xl shadow-sm text-left transition-all group"
+          className="p-5 bg-white hover:bg-earth-cream/60 border border-gray-100 hover:border-earth-wheat/50 rounded-3xl shadow-sm text-left transition-all group cursor-pointer"
         >
           <div className="w-11 h-11 rounded-2xl bg-earth-walnut text-white flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-xs">
             <TrendingUp className="w-5 h-5 text-earth-wheat" />
           </div>
-          <div className="text-xs font-black text-agri-dark">💰 Mandi Prices</div>
-          <div className="text-[11px] text-gray-500 font-medium">Cotton ₹7,250/qtnl</div>
+          <div className="text-xs font-black text-agri-dark">💰 {t.dashboard?.viewMandi || "Mandi Prices"}</div>
+          <div className="text-[11px] text-gray-500 font-medium">{t.dashboard?.viewMandiSub || "Cotton ₹7,410/qtnl"}</div>
         </button>
 
         <button
           onClick={() => setActiveTab('weather')}
-          className="p-5 bg-white hover:bg-emerald-50/60 border border-gray-100 hover:border-emerald-200 rounded-3xl shadow-sm text-left transition-all group"
+          className="p-5 bg-white hover:bg-emerald-50/60 border border-gray-100 hover:border-emerald-200 rounded-3xl shadow-sm text-left transition-all group cursor-pointer"
         >
           <div className="w-11 h-11 rounded-2xl bg-agri-primary text-white flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-xs">
             <CloudSun className="w-5 h-5 text-emerald-200" />
           </div>
-          <div className="text-xs font-black text-agri-dark">🌦️ Agro-Weather</div>
-          <div className="text-[11px] text-gray-500 font-medium">28°C • 85% Rain</div>
+          <div className="text-xs font-black text-agri-dark">🌦️ {t.dashboard?.viewWeather || "Agro-Weather"}</div>
+          <div className="text-[11px] text-gray-500 font-medium">{t.dashboard?.viewWeatherSub || "29°C • 85% Rain"}</div>
         </button>
 
       </div>
@@ -157,13 +157,13 @@ export const Dashboard = () => {
           <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-4">
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <h3 className="font-black text-base text-agri-dark flex items-center gap-2">
-                <Sprout className="w-5 h-5 text-agri-primary" /> Active Crop Lifecycle Status
+                <Sprout className="w-5 h-5 text-agri-primary" /> {t.dashboard?.activeCrops || "Active Crop Lifecycle Status"}
               </h3>
               <button 
                 onClick={() => setActiveTab('myFarm')}
-                className="text-xs font-bold text-agri-primary hover:underline flex items-center gap-1"
+                className="text-xs font-bold text-agri-primary hover:underline flex items-center gap-1 cursor-pointer"
               >
-                View My Farm <ChevronRight className="w-3.5 h-3.5" />
+                {t.nav?.myFarm || "View My Farm"} <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
@@ -207,7 +207,7 @@ export const Dashboard = () => {
           {/* Today's Recommended Action Checklist */}
           <div className="bg-earth-cream/70 p-6 rounded-3xl border border-earth-wheat/40 shadow-sm space-y-4">
             <h3 className="font-black text-base text-earth-soil flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-earth-terracotta" /> Today's Recommended Actions
+              <CheckCircle2 className="w-5 h-5 text-earth-terracotta" /> {t.dashboard?.recommendedToday || "Today's Recommended Actions"}
             </h3>
 
             <div className="space-y-3">
@@ -215,15 +215,15 @@ export const Dashboard = () => {
                 <input type="checkbox" defaultChecked className="mt-1 accent-agri-primary w-4 h-4 rounded" />
                 <div className="text-xs">
                   <span className="font-extrabold text-agri-dark block">Inspect lower Cotton leaves for Pink Bollworm larvae</span>
-                  <span className="text-gray-600 font-medium">KVK Panchmahal alert recommends checking 10 random plants near field edges.</span>
+                  <span className="text-gray-600 font-medium">KVK alert recommends checking 10 random plants near field edges.</span>
                 </div>
               </div>
 
               <div className="flex items-start gap-3 p-4 bg-white rounded-2xl border border-earth-wheat/20 shadow-xs">
                 <input type="checkbox" className="mt-1 accent-agri-primary w-4 h-4 rounded" />
                 <div className="text-xs">
-                  <span className="font-extrabold text-agri-dark block">Postpone fertigation until tomorrow afternoon</span>
-                  <span className="text-gray-600 font-medium">Rain probability 85% at 3:00 PM. Avoid nitrogen leaching into subsoil.</span>
+                  <span className="font-extrabold text-agri-dark block">Postpone nitrogen fertigation until tomorrow afternoon</span>
+                  <span className="text-gray-600 font-medium">Rain probability 85% at 3:00 PM. Avoid fertilizer runoff into subsoil.</span>
                 </div>
               </div>
             </div>
@@ -251,7 +251,7 @@ export const Dashboard = () => {
 
               <button 
                 onClick={() => setActiveTab('alerts')}
-                className="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-2xl transition-colors shadow-xs"
+                className="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-2xl transition-colors shadow-xs cursor-pointer"
               >
                 {topAlert.actionText} →
               </button>
@@ -262,7 +262,7 @@ export const Dashboard = () => {
           <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm space-y-4">
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <h4 className="font-black text-sm text-agri-dark flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-earth-walnut" /> Nearby Mandi Rates
+                <TrendingUp className="w-4 h-4 text-earth-walnut" /> {t.dashboard?.mandiHighlight || "Nearby Mandi Rates"}
               </h4>
               <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">
                 {cottonMandi.trend}
@@ -283,9 +283,9 @@ export const Dashboard = () => {
 
               <button 
                 onClick={() => setActiveTab('market')}
-                className="w-full py-2.5 text-center text-xs font-bold text-agri-primary bg-agri-bg hover:bg-agri-light rounded-2xl transition-colors border border-agri-soft/30"
+                className="w-full py-2.5 text-center text-xs font-bold text-agri-primary bg-agri-bg hover:bg-agri-light rounded-2xl transition-colors border border-agri-soft/30 cursor-pointer"
               >
-                Compare All Mandis →
+                {t.market?.title || "Compare All Mandis"} →
               </button>
             </div>
           </div>
