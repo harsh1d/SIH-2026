@@ -282,6 +282,116 @@ export const AGRONOMY_KNOWLEDGE_BASE = {
       gu: "4-6 દિવસમાં નવા પાંદડાનો લીલો રંગ તપાસો.",
       ml: "4-6 ദിവസത്തിനുള്ളിൽ പുതിയ ഇലകൾ നിരീക്ഷിക്കുക."
     }
+  },
+
+  healthy_leaf: {
+    key: "healthy_leaf",
+    name: {
+      en: "Healthy Foliage (No Pathogen Detected)",
+      hi: "स्वस्थ फसल पत्ती (कोई रोग नहीं)",
+      gu: "તંદુરસ્ત પાકનું પાન (કોઈ રોગ નથી)",
+      ml: "ആരോഗ്യമുള്ള ഇല"
+    },
+    crop: {
+      en: "All Agricultural Crops",
+      hi: "सभी कृषि फसलें",
+      gu: "તમામ પાક",
+      ml: "എല്ലാ വിളകളും"
+    },
+    category: "Optimal Health Benchmark",
+    confidence: 99,
+    wikiQuery: "Plant physiology",
+    symptoms: {
+      en: "Vibrant uniform chlorophyll green coloration, intact cellular margins, absence of fungal lesions or pest punctures.",
+      hi: "चमकदार हरा रंग, स्वस्थ कोशिकाएं और किसी भी कीट या फफूंद के कोई लक्षण नहीं।",
+      gu: "ચમકદાર લીલો રંગ, કોઈ પણ રોગ કે જીવાતના ડાઘ વગરનું તંદુરસ્ત પાન.",
+      ml: "ആരോഗ്യമുള്ള പച്ചനിറം, രോഗലക്ഷണങ്ങളില്ല."
+    },
+    environmentalCause: {
+      en: "Balanced soil nutrient fertility, optimal soil moisture rhizosphere, and effective preventive management.",
+      hi: "संतुलित पोषण, उचित नमी और खेत की अच्छी देखभाल।",
+      gu: "સંતુલિત ખાતર અને યોગ્ય પિયત વ્યવસ્થા.",
+      ml: "ശരിയായ പോഷണവും ഈർപ്പവും."
+    },
+    chemicalTreatment: {
+      en: "• NO chemical pesticides or fungicides required.\n• Continue regular preventive irrigation schedule and routine monitoring.",
+      hi: "• किसी भी रासायनिक कीटनाशक या फफूंदनाशक की आवश्यकता नहीं है।\n• सामान्य सिंचाई और नियमित निगरानी जारी रखें।",
+      gu: "• કોઈ પણ રાસાયણિક દવાની જરૂર નથી.\n• નિયમિત પિયત અને દેખરેખ ચાલુ રાખવી.",
+      ml: "• മരുന്ന് തളിക്കേണ്ടതില്ല."
+    },
+    organicTreatment: {
+      en: "• Apply prophylactic preventive Neem Oil (10,000 ppm) @ 3 ml/L every 14 days\n• Apply Jeevamrut or Panchagavya foliar spray for robust plant immunity",
+      hi: "• 14 दिनों के अंतराल पर नीम तेल (3 मिली/लीटर) का सुरक्षात्मक छिड़काव करें\n• पौधों की रोग प्रतिरोधक क्षमता बढ़ाने के लिए पंचगव्य या जीवामृत का छिड़काव करें",
+      gu: "• 14 દિવસે લીમડાનું તેલ @ 3 મિલી / લીટર રક્ષણાત્મક છાંટવું\n• જીવામૃત આપવું.",
+      ml: "• വേപ്പെണ്ണ ലായനി തളിക്കുക."
+    },
+    whatToAvoid: {
+      en: "Do NOT spray unnecessary prophylactic chemicals which kill beneficial pollinator insects and predatory spiders.",
+      hi: "अनावश्यक रूप से रासायनिक दवाओं का छिड़काव न करें जिससे मित्र कीट और मधुमक्खियां नष्ट होती हैं।",
+      gu: "બિનજરૂરી રાસાયણિક દવાઓ છાંટવાનું ટાળવું.",
+      ml: "അനാവശ്യ കീടനാശിനി പ്രയോഗം ഒഴിവാക്കുക."
+    },
+    monitoringSchedule: {
+      en: "Routine crop scouting once a week during morning hours.",
+      hi: "सप्ताह में एक बार सुबह के समय फसल का सामान्य निरीक्षण करें।",
+      gu: "અઠવાડિયે એક વાર સવારે ખેતરની મુલાકાત લો.",
+      ml: "ആഴ്ചയിലൊരിക്കൽ പരിശോധിക്കുക."
+    }
+  },
+
+  rice_blast: {
+    key: "rice_blast",
+    name: {
+      en: "Rice / Paddy Blast (Magnaporthe oryzae)",
+      hi: "धान का झोंका / ब्लास्ट रोग (Magnaporthe oryzae)",
+      gu: "ડાંગરનો ગેરુ / બ્લાસ્ટ રોગ (Magnaporthe oryzae)",
+      ml: "നെല്ല് കുമിൾ രോഗം (ബ്ലാസ്റ്റ്)"
+    },
+    crop: {
+      en: "Paddy / Rice (Oryza sativa)",
+      hi: "धान / चावल",
+      gu: "ડાંગર / ચોખા",
+      ml: "നെല്ല്"
+    },
+    category: "Fungal Pathogen",
+    confidence: 95,
+    wikiQuery: "Magnaporthe oryzae",
+    symptoms: {
+      en: "Spindle-shaped elliptical diamond lesions with ash-gray centers and brown borders on leaves and neck nodes.",
+      hi: "पत्तियों पर नाव या आंख के आकार के भूरे किनारों वाले धब्बे जिनका केंद्र राख जैसे धूसर रंग का होता है।",
+      gu: "પાંદડા પર આંખ જેવા આકારના કથ્થઈ કિનારીવાળા ડાઘ જે વચ્ચેથી રાખોડી રંગના હોય છે.",
+      ml: "ഇലകളിൽ കണ്ണുകളുടെ ആകൃതിയിലുള്ള ചാരനിറത്തിലുള്ള പാടുകൾ കാണപ്പെടുന്നു."
+    },
+    environmentalCause: {
+      en: "High relative humidity (>90%), continuous cloudy days, dew accumulation, and high nitrogen fertilizer doses.",
+      hi: "अत्यधिक नमी (>90%), लगातार बादल छाए रहना, सुबह की ओस और यूरिया का अधिक उपयोग।",
+      gu: "વાદળછાયું વાતાવરણ, વધુ ભેજ અને વધુ પડતો યુરિયાનો ઉપયોગ.",
+      ml: "കൂടിയ ഈർപ്പവും കനത്ത മഞ്ഞും."
+    },
+    chemicalTreatment: {
+      en: "• Tricyclazole 75% WP @ 0.6 g/litre of water (120g/acre)\n• OR Isoprothiolane 40% EC @ 1.5 ml/litre\n• OR Azoxystrobin 18.2% + Difenoconazole 11.4% SC @ 1.0 ml/litre",
+      hi: "• ट्राईसाइक्लाजोल 75% WP @ 0.6 ग्राम प्रति लीटर पानी (120 ग्राम/एकड़)\n• या आइसोप्रोथियोलेन 40% EC @ 1.5 मिली प्रति लीटर का छिड़काव करें",
+      gu: "• ટ્રાયસાયક્લાઝોલ 75% WP @ 0.6 ગ્રામ / લીટર પાણી (120 ગ્રામ / એકર)\n• અથવા આઇસોપ્રોથિઓલેન 40% EC @ 1.5 મિલી / લીટર.",
+      ml: "• ട്രൈസൈക്ലസോൾ 75% WP 0.6 ഗ്രാം / ലിറ്റർ തളിക്കുക."
+    },
+    organicTreatment: {
+      en: "• Spray Pseudomonas fluorescens @ 10g/litre or Bacillus subtilis @ 5g/litre\n• Apply 20% cow dung slurry supernatant spray (filtered through muslin cloth)",
+      hi: "• स्यूडोमोनास फ्लोरेसेंस @ 10 ग्राम प्रति लीटर का छिड़काव करें\n• 20% छना हुआ गोबर अर्क का छिड़काव करें",
+      gu: "• સ્યુડોમોનાસ ફ્લોરેસન્સ @ 10 ગ્રામ / લીટર છાંટવું.",
+      ml: "• സ്യൂഡോമോണസ് 10 ഗ്രാം / ലിറ്റർ തളിക്കുക."
+    },
+    whatToAvoid: {
+      en: "Do NOT apply excessive top-dressed urea which increases tissue vulnerability to fungal penetration.",
+      hi: "रोग के लक्षण दिखने पर यूरिया की अतिरिक्त खुराक बिल्कुल न दें।",
+      gu: "રોગ દેખાય ત્યારે યુરિયા ખાતર આપવાનું બંધ કરવું.",
+      ml: "യൂറിയയുടെ അമിത ഉപയോഗം ഒഴിവാക്കുക."
+    },
+    monitoringSchedule: {
+      en: "Inspect seedling nursery and main field tillering zones every 3 days during cloudy spells.",
+      hi: "बादल छाए रहने के दौरान हर 3 दिन में धान के पौधों की जांच करें।",
+      gu: "દર 3 દિવસે ખેતરની ચકાસણી કરો.",
+      ml: "മൂന്ന് ദിവസത്തിലൊരിക്കൽ പരിശോധിക്കുക."
+    }
   }
 };
 
